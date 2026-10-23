@@ -1,0 +1,186 @@
+---
+/**
+ * Painel da demonstração comercial: explica ao proprietário o que já funciona, o que falta configurar e
+ * o que precisa de confirmação. Desaparece com lodge.demonstracao.activa = false.
+ */
+import { lodge } from '../config/lodge';
+import { temContactosDirectos, whatsappDisponivel } from '../lib/site';
+
+import Icone from './Icone.astro';
+
+const porConfirmar = lodge.servicos.filter((s) => s.estado === 'por-confirmar');
+const falta = [
+  !temContactosDirectos && 'Contactos oficiais: telefone, WhatsApp e e-mail.',
+  !whatsappDisponivel && 'Número de WhatsApp: activa os botões e as mensagens pré-preenchidas.',
+  !lodge.pedidos.endpoint && 'Envio real dos pedidos: endereço do serviço que os recebe (backend ou e-mail).',
+  !lodge.mapa.coordenadas && 'Localização exacta: activa o mapa e as direcções confirmadas.',
+  !lodge.site.dominioFinal && 'Domínio definitivo: activa a indexação nos motores de busca.',
+  !lodge.marca.logotipo && 'Logótipo oficial: a assinatura "Mulotane Lodge" do topo é temporária.',
+].filter(Boolean);
+---
+
+<button
+  class="demo-botao"
+  type="button"
+  data-abrir-demo
+  aria-haspopup="dialog"
+  aria-label="Sobre esta demonstração"
+>
+  <Icone nome="info" tamanho={18} />
+  <span class="demo-botao__texto" aria-hidden="true">
+    Demonstração
+  </span>
+</button>
+
+<dialog class="demo" aria-labelledby="demo-titulo" data-demo>
+  <div class="demo__cabecalho">
+    <p class="etiqueta">{lodge.demonstracao.autor}</p>
+    <button class="demo__fechar" type="button" data-fechar-demo>
+      <Icone nome="fechar" tamanho={24} />
+      <span class="visualmente-oculto">Fechar</span>
+    </button>
+  </div>
+  <h2 id="demo-titulo">Demonstração para o {lodge.nome}</h2>
+  <p class="demo__intro">
+    Proposta de website para mostrar como o lodge pode ser apresentado e como os visitantes podem consultar
+    disponibilidade ou pedir orçamentos.{' '}
+    <strong>Nesta demonstração, os formulários não enviam nem guardam dados.</strong>
+  </p>
+
+  <h3>Já funciona</h3>
+  <ul class="lista-traco">
+    <li>Páginas de alojamento, restaurante, piscinas, eventos, galeria e contactos.</li>
+    <li>Galeria com ampliação e navegação por teclado.</li>
+    <li>Formulários de disponibilidade e de eventos, com validação completa.</li>
+    <li>Mensagens de WhatsApp pré-preenchidas, prontas para o número oficial.</li>
+  </ul>
+
+  {falta.length > 0 && (
+    <>
+      <h3>Falta configurar</h3>
+      <ul class="lista-traco">
+        {falta.map((f) => (
+          <li>{f}</li>
+        ))}
+      </ul>
+    </>
+  )}
+
+  <h3>A confirmar com o proprietário</h3>
+  <ul class="lista-traco">
+    {porConfirmar.length > 0 && (
+      <li>Serviços disponíveis actualmente: {porConfirmar.map((s) => s.nome.toLowerCase()).join(', ')}.</li>
+    )}
+    <li>
+      Várias fotografias são contribuições de visitantes no Google Maps (autoria indicada na galeria): é
+      preciso autorização dos autores ou substituí-las por fotografias do lodge.
+    </li>
+    <li>
+      A fotografia do quarto mostra toalhas com a inscrição "ALD. TUR. MIXALI-XAU": confirmar que é um quarto
+      do Mulotane Lodge.
+    </li>
+    <li>Algumas fotografias têm vários anos: confirmar que representam o estado actual dos espaços.</li>
+  </ul>
+
+  <button class="botao botao--verde" type="button" data-fechar-demo>
+    Fechar
+  </button>
+</dialog>
+
+<script>
+  import '../scripts/demonstracao';
+</script>
+
+<style>
+  .demo-botao {
+    position: fixed;
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(14px, env(safe-area-inset-bottom));
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 16px 0 12px;
+    border: 1px solid rgb(199 161 90 / 0.6);
+    border-radius: 999px;
+    background: var(--verde);
+    color: var(--branco);
+    font: 600 0.8125rem/1 var(--sans);
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgb(5 22 18 / 0.25);
+    --foco: var(--dourado);
+  }
+  .demo-botao :global(svg) {
+    color: var(--dourado);
+  }
+  @media (max-width: 759px) {
+    .demo-botao {
+      width: 44px;
+      padding: 0;
+      justify-content: center;
+    }
+    .demo-botao__texto {
+      display: none;
+    }
+  }
+  .demo {
+    width: min(640px, calc(100% - 24px));
+    max-height: min(88vh, 900px);
+    padding: clamp(24px, 4vw, 40px);
+    border: 0;
+    border-radius: var(--raio-m);
+    background: var(--branco);
+    color: var(--texto);
+    overflow-y: auto;
+  }
+  .demo::backdrop {
+    background: rgb(5 22 18 / 0.6);
+  }
+  .demo[open] {
+    display: grid;
+    gap: 18px;
+  }
+  .demo__cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .demo__cabecalho .etiqueta {
+    margin: 0;
+  }
+  .demo__fechar {
+    display: inline-grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin: -8px -10px -8px 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .demo h2 {
+    font-size: clamp(1.8rem, 1.5rem + 1.2vw, 2.4rem);
+  }
+  .demo h3 {
+    margin-top: 8px;
+    font-family: var(--sans);
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dourado-texto);
+  }
+  .demo__intro {
+    color: var(--texto-suave);
+  }
+  .demo .lista-traco {
+    font-size: 0.95rem;
+  }
+  .demo .botao {
+    justify-self: start;
+    margin-top: 8px;
+  }
+</style>

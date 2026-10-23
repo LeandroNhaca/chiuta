@@ -1,0 +1,109 @@
+---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Foto from '../components/Foto.astro';
+import IndiceServicos from '../components/IndiceServicos.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  titulo="Restaurante"
+  descricao="O espaço de restauração do Mulotane Lodge, em Boane. Entre em contacto para conhecer a oferta disponível."
+>
+  <CabecalhoPagina
+    titulo="Restaurante"
+    intro="Sabores e momentos à mesa, numa sala ampla com janelas largas sobre a vegetação."
+    foto="sala-refeicoes-bar"
+  />
+
+  <section class="secao secao--clara" aria-labelledby="mesa-titulo">
+    <div class="contentor grelha grelha--texto-foto">
+      <div class="bloco-titulo">
+        <p class="etiqueta">À mesa</p>
+        <h2 id="mesa-titulo">
+          Sabores e momentos <em>à mesa.</em>
+        </h2>
+        <div class="texto">
+          <p>
+            Descubra o espaço de restauração do Mulotane Lodge e entre em contacto para conhecer a oferta
+            disponível.
+          </p>
+        </div>
+        <h3 class="restaurante__subtitulo">Pergunte-nos sobre</h3>
+        <ul class="lista-traco">
+          <li>Refeições disponíveis e horários</li>
+          <li>Refeições para grupos e eventos</li>
+          <li>Pedidos especiais</li>
+        </ul>
+        <div class="accoes">
+          <a class="botao botao--verde" href="/contactos/">
+            Consultar o serviço de restauração
+          </a>
+          <BotaoWhatsApp
+            id="restaurante-wa"
+            mensagem="Olá, Mulotane Lodge! Gostaria de saber mais sobre o restaurante."
+          />
+        </div>
+      </div>
+      <div class="restaurante__par">
+        <figure>
+          <Foto
+            id="restaurante-buffet"
+            sizes="(min-width: 900px) 340px, 46vw"
+            class="foto restaurante__alta"
+          />
+          <figcaption class="legenda">Buffet.</figcaption>
+        </figure>
+        <figure>
+          <Foto id="sala-refeicoes" sizes="(min-width: 900px) 340px, 46vw" class="foto restaurante__larga" />
+          <figcaption class="legenda">A sala, com janelas amplas.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
+    <div class="contentor">
+      <p class="etiqueta">Continue a explorar</p>
+      <h2 id="explorar-titulo" class="explorar__titulo">
+        Mais para descobrir no lodge.
+      </h2>
+      <IndiceServicos variante="cartoes" excluir="restaurante" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .restaurante__subtitulo {
+    margin-top: 8px;
+    font-family: var(--sans);
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dourado-texto);
+  }
+  .restaurante__par {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(14px, 2vw, 28px);
+    align-items: end;
+  }
+  .restaurante__par figure {
+    margin: 0;
+  }
+  .restaurante__par :global(.restaurante__alta) {
+    display: block;
+    aspect-ratio: 3 / 4;
+  }
+  .restaurante__par :global(.restaurante__larga) {
+    display: block;
+    aspect-ratio: 3 / 4;
+  }
+  .restaurante__par figure:last-child {
+    margin-bottom: clamp(32px, 6vw, 96px);
+  }
+  .explorar__titulo {
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+</style>

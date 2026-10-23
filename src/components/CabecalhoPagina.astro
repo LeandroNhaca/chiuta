@@ -1,0 +1,140 @@
+---
+import type { IdFotografia } from '../data/fotografias';
+
+import Foto from './Foto.astro';
+
+interface Props {
+  titulo: string;
+  intro: string;
+  foto?: IdFotografia;
+  /** Classe de enquadramento da fotografia (ver os estilos abaixo). */
+  enquadramento?: 'centro' | 'baixo' | 'cima';
+}
+
+const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
+---
+
+<section class:list={['topo', { 'topo--com-foto': foto }]} aria-labelledby="topo-titulo">
+  <img
+    class="topo__folhagem"
+    src="/images/mulotane/conceptual/folhagem.svg"
+    alt=""
+    width="520"
+    height="600"
+  />
+  <div class="contentor topo__texto">
+    <nav class="topo__caminho" aria-label="Caminho">
+      <a href="/">Início</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{titulo}</span>
+    </nav>
+    <h1 id="topo-titulo">
+      <slot name="titulo">{titulo}</slot>
+    </h1>
+    <p class="lead">{intro}</p>
+  </div>
+  {foto && (
+    <div class="contentor">
+      <Foto
+        id={foto}
+        prioridade
+        sizes="(min-width: 1336px) 1240px, 92vw"
+        class:list={['topo__foto', `topo__foto--${enquadramento}`]}
+      />
+    </div>
+  )}
+</section>
+
+<style>
+  .topo {
+    --foco: var(--dourado);
+    position: relative;
+    overflow: hidden;
+    padding-top: calc(var(--cabecalho) + clamp(48px, 7vw, 96px));
+    padding-bottom: clamp(56px, 7vw, 96px);
+    background: var(--verde);
+    color: var(--branco);
+  }
+  .topo--com-foto {
+    padding-bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      var(--verde) 0,
+      var(--verde) calc(100% - clamp(80px, 12vw, 160px)),
+      var(--branco) calc(100% - clamp(80px, 12vw, 160px))
+    );
+  }
+  .topo__folhagem {
+    position: absolute;
+    top: 40px;
+    right: -60px;
+    width: clamp(220px, 30vw, 420px);
+    height: auto;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+  .topo__texto {
+    position: relative;
+    display: grid;
+    gap: 24px;
+    margin-bottom: clamp(40px, 6vw, 72px);
+  }
+  .topo:not(.topo--com-foto) .topo__texto {
+    margin-bottom: 0;
+  }
+  .topo h1 {
+    max-width: 14ch;
+    font-size: var(--t-h1);
+  }
+  .topo h1 :global(em) {
+    color: var(--dourado);
+  }
+  .topo .lead {
+    color: rgb(250 248 243 / 0.82);
+  }
+  .topo__caminho {
+    display: flex;
+    gap: 10px;
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dourado);
+  }
+  .topo__caminho a {
+    text-decoration: none;
+    color: rgb(250 248 243 / 0.75);
+  }
+  .topo__caminho a:hover {
+    color: var(--branco);
+  }
+  .topo :global(.topo__foto) {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--raio);
+    background: var(--verde-2);
+  }
+  @media (min-width: 700px) {
+    .topo :global(.topo__foto) {
+      aspect-ratio: 16 / 8;
+    }
+  }
+  @media (min-width: 1100px) {
+    .topo :global(.topo__foto) {
+      aspect-ratio: 21 / 9;
+    }
+  }
+  .topo :global(.topo__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .topo :global(.topo__foto--baixo img) {
+    object-position: 50% 75%;
+  }
+  .topo :global(.topo__foto--cima img) {
+    object-position: 50% 30%;
+  }
+</style>

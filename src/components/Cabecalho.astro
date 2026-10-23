@@ -1,0 +1,256 @@
+---
+import { navegacao } from '../lib/site';
+
+import Assinatura from './Assinatura.astro';
+import Icone from './Icone.astro';
+
+const caminho = Astro.url.pathname;
+const actual = (href: string) => (href === '/' ? caminho === '/' : caminho.startsWith(href));
+// O formulário de disponibilidade existe na página inicial e na página de alojamento.
+const ctaHref =
+  caminho === '/' || caminho.startsWith('/alojamento/') ? '#disponibilidade' : '/#disponibilidade';
+---
+
+<header class="cabecalho" data-cabecalho>
+  <div class="cabecalho__barra contentor">
+    <Assinatura class="cabecalho__assinatura" />
+    <nav class="cabecalho__nav" aria-label="Principal">
+      <ul>
+        {navegacao.map((item) => (
+          <li>
+            <a href={item.href} aria-current={actual(item.href) ? 'page' : undefined}>
+              {item.nome}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <a class="botao botao--principal cabecalho__cta" href={ctaHref}>
+      Consultar disponibilidade
+    </a>
+    <button
+      class="cabecalho__menu"
+      type="button"
+      aria-expanded="false"
+      aria-controls="menu-movel"
+      data-abrir-menu
+    >
+      <Icone nome="menu" tamanho={26} />
+      <span class="visualmente-oculto">Abrir menu</span>
+    </button>
+  </div>
+</header>
+
+<dialog id="menu-movel" class="menu-movel" aria-label="Menu" data-menu-movel>
+  <div class="menu-movel__topo contentor">
+    <Assinatura />
+    <button class="menu-movel__fechar" type="button" data-fechar-menu>
+      <Icone nome="fechar" tamanho={26} />
+      <span class="visualmente-oculto">Fechar menu</span>
+    </button>
+  </div>
+  <nav class="menu-movel__nav contentor" aria-label="Principal">
+    <ol>
+      {navegacao.map((item, i) => (
+        <li>
+          <a
+            href={item.href}
+            aria-current={actual(item.href) ? 'page' : undefined}
+            data-fechar-menu-ao-navegar
+          >
+            <span class="menu-movel__num" aria-hidden="true">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            {item.nome}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+  <div class="menu-movel__rodape contentor">
+    <a class="botao botao--principal botao--bloco" href={ctaHref} data-fechar-menu-ao-navegar>
+      Consultar disponibilidade
+    </a>
+    <p>Boane · Província de Maputo · Moçambique</p>
+  </div>
+</dialog>
+
+<script>
+  import '../scripts/cabecalho';
+</script>
+
+<style>
+  .cabecalho {
+    --foco: var(--dourado);
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    color: var(--branco);
+    background: linear-gradient(to bottom, rgb(5 22 18 / 0.55), rgb(5 22 18 / 0));
+    transition:
+      background-color var(--transicao),
+      box-shadow var(--transicao);
+  }
+  .cabecalho:global(.cabecalho--solido) {
+    background: var(--verde);
+    box-shadow: 0 1px 0 var(--linha-clara);
+  }
+  .cabecalho__barra {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: var(--cabecalho);
+  }
+  .cabecalho__assinatura {
+    margin-right: auto;
+  }
+  .cabecalho__nav {
+    display: none;
+  }
+  .cabecalho__nav ul {
+    display: flex;
+    gap: 26px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .cabecalho__nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    color: rgb(250 248 243 / 0.86);
+    transition: color var(--transicao);
+  }
+  .cabecalho__nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    height: 1px;
+    background: var(--dourado);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--transicao);
+  }
+  .cabecalho__nav a:hover,
+  .cabecalho__nav a[aria-current='page'] {
+    color: var(--branco);
+  }
+  .cabecalho__nav a:hover::after,
+  .cabecalho__nav a[aria-current='page']::after {
+    transform: none;
+  }
+  .cabecalho__cta {
+    display: none;
+    min-height: 46px;
+    padding-inline: 22px;
+  }
+  .cabecalho__menu {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-right: -10px;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  @media (min-width: 680px) {
+    .cabecalho__cta {
+      display: inline-flex;
+    }
+  }
+  @media (min-width: 1300px) {
+    .cabecalho__nav {
+      display: block;
+    }
+    .cabecalho__menu {
+      display: none;
+    }
+  }
+
+  .menu-movel {
+    --foco: var(--dourado);
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--verde);
+    color: var(--branco);
+    overflow-y: auto;
+  }
+  .menu-movel[open] {
+    display: flex;
+    flex-direction: column;
+  }
+  .menu-movel::backdrop {
+    background: var(--verde);
+  }
+  .menu-movel__topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--cabecalho);
+    border-bottom: 1px solid var(--linha-clara);
+  }
+  .menu-movel__fechar {
+    display: inline-grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin-right: -10px;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .menu-movel__nav {
+    flex: 1;
+    padding-block: 24px;
+  }
+  .menu-movel__nav ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .menu-movel__nav a {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 12px 0;
+    font-family: var(--serif);
+    font-size: clamp(1.9rem, 1.4rem + 2.4vw, 2.6rem);
+    font-weight: 500;
+    line-height: 1.1;
+    text-decoration: none;
+    border-bottom: 1px solid var(--linha-clara);
+  }
+  .menu-movel__nav a[aria-current='page'] {
+    color: var(--dourado);
+  }
+  .menu-movel__num {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--dourado);
+  }
+  .menu-movel__rodape {
+    display: grid;
+    gap: 18px;
+    padding-block: 8px max(28px, env(safe-area-inset-bottom));
+    font-size: var(--t-pequeno);
+    color: rgb(250 248 243 / 0.72);
+  }
+</style>

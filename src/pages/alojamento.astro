@@ -1,0 +1,88 @@
+---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import IndiceServicos from '../components/IndiceServicos.astro';
+import SecaoDisponibilidade from '../components/SecaoDisponibilidade.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  titulo="Alojamento"
+  descricao="Alojamento no Mulotane Lodge, em Boane. Consulte a disponibilidade para as datas da sua visita e peça informações sobre os quartos."
+>
+  <CabecalhoPagina
+    titulo="Alojamento"
+    intro="O seu espaço para descansar, depois de um dia de lazer, de trabalho ou de celebração."
+    foto="quarto-twin"
+    enquadramento="baixo"
+  />
+
+  <section class="secao secao--clara" aria-labelledby="quartos-titulo">
+    <div class="contentor grelha grelha--metades detalhe">
+      <div class="bloco-titulo">
+        <p class="etiqueta">Os quartos</p>
+        <h2 id="quartos-titulo">
+          Descanso com <em>tranquilidade.</em>
+        </h2>
+        <div class="texto">
+          <p>Conheça as opções de alojamento e consulte a disponibilidade para as datas da sua visita.</p>
+          <p>
+            Na fotografia, um quarto com duas camas individuais, cabeceiras estofadas e roupa de cama branca.
+            A equipa do lodge indica os tipos de quarto disponíveis e as condições da estadia.
+          </p>
+        </div>
+        <div class="accoes">
+          <a class="botao botao--verde" href="#disponibilidade">
+            Consultar disponibilidade
+          </a>
+          <BotaoWhatsApp
+            id="alojamento-wa"
+            mensagem="Olá, Mulotane Lodge! Gostaria de saber mais sobre o alojamento."
+          />
+        </div>
+      </div>
+      <div class="detalhe__caixa">
+        <h3>Pode pedir-nos informações sobre</h3>
+        <ul class="lista-traco">
+          <li>Tipos de quarto disponíveis</li>
+          <li>Tarifas e condições de reserva</li>
+          <li>Número de hóspedes por quarto</li>
+          <li>Horários de entrada e de saída</li>
+          <li>Comodidades incluídas na estadia</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <SecaoDisponibilidade prefixo="aloj" />
+
+  <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
+    <div class="contentor">
+      <p class="etiqueta">Continue a explorar</p>
+      <h2 id="explorar-titulo" class="explorar__titulo">
+        Mais para descobrir no lodge.
+      </h2>
+      <IndiceServicos variante="cartoes" excluir="alojamento" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .detalhe {
+    align-items: start;
+  }
+  .detalhe__caixa {
+    display: grid;
+    gap: 22px;
+    padding: clamp(28px, 4vw, 44px);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio);
+    background: #fff;
+  }
+  .detalhe__caixa h3 {
+    font-size: var(--t-h3);
+  }
+  .explorar__titulo {
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+</style>

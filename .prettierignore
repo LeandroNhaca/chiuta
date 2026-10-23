@@ -1,0 +1,11 @@
+dist
+.astro
+node_modules
+public
+assets-originais
+package-lock.json
+src/data/imagens-geradas.json
+test-results
+playwright-report
+*.md
+deploy/nginx

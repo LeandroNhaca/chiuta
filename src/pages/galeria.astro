@@ -1,0 +1,56 @@
+---
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Galeria from '../components/Galeria.astro';
+import { fotografias } from '../data/fotografias';
+import Base from '../layouts/Base.astro';
+
+const autores = [
+  ...new Set(fotografias.filter((f) => f.origem === 'google-maps' && f.autor).map((f) => f.autor)),
+];
+---
+
+<Base
+  titulo="Galeria"
+  descricao="Fotografias reais do Mulotane Lodge, em Boane: piscinas e exteriores, alojamento, restaurante e espaços para eventos."
+>
+  <CabecalhoPagina
+    titulo="Galeria"
+    intro="Os espaços do Mulotane Lodge em fotografias reais: piscinas e exteriores, alojamento, restaurante e salas."
+  />
+
+  <section class="secao secao--clara" aria-label="Fotografias">
+    <div class="contentor">
+      <Galeria />
+      {autores.length > 0 && (
+        <aside class="creditos" aria-labelledby="creditos-titulo">
+          <h2 id="creditos-titulo">Créditos fotográficos</h2>
+          <p>
+            Algumas fotografias foram publicadas por visitantes no Google Maps e são apresentadas com
+            indicação de autoria: {autores.join(', ')}.
+          </p>
+        </aside>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .creditos {
+    display: grid;
+    gap: 10px;
+    max-width: 48rem;
+    margin-top: clamp(64px, 8vw, 112px);
+    padding-top: 28px;
+    border-top: 1px solid var(--linha);
+    font-size: var(--t-pequeno);
+    color: var(--texto-suave);
+  }
+  .creditos h2 {
+    font-family: var(--sans);
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dourado-texto);
+  }
+</style>

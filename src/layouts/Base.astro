@@ -1,0 +1,83 @@
+---
+import '../styles/global.css';
+
+import Cabecalho from '../components/Cabecalho.astro';
+import PainelDemonstracao from '../components/PainelDemonstracao.astro';
+import Rodape from '../components/Rodape.astro';
+import { lodge } from '../config/lodge';
+import { politicaSeguranca } from '../lib/site';
+
+interface Props {
+  /** Título da página (sem o nome do lodge, que é acrescentado). Na página inicial, o título completo. */
+  titulo: string;
+  descricao: string;
+  inicio?: boolean;
+  /** Dados estruturados (só com informação confirmada). */
+  dadosEstruturados?: Record<string, unknown>;
+}
+
+const { titulo, descricao, inicio = false, dadosEstruturados } = Astro.props;
+const tituloCompleto = inicio ? titulo : `${titulo} · ${lodge.nome}, Boane`;
+const indexavel = !lodge.demonstracao.activa && Boolean(lodge.site.dominioFinal);
+const canonical = lodge.site.dominioFinal ? new URL(Astro.url.pathname, lodge.site.dominioFinal).href : null;
+const urlPagina = new URL(Astro.url.pathname, Astro.site).href;
+const imagemPartilha = new URL('/og/mulotane-lodge.jpg', Astro.site).href;
+---
+
+<!doctype html>
+<html lang="pt-MZ">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="Content-Security-Policy" content={politicaSeguranca()} />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descricao} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    {!indexavel && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content="#0b3027" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link
+      rel="preload"
+      href="/fonts/cormorant-garamond-latin-500-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/manrope-latin-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={lodge.nome} />
+    <meta property="og:locale" content="pt_PT" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={urlPagina} />
+    <meta property="og:image" content={imagemPartilha} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Piscina do Mulotane Lodge, com espreguiçadeiras e palmeiras." />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {dadosEstruturados && (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(dadosEstruturados)} />
+    )}
+  </head>
+  <body>
+    <a class="saltar" href="#conteudo">
+      Saltar para o conteúdo
+    </a>
+    <Cabecalho />
+    <main id="conteudo" tabindex="-1">
+      <slot />
+    </main>
+    <Rodape />
+    {lodge.demonstracao.activa && <PainelDemonstracao />}
+  </body>
+</html>

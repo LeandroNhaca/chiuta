@@ -1,0 +1,31 @@
+---
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import IndiceServicos from '../components/IndiceServicos.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base titulo="Página não encontrada" descricao="A página que procura não existe ou mudou de endereço.">
+  <CabecalhoPagina
+    titulo="Página não encontrada"
+    intro="A página que procura não existe ou mudou de endereço. Pode continuar a partir daqui."
+  />
+  <section class="secao secao--clara">
+    <div class="contentor">
+      <div class="accoes erro__accoes">
+        <a class="botao botao--verde" href="/">
+          Voltar ao início
+        </a>
+        <a class="botao botao--contorno" href="/contactos/">
+          Fale connosco
+        </a>
+      </div>
+      <IndiceServicos />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .erro__accoes {
+    margin-bottom: clamp(48px, 6vw, 80px);
+  }
+</style>

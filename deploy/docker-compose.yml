@@ -1,0 +1,31 @@
+# Projecto Docker "mulotane" no VPS da One Prompt Studio: website de demonstração do Mulotane Lodge.
+# Projecto independente: imagem, contentor e configuração próprios. Só se liga à rede "edge", por onde o
+# reverse proxy (Caddy) encaminha https://mulotane.onepromptstudio.com para mulotane-web:8080.
+# Não publica portas no servidor. Corre como utilizador sem privilégios, com disco só de leitura.
+# A imagem é publicada pelo GitHub Actions do repositório LeandroNhaca/chiuta (.github/workflows/imagem.yml).
+# Actualizar: "Update project" no Docker Manager (faz pull de :demo). Voltar atrás: trocar :demo por :sha-<commit>.
+services:
+  web:
+    image: ghcr.io/leandronhaca/mulotane-lodge:demo
+    pull_policy: always
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    mem_limit: 128m
+    cpus: 0.5
+    pids_limit: 64
+    environment:
+      NGINX_ENTRYPOINT_QUIET_LOGS: '1'
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '-O', '/dev/null', 'http://127.0.0.1:8080/saude']
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    networks:
+      edge:
+        aliases: [mulotane-web]
+networks:
+  edge:
+    external: true

@@ -1,0 +1,70 @@
+---
+/**
+ * Assinatura tipográfica TEMPORÁRIA. Não é o logótipo oficial: a placa da entrada mostra um logótipo,
+ * mas ainda não há ficheiro confirmado. Quando houver, basta preencher lodge.marca.logotipo.
+ */
+import { lodge } from '../config/lodge';
+
+interface Props {
+  class?: string;
+}
+const { class: classe } = Astro.props;
+---
+
+<a href="/" class:list={['assinatura', classe]} aria-label={`${lodge.nome}, página inicial`}>
+  {lodge.marca.logotipo ? (
+    <img src={lodge.marca.logotipo} alt="" width="160" height="48" />
+  ) : (
+    <>
+      <span class="assinatura__nome" aria-hidden="true">
+        Mulotane
+      </span>
+      <span class="assinatura__sub" aria-hidden="true">
+        Lodge
+      </span>
+    </>
+  )}
+</a>
+
+<style>
+  .assinatura {
+    display: inline-grid;
+    justify-items: center;
+    gap: 7px;
+    padding: 6px 0;
+    color: inherit;
+    line-height: 1;
+    text-decoration: none;
+  }
+  .assinatura__nome {
+    margin-right: -0.2em;
+    font-family: var(--serif);
+    font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.5rem);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+  .assinatura__sub {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-right: -0.42em;
+    font-family: var(--sans);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: var(--dourado);
+  }
+  .assinatura__sub::before,
+  .assinatura__sub::after {
+    content: '';
+    width: 18px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.8;
+  }
+  .assinatura__sub::after {
+    margin-left: -0.42em;
+  }
+</style>

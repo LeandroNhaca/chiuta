@@ -1,0 +1,173 @@
+---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import ComoChegar from '../components/ComoChegar.astro';
+import Icone from '../components/Icone.astro';
+import { lodge } from '../config/lodge';
+import { telefoneHref, temContactosDirectos } from '../lib/site';
+import Base from '../layouts/Base.astro';
+
+const { telefone, email } = lodge.contactos;
+---
+
+<Base
+  titulo="Contactos e como chegar"
+  descricao="Fale com o Mulotane Lodge, em Boane, província de Maputo: consulte disponibilidade, peça um orçamento para um evento e prepare a viagem."
+>
+  <CabecalhoPagina
+    titulo="Fale connosco"
+    intro="Peça informações, consulte a disponibilidade ou prepare o seu evento. A equipa do Mulotane Lodge responde ao seu pedido."
+  />
+
+  <section class="secao secao--clara" aria-labelledby="contactos-titulo">
+    <div class="contentor grelha grelha--metades contactos">
+      <div class="bloco-titulo">
+        <p class="etiqueta">Contactos</p>
+        <h2 id="contactos-titulo">
+          Estamos em <em>Boane.</em>
+        </h2>
+        {temContactosDirectos ? (
+          <ul class="contactos__lista">
+            {telefone && (
+              <li>
+                <Icone nome="telefone" tamanho={22} />
+                <span>
+                  <span class="contactos__rotulo">Telefone</span>
+                  <a href={telefoneHref(telefone)}>{telefone}</a>
+                </span>
+              </li>
+            )}
+            {email && (
+              <li>
+                <Icone nome="email" tamanho={22} />
+                <span>
+                  <span class="contactos__rotulo">E-mail</span>
+                  <a href={`mailto:${email}`}>{email}</a>
+                </span>
+              </li>
+            )}
+          </ul>
+        ) : (
+          lodge.demonstracao.activa && (
+            <p class="nota">
+              <Icone nome="info" tamanho={18} />
+              <span>
+                Os contactos oficiais do Mulotane Lodge (telefone, WhatsApp e e-mail) são publicados aqui
+                depois de confirmados com a gerência.
+              </span>
+            </p>
+          )
+        )}
+        <BotaoWhatsApp id="contactos-wa" />
+      </div>
+
+      <ul class="contactos__accoes">
+        <li>
+          <a class="contactos__cartao" href="/alojamento/#disponibilidade">
+            <Icone nome="calendario" tamanho={28} />
+            <span class="contactos__titulo">Consultar disponibilidade</span>
+            <span class="contactos__texto">Indique as datas e o número de hóspedes.</span>
+            <Icone nome="seta" tamanho={20} class="contactos__seta" />
+          </a>
+        </li>
+        <li>
+          <a class="contactos__cartao" href="/eventos/#pedido">
+            <Icone nome="pessoas" tamanho={28} />
+            <span class="contactos__titulo">Pedir orçamento para um evento</span>
+            <span class="contactos__texto">Reuniões, conferências, celebrações e encontros de grupo.</span>
+            <Icone nome="seta" tamanho={20} class="contactos__seta" />
+          </a>
+        </li>
+        <li>
+          <a class="contactos__cartao" href="#como-chegar">
+            <Icone nome="pino" tamanho={28} />
+            <span class="contactos__titulo">Como chegar</span>
+            <span class="contactos__texto">Boane, província de Maputo, Moçambique.</span>
+            <Icone nome="seta" tamanho={20} class="contactos__seta" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <ComoChegar semContacto />
+</Base>
+
+<style>
+  .contactos {
+    align-items: start;
+  }
+  .contactos__lista {
+    display: grid;
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .contactos__lista li {
+    display: flex;
+    gap: 16px;
+    align-items: start;
+  }
+  .contactos__lista :global(svg) {
+    margin-top: 4px;
+    color: var(--dourado-texto);
+  }
+  .contactos__lista a {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    text-decoration: none;
+  }
+  .contactos__rotulo {
+    display: block;
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--texto-suave);
+  }
+  .contactos__accoes {
+    display: grid;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .contactos__cartao {
+    position: relative;
+    display: grid;
+    gap: 8px;
+    padding: 26px 64px 26px 28px;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio);
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color var(--transicao),
+      transform var(--transicao);
+  }
+  .contactos__cartao:hover {
+    border-color: var(--dourado);
+    transform: translateY(-2px);
+  }
+  .contactos__cartao > :global(svg:first-child) {
+    color: var(--dourado-texto);
+  }
+  .contactos__titulo {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    line-height: 1.15;
+  }
+  .contactos__texto {
+    font-size: 0.95rem;
+    color: var(--texto-suave);
+  }
+  .contactos__cartao :global(.contactos__seta) {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--verde);
+  }
+</style>

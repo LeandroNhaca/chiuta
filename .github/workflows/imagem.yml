@@ -1,0 +1,64 @@
+# Testa o site e publica a imagem Docker em ghcr.io/leandronhaca/mulotane-lodge.
+# O VPS da One Prompt Studio faz pull desta imagem (pacote público: só contém o site estático e o nginx).
+name: Testes e imagem
+
+on:
+  push:
+    branches: [main, claude/zen-lovelace-hscc97]
+  workflow_dispatch:
+
+concurrency:
+  group: imagem-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  IMAGEM: ghcr.io/leandronhaca/mulotane-lodge
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22.23.4
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+        env:
+          CI: 'true'
+
+  imagem:
+    needs: testes
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v6
+      - name: Entrar no GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Construir
+        run: |
+          SHA="sha-${GITHUB_SHA::7}"
+          docker build \
+            --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+            -t "$IMAGEM:$SHA" -t "$IMAGEM:demo" .
+      - name: Publicar
+        run: |
+          docker push "$IMAGEM:sha-${GITHUB_SHA::7}"
+          docker push "$IMAGEM:demo"
+          echo "Imagem: $IMAGEM:sha-${GITHUB_SHA::7}" >> "$GITHUB_STEP_SUMMARY"
+          docker inspect --format '{{index .RepoDigests 0}}' "$IMAGEM:demo" >> "$GITHUB_STEP_SUMMARY"
