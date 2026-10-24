@@ -1,0 +1,172 @@
+---
+/** Os quatro pilares do lodge, com o mesmo peso: alojamento, restaurante, piscinas e eventos. */
+import type { IdFotografia } from '../data/fotografias';
+
+import Foto from './Foto.astro';
+import Icone, { type NomeIcone } from './Icone.astro';
+
+type Id = 'alojamento' | 'restaurante' | 'piscinas' | 'eventos';
+
+interface Props {
+  variante?: 'pilares' | 'cartoes';
+  excluir?: Id;
+}
+
+const { variante = 'pilares', excluir } = Astro.props;
+
+const itens: { id: Id; icone: NomeIcone; titulo: string; texto: string; href: string; foto: IdFotografia }[] =
+  [
+    {
+      id: 'alojamento',
+      icone: 'cama',
+      titulo: 'Alojamento',
+      texto: 'Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração.',
+      href: '/alojamento/',
+      foto: 'quarto-twin',
+    },
+    {
+      id: 'restaurante',
+      icone: 'talheres',
+      titulo: 'Restaurante',
+      texto: 'Refeições numa sala ampla, com janelas largas sobre a vegetação.',
+      href: '/restaurante/',
+      foto: 'sala-refeicoes-bar',
+    },
+    {
+      id: 'piscinas',
+      icone: 'ondas',
+      titulo: 'Piscinas',
+      texto: 'Lazer ao ar livre, entre o jardim, as palmeiras e a esplanada.',
+      href: '/piscinas/',
+      foto: 'piscina-terraco',
+    },
+    {
+      id: 'eventos',
+      icone: 'pessoas',
+      titulo: 'Eventos e conferências',
+      texto: 'Um espaço para reunir equipas, famílias e amigos.',
+      href: '/eventos/',
+      foto: 'sala-conferencias',
+    },
+  ];
+const lista = itens.filter((i) => i.id !== excluir);
+---
+
+<ul class:list={['indice', `indice--${variante}`]}>
+  {lista.map((i) => (
+    <li>
+      <a class="indice__item" href={i.href}>
+        {variante === 'cartoes' ? (
+          <Foto id={i.foto} sizes="(min-width: 900px) 400px, 92vw" class="indice__foto" alt="" />
+        ) : (
+          <Icone nome={i.icone} tamanho={30} class="indice__icone" />
+        )}
+        <span class="indice__titulo">{i.titulo}</span>
+        <span class="indice__texto">{i.texto}</span>
+        <span class="indice__seta">
+          Saber mais <Icone nome="seta" tamanho={18} />
+        </span>
+      </a>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .indice {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .indice--pilares {
+    border-top: 1px solid var(--linha);
+  }
+  @media (min-width: 640px) {
+    .indice--pilares {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .indice--pilares {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .indice--cartoes {
+    gap: 32px;
+  }
+  @media (min-width: 760px) {
+    .indice--cartoes {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .indice__item {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+    height: 100%;
+    padding: 32px 28px 32px 0;
+    text-decoration: none;
+    color: inherit;
+  }
+  .indice--pilares li {
+    border-bottom: 1px solid var(--linha);
+  }
+  @media (min-width: 1100px) {
+    .indice--pilares li + li .indice__item {
+      padding-left: 28px;
+      border-left: 1px solid var(--linha);
+    }
+  }
+  .indice--cartoes .indice__item {
+    padding: 0;
+  }
+  .indice :global(.indice__icone) {
+    color: var(--dourado-texto);
+    margin-bottom: 8px;
+  }
+  .indice :global(.indice__foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--raio);
+    margin-bottom: 10px;
+    background: var(--cinzento);
+  }
+  .indice :global(.indice__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .indice__item:hover :global(.indice__foto img) {
+    transform: scale(1.04);
+  }
+  .indice__titulo {
+    font-family: var(--serif);
+    font-size: var(--t-h3);
+    font-weight: 500;
+    line-height: 1.1;
+  }
+  .indice__texto {
+    color: var(--texto-suave);
+    font-size: 0.97rem;
+  }
+  .indice__seta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--verde);
+  }
+  .indice__seta :global(svg) {
+    transition: transform var(--transicao);
+  }
+  .indice__item:hover .indice__seta :global(svg) {
+    transform: translateX(4px);
+  }
+</style>

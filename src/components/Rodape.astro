@@ -1,0 +1,224 @@
+---
+import { lodge } from '../config/lodge';
+import { navegacao, telefoneHref, temContactosDirectos, whatsappDisponivel } from '../lib/site';
+import { linkWhatsApp } from '../lib/whatsapp';
+
+import Assinatura from './Assinatura.astro';
+import Icone from './Icone.astro';
+
+const ano = new Date().getFullYear();
+const { telefone, email, whatsapp } = lodge.contactos;
+---
+
+<footer class="rodape" class:list={{ 'rodape--demo': lodge.demonstracao.activa }}>
+  <div class="contentor rodape__grelha">
+    <div class="rodape__marca">
+      <Assinatura />
+      <p>Um refúgio de tranquilidade, entre o lazer, a gastronomia e a natureza.</p>
+      <p class="rodape__local">
+        <Icone nome="pino" tamanho={18} />
+        {lodge.localizacao.localidade} · Província de {lodge.localizacao.provincia} · {lodge.localizacao.pais}
+      </p>
+    </div>
+
+    <nav class="rodape__coluna" aria-label="Rodapé">
+      <h2>Explorar</h2>
+      <ul>
+        {navegacao.map((item) => (
+          <li>
+            <a href={item.href}>{item.nome}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="rodape__coluna">
+      <h2>Pedidos</h2>
+      <ul>
+        <li>
+          <a href="/#disponibilidade">Consultar disponibilidade</a>
+        </li>
+        <li>
+          <a href="/eventos/#pedido">Pedir orçamento para um evento</a>
+        </li>
+        <li>
+          <a href="/contactos/#como-chegar">Como chegar</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="rodape__coluna">
+      <h2>Contactos</h2>
+      {temContactosDirectos ? (
+        <ul class="rodape__contactos">
+          {telefone && (
+            <li>
+              <a href={telefoneHref(telefone)}>
+                <Icone nome="telefone" tamanho={18} />
+                {telefone}
+              </a>
+            </li>
+          )}
+          {whatsappDisponivel && (
+            <li>
+              <a href={linkWhatsApp(whatsapp)} rel="noopener" target="_blank">
+                <Icone nome="whatsapp" tamanho={18} />
+                WhatsApp
+              </a>
+            </li>
+          )}
+          {email && (
+            <li>
+              <a href={`mailto:${email}`}>
+                <Icone nome="email" tamanho={18} />
+                {email}
+              </a>
+            </li>
+          )}
+        </ul>
+      ) : (
+        <p class="rodape__pendente">Contactos oficiais em confirmação com a gerência.</p>
+      )}
+      {lodge.redesSociais.length > 0 && (
+        <ul class="rodape__redes">
+          {lodge.redesSociais.map((r) => (
+            <li>
+              <a href={r.url} rel="noopener" target="_blank">
+                {r.nome}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+      <a class="ligacao-seta" href="/contactos/">
+        <span>Fale connosco</span>
+        <Icone nome="seta" tamanho={18} />
+      </a>
+    </div>
+  </div>
+
+  <div class="contentor rodape__base">
+    <p>
+      © {ano} {lodge.nome}. Todos os direitos reservados.
+    </p>
+    <ul>
+      <li>
+        <a href="/privacidade/">Política de privacidade</a>
+      </li>
+      {lodge.demonstracao.activa && <li>Demonstração preparada por {lodge.demonstracao.autor}</li>}
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    --foco: var(--dourado);
+    padding-top: clamp(64px, 8vw, 112px);
+    background: #082820;
+    color: rgb(250 248 243 / 0.78);
+    font-size: 0.95rem;
+    border-top: 1px solid rgb(199 161 90 / 0.4);
+  }
+  .rodape--demo {
+    padding-bottom: 72px;
+  }
+  .rodape a {
+    text-decoration: none;
+    transition: color var(--transicao);
+  }
+  .rodape a:hover {
+    color: var(--branco);
+  }
+  .rodape .ligacao-seta {
+    color: var(--dourado);
+  }
+  .rodape__grelha {
+    display: grid;
+    gap: 48px 32px;
+  }
+  @media (min-width: 720px) {
+    .rodape__grelha {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .rodape__grelha {
+      grid-template-columns: 1.6fr 1fr 1.2fr 1.3fr;
+    }
+  }
+  .rodape__marca {
+    display: grid;
+    gap: 20px;
+    align-content: start;
+    justify-items: start;
+    max-width: 22rem;
+    color: var(--branco);
+  }
+  .rodape__marca p {
+    color: rgb(250 248 243 / 0.78);
+  }
+  .rodape__local {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: var(--t-pequeno);
+  }
+  .rodape__local :global(svg) {
+    color: var(--dourado);
+  }
+  .rodape__coluna {
+    display: grid;
+    gap: 16px;
+    align-content: start;
+    justify-items: start;
+  }
+  .rodape h2 {
+    font-family: var(--sans);
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--dourado);
+  }
+  .rodape ul {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rodape__coluna li a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+  }
+  .rodape__pendente {
+    max-width: 20rem;
+    font-size: var(--t-pequeno);
+  }
+  .rodape__base {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    justify-content: space-between;
+    margin-top: clamp(56px, 7vw, 96px);
+    padding-block: 28px;
+    border-top: 1px solid var(--linha-clara);
+    font-size: 0.8125rem;
+    color: rgb(250 248 243 / 0.66);
+  }
+  .rodape__base ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+  }
+  .rodape__base a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgb(250 248 243 / 0.3);
+  }
+</style>

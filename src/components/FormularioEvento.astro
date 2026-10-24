@@ -1,0 +1,76 @@
+---
+import { LIMITES, TIPOS_EVENTO } from '../lib/validacao';
+
+import Campo from './Campo.astro';
+import Pedido from './Pedido.astro';
+
+const prefixo = 'evento';
+---
+
+<Pedido tipo="evento" prefixo={prefixo} titulo="Pedido de orçamento" botao="Pedir orçamento">
+  <Campo
+    prefixo={prefixo}
+    nome="nome"
+    rotulo="Nome"
+    obrigatorio
+    atributos={{ autocomplete: 'name', maxlength: 80 }}
+  />
+  <Campo
+    prefixo={prefixo}
+    nome="empresa"
+    rotulo="Empresa ou instituição"
+    atributos={{ autocomplete: 'organization', maxlength: LIMITES.empresa.max }}
+  />
+  <Campo
+    prefixo={prefixo}
+    nome="telefone"
+    rotulo="Telefone ou WhatsApp"
+    tipo="tel"
+    obrigatorio
+    ajuda="Com o indicativo do país, por exemplo +258."
+    atributos={{ autocomplete: 'tel', inputmode: 'tel', maxlength: 24 }}
+  />
+  <Campo
+    prefixo={prefixo}
+    nome="email"
+    rotulo="E-mail"
+    tipo="email"
+    atributos={{ autocomplete: 'email', maxlength: 160 }}
+  />
+  <Campo
+    prefixo={prefixo}
+    nome="tipo"
+    rotulo="Tipo de evento"
+    tipo="select"
+    obrigatorio
+    opcoes={TIPOS_EVENTO}
+  />
+  <Campo prefixo={prefixo} nome="data" rotulo="Data pretendida" tipo="date" obrigatorio />
+  <Campo
+    prefixo={prefixo}
+    nome="participantes"
+    rotulo="Número estimado de participantes"
+    tipo="number"
+    obrigatorio
+    largo
+    atributos={{
+      min: LIMITES.participantes.min,
+      max: LIMITES.participantes.max,
+      step: 1,
+      inputmode: 'numeric',
+    }}
+  />
+  <Campo
+    prefixo={prefixo}
+    nome="mensagem"
+    rotulo="Mensagem adicional"
+    tipo="textarea"
+    largo
+    ajuda="Horário, refeições, equipamento ou outras necessidades que queira indicar."
+    atributos={{ maxlength: LIMITES.mensagem.max }}
+  />
+  <Fragment slot="aviso">
+    O orçamento é preparado pela equipa do Mulotane Lodge de acordo com a disponibilidade do espaço na data
+    pretendida.
+  </Fragment>
+</Pedido>

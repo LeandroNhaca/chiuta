@@ -1,0 +1,256 @@
+---
+/**
+ * Moldura comum dos formulários de pedido: avisos, botão, armadilha anti-spam e painel de resultado.
+ * O comportamento (validação, WhatsApp, envio) está em src/scripts/formularios.ts.
+ */
+import { lodge } from '../config/lodge';
+import { normalizarNumero } from '../lib/whatsapp';
+
+import Icone from './Icone.astro';
+
+interface Props {
+  tipo: 'alojamento' | 'evento';
+  prefixo: string;
+  botao: string;
+  titulo: string;
+}
+
+const { tipo, prefixo, botao, titulo } = Astro.props;
+---
+
+<div class="pedido" data-pedido>
+  <form
+    class="pedido__form"
+    novalidate
+    data-formulario
+    data-tipo={tipo}
+    data-endpoint={lodge.pedidos.endpoint}
+    data-whatsapp={normalizarNumero(lodge.contactos.whatsapp)}
+    data-lodge={lodge.nome}
+    aria-labelledby={`${prefixo}-titulo`}
+  >
+    <h3 class="pedido__titulo" id={`${prefixo}-titulo`}>
+      {titulo}
+    </h3>
+    <p class="pedido__obrigatorios">
+      Os campos com <span aria-hidden="true">*</span> são obrigatórios.
+    </p>
+    <p class="pedido__erros" role="alert" data-resumo-erros hidden></p>
+
+    <div class="pedido__campos">
+      <slot />
+    </div>
+
+    <div class="pedido__armadilha" aria-hidden="true">
+      <label for={`${prefixo}-website`}>Não preencha este campo</label>
+      <input id={`${prefixo}-website`} name="website" type="text" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <p class="pedido__falha" role="alert" data-falha-envio hidden></p>
+
+    <button class="botao botao--verde botao--bloco" type="submit" data-enviar>
+      <span data-enviar-rotulo>{botao}</span>
+      <Icone nome="seta" tamanho={18} />
+    </button>
+    <p class="pedido__aviso">
+      <Icone nome="info" tamanho={16} />
+      <span>
+        <slot name="aviso" />
+      </span>
+    </p>
+  </form>
+
+  <div class="pedido__resultado" data-resultado hidden tabindex="-1">
+    <span class="pedido__visto">
+      <Icone nome="visto" tamanho={26} />
+    </span>
+    <h3 data-resultado-titulo></h3>
+    <p data-resultado-texto></p>
+    <dl class="pedido__resumo" data-resultado-resumo></dl>
+    <div class="accoes">
+      <a class="botao botao--principal" data-resultado-whatsapp hidden target="_blank" rel="noopener">
+        <Icone nome="whatsapp" tamanho={18} />
+        Continuar no WhatsApp
+      </a>
+      <button class="botao botao--contorno" type="button" data-novo-pedido>
+        Fazer outro pedido
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import '../scripts/formularios';
+</script>
+
+<style>
+  .pedido {
+    --foco: var(--verde);
+    padding: clamp(24px, 4vw, 44px);
+    border-radius: var(--raio-m);
+    background: var(--branco);
+    color: var(--texto);
+    box-shadow: 0 24px 60px rgb(5 22 18 / 0.18);
+  }
+  .pedido__form,
+  .pedido__resultado {
+    display: grid;
+    gap: 20px;
+  }
+  .pedido__form[hidden],
+  .pedido__resultado[hidden] {
+    display: none;
+  }
+  .pedido__titulo,
+  .pedido__resultado h3 {
+    font-size: clamp(1.7rem, 1.4rem + 1vw, 2.2rem);
+  }
+  .pedido__obrigatorios {
+    margin-top: -10px;
+    font-size: var(--t-pequeno);
+    color: var(--texto-suave);
+  }
+  .pedido__campos {
+    display: grid;
+    gap: 18px 20px;
+  }
+  @media (min-width: 560px) {
+    .pedido__campos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .pedido__erros,
+  .pedido__falha {
+    padding: 12px 16px;
+    border-left: 3px solid var(--erro);
+    background: rgb(155 44 31 / 0.08);
+    color: var(--erro);
+    font-size: var(--t-pequeno);
+    font-weight: 600;
+  }
+  .pedido__armadilha {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .pedido__aviso {
+    display: flex;
+    gap: 10px;
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--texto-suave);
+  }
+  .pedido__aviso :global(svg) {
+    flex: none;
+    margin-top: 2px;
+    color: var(--dourado-texto);
+  }
+  .pedido__visto {
+    display: inline-grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgb(199 161 90 / 0.18);
+    color: var(--dourado-texto);
+  }
+  .pedido__resultado:focus {
+    outline: none;
+  }
+  .pedido__resultado p {
+    color: var(--texto-suave);
+  }
+  .pedido__resumo {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 20px;
+    margin: 0;
+    padding: 18px 0;
+    border-block: 1px solid var(--linha);
+    font-size: 0.95rem;
+  }
+  .pedido__resumo :global(dt) {
+    font-weight: 700;
+    color: var(--texto);
+  }
+  .pedido__resumo :global(dd) {
+    margin: 0;
+    color: var(--texto-suave);
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+  }
+
+  /* Campos (componente Campo.astro, renderizado dentro deste formulário). */
+  .pedido :global(.campo) {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+  }
+  @media (min-width: 560px) {
+    .pedido :global(.campo--largo) {
+      grid-column: 1 / -1;
+    }
+  }
+  .pedido :global(label) {
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .pedido :global(.campo__obrigatorio) {
+    margin-left: 4px;
+    color: var(--erro);
+  }
+  .pedido :global(.campo__opcional) {
+    margin-left: 6px;
+    font-weight: 500;
+    color: var(--texto-suave);
+  }
+  .pedido :global(.campo__ajuda) {
+    font-size: 0.8125rem;
+    color: var(--texto-suave);
+  }
+  .pedido :global(input),
+  .pedido :global(select),
+  .pedido :global(textarea) {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 14px;
+    border: 1px solid rgb(32 41 35 / 0.28);
+    border-radius: var(--raio);
+    background: #fff;
+    color: var(--texto);
+    font: 500 1rem/1.4 var(--sans);
+    transition:
+      border-color var(--transicao),
+      box-shadow var(--transicao);
+  }
+  .pedido :global(textarea) {
+    resize: vertical;
+    min-height: 116px;
+  }
+  .pedido :global(input:hover),
+  .pedido :global(select:hover),
+  .pedido :global(textarea:hover) {
+    border-color: rgb(32 41 35 / 0.5);
+  }
+  .pedido :global(input:focus-visible),
+  .pedido :global(select:focus-visible),
+  .pedido :global(textarea:focus-visible) {
+    outline: none;
+    border-color: var(--verde);
+    box-shadow: 0 0 0 3px rgb(199 161 90 / 0.45);
+  }
+  .pedido :global([aria-invalid='true']) {
+    border-color: var(--erro);
+  }
+  .pedido :global(.campo__erro) {
+    min-height: 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--erro);
+  }
+  .pedido :global(.campo__erro:empty) {
+    display: none;
+  }
+</style>

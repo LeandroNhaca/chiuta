@@ -1,0 +1,14 @@
+.git
+node_modules
+dist
+.astro
+test-results
+playwright-report
+assets-originais
+.venv-imagens
+deploy/backups
+.github
+tests
+*.log
+.env
+.env.*

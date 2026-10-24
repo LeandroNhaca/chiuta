@@ -1,0 +1,126 @@
+---
+import { lodge } from '../config/lodge';
+import { localizacaoCompleta, urlDireccoes, urlMapaIncorporado } from '../lib/site';
+
+import Foto from './Foto.astro';
+import Icone from './Icone.astro';
+
+interface Props {
+  /** Na página de contactos o botão "Fale connosco" seria redundante. */
+  semContacto?: boolean;
+}
+const { semContacto = false } = Astro.props;
+const mapa = urlMapaIncorporado();
+---
+
+<section id="como-chegar" class="secao secao--clara como-chegar" aria-labelledby="como-chegar-titulo">
+  <div class="contentor grelha grelha--texto-foto">
+    <div class="bloco-titulo">
+      <p class="etiqueta">Como chegar</p>
+      <h2 id="como-chegar-titulo">
+        Boane, <em>província de Maputo</em>.
+      </h2>
+      <div class="texto">
+        <p>
+          O Mulotane Lodge fica em Boane, na província de Maputo, em Moçambique.
+          {lodge.localizacao.morada && ` ${lodge.localizacao.morada}.`}
+        </p>
+        <p>
+          Antes de viajar, confirme o percurso com a equipa do lodge. Ao chegar, procure a placa do Mulotane
+          Lodge.
+        </p>
+      </div>
+      <dl class="como-chegar__dados">
+        <div>
+          <dt>
+            <Icone nome="pino" tamanho={18} /> Localização
+          </dt>
+          <dd>{localizacaoCompleta}</dd>
+        </div>
+      </dl>
+      {!lodge.mapa.coordenadas && lodge.demonstracao.activa && (
+        <p class="nota">
+          <Icone nome="info" tamanho={18} />
+          <span>
+            A localização exacta e as indicações de acesso estão a ser confirmadas com a gerência. Até lá, o
+            botão abaixo pesquisa o lodge no Google Maps.
+          </span>
+        </p>
+      )}
+      <div class="accoes">
+        <a class="botao botao--verde" href={urlDireccoes()} target="_blank" rel="noopener">
+          Obter direcções
+          <Icone nome="externa" tamanho={18} />
+          <span class="visualmente-oculto">(abre o Google Maps numa nova janela)</span>
+        </a>
+        {!semContacto && (
+          <a class="botao botao--contorno" href="/contactos/">
+            Fale connosco
+          </a>
+        )}
+      </div>
+    </div>
+    <figure class="como-chegar__figura">
+      {mapa ? (
+        <iframe
+          class="como-chegar__mapa"
+          src={mapa}
+          title={`Mapa da localização do ${lodge.nome}`}
+          loading="lazy"
+        />
+      ) : (
+        <Foto id="placa-entrada" sizes="(min-width: 900px) 560px, 92vw" class="como-chegar__foto" />
+      )}
+      {!mapa && <figcaption class="legenda">A placa do Mulotane Lodge, no muro exterior.</figcaption>}
+    </figure>
+  </div>
+</section>
+
+<style>
+  .como-chegar__dados {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+  }
+  .como-chegar__dados dt {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--dourado-texto);
+  }
+  .como-chegar__dados dd {
+    margin: 4px 0 0;
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    line-height: 1.2;
+  }
+  .como-chegar__figura {
+    margin: 0;
+    justify-self: center;
+    width: 100%;
+    max-width: 520px;
+  }
+  .como-chegar :global(.como-chegar__foto) {
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--raio);
+    background: var(--cinzento);
+  }
+  .como-chegar :global(.como-chegar__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 40%;
+  }
+  .como-chegar__mapa {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border: 0;
+    border-radius: var(--raio);
+  }
+</style>

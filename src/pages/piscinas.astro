@@ -1,0 +1,138 @@
+---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Foto from '../components/Foto.astro';
+import Icone from '../components/Icone.astro';
+import IndiceServicos from '../components/IndiceServicos.astro';
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  titulo="Piscinas"
+  descricao="Piscinas e espaços exteriores do Mulotane Lodge, em Boane. Confirme as condições de utilização antes da sua visita."
+>
+  <CabecalhoPagina
+    titulo="Piscinas"
+    intro="Desfrute de momentos de lazer ao ar livre, entre o jardim, as palmeiras e a esplanada."
+    foto="piscina-vista-geral"
+    enquadramento="baixo"
+  />
+
+  <section class="secao secao--clara" aria-labelledby="lazer-titulo">
+    <div class="contentor">
+      <div class="grelha grelha--metades lazer__topo">
+        <div class="bloco-titulo">
+          <p class="etiqueta">Lazer</p>
+          <h2 id="lazer-titulo">
+            Desfrute de momentos de <em>lazer.</em>
+          </h2>
+        </div>
+        <div class="texto">
+          <p>Um espaço para descontrair, aproveitar o ambiente exterior e partilhar bons momentos.</p>
+          <p>
+            As fotografias mostram uma piscina rectangular com espreguiçadeiras e chapéus-de-sol, uma piscina
+            de forma irregular junto ao relvado e zonas de esplanada à sombra.
+          </p>
+        </div>
+      </div>
+      <div class="mosaico">
+        <Foto id="piscina-espreguicadeiras" sizes="(min-width: 900px) 760px, 92vw" class="foto mosaico__a" />
+        <Foto id="piscina-terraco" sizes="(min-width: 900px) 480px, 92vw" class="foto mosaico__b" />
+        <Foto id="esplanada-piscina" sizes="(min-width: 900px) 480px, 92vw" class="foto mosaico__c" />
+        <Foto id="piscina-relvado" sizes="(min-width: 900px) 620px, 92vw" class="foto mosaico__d" />
+        <Foto id="piscina-jardim" sizes="(min-width: 900px) 620px, 92vw" class="foto mosaico__e" />
+      </div>
+    </div>
+  </section>
+
+  <section id="condicoes" class="secao secao--escura" aria-labelledby="condicoes-titulo">
+    <div class="contentor grelha grelha--metades condicoes">
+      <div class="bloco-titulo">
+        <p class="etiqueta">Antes da visita</p>
+        <h2 id="condicoes-titulo">
+          Condições de utilização das <em>piscinas.</em>
+        </h2>
+      </div>
+      <div class="bloco-titulo">
+        <div class="texto">
+          <p>
+            Os horários, as regras de utilização e o acesso de visitantes que não estejam alojados são
+            indicados pela equipa do Mulotane Lodge.
+          </p>
+          <p>Confirme as condições antes da sua visita.</p>
+        </div>
+        <div class="accoes">
+          <a class="botao botao--principal" href="/contactos/">
+            Fale connosco
+            <Icone nome="seta" tamanho={18} />
+          </a>
+          <BotaoWhatsApp
+            id="piscinas-wa"
+            variante="contorno-claro"
+            mensagem="Olá, Mulotane Lodge! Gostaria de saber as condições de utilização das piscinas."
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
+    <div class="contentor">
+      <p class="etiqueta">Continue a explorar</p>
+      <h2 id="explorar-titulo" class="explorar__titulo">
+        Mais para descobrir no lodge.
+      </h2>
+      <IndiceServicos variante="cartoes" excluir="piscinas" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .lazer__topo {
+    align-items: end;
+    margin-bottom: clamp(40px, 6vw, 80px);
+  }
+  .mosaico {
+    display: grid;
+    gap: clamp(12px, 1.6vw, 20px);
+  }
+  .mosaico :global(.foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  @media (min-width: 900px) {
+    .mosaico {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-auto-rows: clamp(90px, 9vw, 130px);
+    }
+    .mosaico :global(.foto) {
+      aspect-ratio: auto;
+    }
+    .mosaico :global(.mosaico__a) {
+      grid-column: 1 / 8;
+      grid-row: 1 / 5;
+    }
+    .mosaico :global(.mosaico__b) {
+      grid-column: 8 / 13;
+      grid-row: 1 / 3;
+    }
+    .mosaico :global(.mosaico__c) {
+      grid-column: 8 / 13;
+      grid-row: 3 / 7;
+    }
+    .mosaico :global(.mosaico__d) {
+      grid-column: 1 / 4;
+      grid-row: 5 / 7;
+    }
+    .mosaico :global(.mosaico__e) {
+      grid-column: 4 / 8;
+      grid-row: 5 / 7;
+    }
+  }
+  .condicoes {
+    align-items: start;
+  }
+  .explorar__titulo {
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+</style>

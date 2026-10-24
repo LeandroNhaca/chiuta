@@ -1,0 +1,75 @@
+---
+/** Campo de formulário com rótulo, ajuda e mensagem de erro ligadas por aria-describedby. */
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props {
+  prefixo: string;
+  nome: string;
+  rotulo: string;
+  tipo?: 'text' | 'tel' | 'email' | 'date' | 'number' | 'textarea' | 'select';
+  obrigatorio?: boolean;
+  ajuda?: string;
+  opcoes?: readonly string[];
+  largo?: boolean;
+  atributos?: HTMLAttributes<'input'> & HTMLAttributes<'textarea'>;
+}
+
+const {
+  prefixo,
+  nome,
+  rotulo,
+  tipo = 'text',
+  obrigatorio = false,
+  ajuda,
+  opcoes = [],
+  largo,
+  atributos = {},
+} = Astro.props;
+const id = `${prefixo}-${nome}`;
+const descricao = [ajuda && `${id}-ajuda`, `${id}-erro`].filter(Boolean).join(' ');
+---
+
+<div class:list={['campo', { 'campo--largo': largo }]}>
+  <label for={id}>
+    {rotulo}
+    {obrigatorio ? (
+      <span class="campo__obrigatorio" aria-hidden="true">
+        *
+      </span>
+    ) : (
+      <span class="campo__opcional">(opcional)</span>
+    )}
+  </label>
+  {ajuda && (
+    <p class="campo__ajuda" id={`${id}-ajuda`}>
+      {ajuda}
+    </p>
+  )}
+  {tipo === 'textarea' ? (
+    <textarea
+      id={id}
+      name={nome}
+      rows="4"
+      aria-describedby={descricao}
+      required={obrigatorio}
+      {...atributos}
+    />
+  ) : tipo === 'select' ? (
+    <select id={id} name={nome} aria-describedby={descricao} required={obrigatorio}>
+      <option value="">Escolha uma opção</option>
+      {opcoes.map((o) => (
+        <option value={o}>{o}</option>
+      ))}
+    </select>
+  ) : (
+    <input
+      id={id}
+      name={nome}
+      type={tipo}
+      aria-describedby={descricao}
+      required={obrigatorio}
+      {...atributos}
+    />
+  )}
+  <p class="campo__erro" id={`${id}-erro`} data-erro-para={nome}></p>
+</div>

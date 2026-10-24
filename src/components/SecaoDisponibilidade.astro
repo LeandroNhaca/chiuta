@@ -1,0 +1,126 @@
+---
+import BotaoWhatsApp from './BotaoWhatsApp.astro';
+import FormularioDisponibilidade from './FormularioDisponibilidade.astro';
+import Icone from './Icone.astro';
+
+interface Props {
+  prefixo?: string;
+}
+const { prefixo = 'disp' } = Astro.props;
+---
+
+<section
+  id="disponibilidade"
+  class="secao secao--escura disponibilidade"
+  aria-labelledby={`${prefixo}-secao-titulo`}
+>
+  <img
+    class="disponibilidade__folhagem"
+    src="/images/mulotane/conceptual/folhagem.svg"
+    alt=""
+    width="520"
+    height="600"
+    loading="lazy"
+  />
+  <div class="contentor grelha disponibilidade__grelha">
+    <div class="bloco-titulo disponibilidade__titulo">
+      <p class="etiqueta">Reservas</p>
+      <h2 id={`${prefixo}-secao-titulo`}>
+        Consultar <em>disponibilidade</em>
+      </h2>
+      <div class="texto">
+        <p>
+          Indique as datas da sua visita e o número de hóspedes. A equipa do Mulotane Lodge responde com a
+          disponibilidade e as condições da estadia.
+        </p>
+      </div>
+    </div>
+    <div class="disponibilidade__form">
+      <FormularioDisponibilidade prefixo={prefixo} />
+    </div>
+    <div class="disponibilidade__extra">
+      <ul class="disponibilidade__passos">
+        <li>
+          <Icone nome="calendario" tamanho={20} />
+          <span>Escolha as datas de entrada e de saída.</span>
+        </li>
+        <li>
+          <Icone nome="pessoas" tamanho={20} />
+          <span>Indique quantas pessoas vão ficar.</span>
+        </li>
+        <li>
+          <Icone nome="visto" tamanho={20} />
+          <span>Aguarde a confirmação da equipa.</span>
+        </li>
+      </ul>
+      <BotaoWhatsApp
+        id={`${prefixo}-wa`}
+        variante="contorno-claro"
+        mensagem="Olá, Mulotane Lodge! Gostaria de consultar a disponibilidade de alojamento."
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .disponibilidade {
+    overflow: hidden;
+  }
+  .disponibilidade__folhagem {
+    position: absolute;
+    left: -80px;
+    bottom: -40px;
+    width: clamp(260px, 34vw, 480px);
+    height: auto;
+    opacity: 0.09;
+    pointer-events: none;
+  }
+  .disponibilidade__grelha {
+    position: relative;
+    align-items: start;
+    row-gap: 40px;
+  }
+  .disponibilidade__extra {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+  /* Telemóvel: título, formulário e só depois os passos. Computador: duas colunas. */
+  @media (min-width: 1000px) {
+    .disponibilidade__grelha {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-rows: auto 1fr;
+      row-gap: 32px;
+    }
+    .disponibilidade__titulo {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .disponibilidade__extra {
+      grid-column: 1;
+      grid-row: 2;
+      align-self: start;
+    }
+    .disponibilidade__form {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+  }
+  .disponibilidade__passos {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .disponibilidade__passos li {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    color: rgb(250 248 243 / 0.86);
+  }
+  .disponibilidade__passos :global(svg) {
+    flex: none;
+    color: var(--dourado);
+  }
+</style>

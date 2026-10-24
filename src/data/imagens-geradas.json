@@ -1,0 +1,596 @@
+{
+  "piscina-jardim": {
+    "original": "assets-originais/mulotane/real/piscina-jardim.jpg",
+    "dimensoes_originais": [
+      900,
+      675
+    ],
+    "dimensoes_tratadas": [
+      900,
+      675
+    ],
+    "ajustes": {
+      "balanco": 0.15,
+      "gama": 0.97,
+      "contraste": 0.1,
+      "saturacao": 1.03,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": null
+    },
+    "luminancia_mediana": {
+      "antes": 128.6,
+      "depois": 132.3
+    },
+    "larguras": [
+      640,
+      900
+    ],
+    "ficheiros": [
+      "piscina-jardim-640.avif",
+      "piscina-jardim-640.webp",
+      "piscina-jardim-900.avif",
+      "piscina-jardim-900.webp"
+    ]
+  },
+  "sala-refeicoes": {
+    "original": "assets-originais/mulotane/real/sala-refeicoes.jpg",
+    "dimensoes_originais": [
+      900,
+      1200
+    ],
+    "dimensoes_tratadas": [
+      900,
+      1200
+    ],
+    "ajustes": {
+      "balanco": 0.3,
+      "gama": 0.78,
+      "contraste": 0.06,
+      "saturacao": 1.0,
+      "ruido": 5.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": null
+    },
+    "luminancia_mediana": {
+      "antes": 67.9,
+      "depois": 89.4
+    },
+    "larguras": [
+      640,
+      900
+    ],
+    "ficheiros": [
+      "sala-refeicoes-640.avif",
+      "sala-refeicoes-640.webp",
+      "sala-refeicoes-900.avif",
+      "sala-refeicoes-900.webp"
+    ]
+  },
+  "restaurante-buffet": {
+    "original": "assets-originais/mulotane/real/restaurante-buffet.jpg",
+    "dimensoes_originais": [
+      900,
+      1200
+    ],
+    "dimensoes_tratadas": [
+      900,
+      1200
+    ],
+    "ajustes": {
+      "balanco": 0.3,
+      "gama": 0.95,
+      "contraste": 0.06,
+      "saturacao": 1.0,
+      "ruido": 4.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": null
+    },
+    "luminancia_mediana": {
+      "antes": 112.0,
+      "depois": 118.3
+    },
+    "larguras": [
+      640,
+      900
+    ],
+    "ficheiros": [
+      "restaurante-buffet-640.avif",
+      "restaurante-buffet-640.webp",
+      "restaurante-buffet-900.avif",
+      "restaurante-buffet-900.webp"
+    ]
+  },
+  "restaurante-buffet-sala": {
+    "original": "assets-originais/mulotane/real/restaurante-buffet-sala.jpg",
+    "dimensoes_originais": [
+      900,
+      607
+    ],
+    "dimensoes_tratadas": [
+      900,
+      607
+    ],
+    "ajustes": {
+      "balanco": 0.25,
+      "gama": 0.88,
+      "contraste": 0.06,
+      "saturacao": 1.0,
+      "ruido": 4.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": null
+    },
+    "luminancia_mediana": {
+      "antes": 104.5,
+      "depois": 116.9
+    },
+    "larguras": [
+      640,
+      900
+    ],
+    "ficheiros": [
+      "restaurante-buffet-sala-640.avif",
+      "restaurante-buffet-sala-640.webp",
+      "restaurante-buffet-sala-900.avif",
+      "restaurante-buffet-sala-900.webp"
+    ]
+  },
+  "quarto-twin": {
+    "original": "assets-originais/mulotane/real/quarto-twin.jpg",
+    "dimensoes_originais": [
+      900,
+      675
+    ],
+    "dimensoes_tratadas": [
+      900,
+      675
+    ],
+    "ajustes": {
+      "balanco": 0.3,
+      "gama": 0.92,
+      "contraste": 0.06,
+      "saturacao": 1.0,
+      "ruido": 4.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": null
+    },
+    "luminancia_mediana": {
+      "antes": 106.6,
+      "depois": 113.9
+    },
+    "larguras": [
+      640,
+      900
+    ],
+    "ficheiros": [
+      "quarto-twin-640.avif",
+      "quarto-twin-640.webp",
+      "quarto-twin-900.avif",
+      "quarto-twin-900.webp"
+    ]
+  },
+  "piscina-espreguicadeiras": {
+    "original": "assets-originais/mulotane/real/gm-piscina-espreguicadeiras.png",
+    "dimensoes_originais": [
+      1080,
+      809
+    ],
+    "dimensoes_tratadas": [
+      1080,
+      740
+    ],
+    "ajustes": {
+      "balanco": 0.1,
+      "gama": 1.0,
+      "contraste": 0.08,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        1080,
+        1600
+      ],
+      "recorte": [
+        0,
+        0,
+        1080,
+        740
+      ]
+    },
+    "luminancia_mediana": {
+      "antes": 135.6,
+      "depois": 135.6
+    },
+    "larguras": [
+      640,
+      1080,
+      1600
+    ],
+    "ficheiros": [
+      "piscina-espreguicadeiras-640.avif",
+      "piscina-espreguicadeiras-640.webp",
+      "piscina-espreguicadeiras-1080.avif",
+      "piscina-espreguicadeiras-1080.webp",
+      "piscina-espreguicadeiras-1600.avif",
+      "piscina-espreguicadeiras-1600.webp"
+    ]
+  },
+  "sala-conferencias": {
+    "original": "assets-originais/mulotane/real/gm-sala-conferencias.png",
+    "dimensoes_originais": [
+      1080,
+      809
+    ],
+    "dimensoes_tratadas": [
+      1020,
+      809
+    ],
+    "ajustes": {
+      "balanco": 0.2,
+      "gama": 0.97,
+      "contraste": 0.05,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": [
+        0,
+        0,
+        1020,
+        809
+      ]
+    },
+    "luminancia_mediana": {
+      "antes": 60.2,
+      "depois": 61.0
+    },
+    "larguras": [
+      640,
+      1020
+    ],
+    "ficheiros": [
+      "sala-conferencias-640.avif",
+      "sala-conferencias-640.webp",
+      "sala-conferencias-1020.avif",
+      "sala-conferencias-1020.webp"
+    ]
+  },
+  "esplanada-piscina": {
+    "original": "assets-originais/mulotane/real/gm-esplanada-piscina.png",
+    "dimensoes_originais": [
+      1080,
+      1439
+    ],
+    "dimensoes_tratadas": [
+      1080,
+      1340
+    ],
+    "ajustes": {
+      "balanco": 0.1,
+      "gama": 0.97,
+      "contraste": 0.05,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": [
+        0,
+        0,
+        1080,
+        1340
+      ]
+    },
+    "luminancia_mediana": {
+      "antes": 64.2,
+      "depois": 65.2
+    },
+    "larguras": [
+      640,
+      1032
+    ],
+    "ficheiros": [
+      "esplanada-piscina-640.avif",
+      "esplanada-piscina-640.webp",
+      "esplanada-piscina-1032.avif",
+      "esplanada-piscina-1032.webp"
+    ]
+  },
+  "edificio-exterior": {
+    "original": "assets-originais/mulotane/real/gm-edificio-exterior.png",
+    "dimensoes_originais": [
+      1080,
+      1439
+    ],
+    "dimensoes_tratadas": [
+      950,
+      1439
+    ],
+    "ajustes": {
+      "balanco": 0.1,
+      "gama": 1.0,
+      "contraste": 0.05,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": [
+        130,
+        0,
+        1080,
+        1439
+      ]
+    },
+    "luminancia_mediana": {
+      "antes": 104.6,
+      "depois": 103.2
+    },
+    "larguras": [
+      640,
+      845
+    ],
+    "ficheiros": [
+      "edificio-exterior-640.avif",
+      "edificio-exterior-640.webp",
+      "edificio-exterior-845.avif",
+      "edificio-exterior-845.webp"
+    ]
+  },
+  "entrada-coberta": {
+    "original": "assets-originais/mulotane/real/gm-entrada-coberta.png",
+    "dimensoes_originais": [
+      1080,
+      809
+    ],
+    "dimensoes_tratadas": [
+      1080,
+      740
+    ],
+    "ajustes": {
+      "balanco": 0.1,
+      "gama": 0.97,
+      "contraste": 0.1,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": [
+        0,
+        0,
+        1080,
+        740
+      ]
+    },
+    "luminancia_mediana": {
+      "antes": 131.5,
+      "depois": 134.3
+    },
+    "larguras": [
+      640,
+      1080
+    ],
+    "ficheiros": [
+      "entrada-coberta-640.avif",
+      "entrada-coberta-640.webp",
+      "entrada-coberta-1080.avif",
+      "entrada-coberta-1080.webp"
+    ]
+  },
+  "sala-refeicoes-bar": {
+    "original": "assets-originais/mulotane/real/gm-sala-refeicoes-bar.png",
+    "dimensoes_originais": [
+      1080,
+      809
+    ],
+    "dimensoes_tratadas": [
+      950,
+      740
+    ],
+    "ajustes": {
+      "balanco": 0.15,
+      "gama": 1.0,
+      "contraste": 0.05,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": [
+        0,
+        0,
+        950,
+        740
+      ]
+    },
+    "luminancia_mediana": {
+      "antes": 117.0,
+      "depois": 116.6
+    },
+    "larguras": [
+      640,
+      950
+    ],
+    "ficheiros": [
+      "sala-refeicoes-bar-640.avif",
+      "sala-refeicoes-bar-640.webp",
+      "sala-refeicoes-bar-950.avif",
+      "sala-refeicoes-bar-950.webp"
+    ]
+  },
+  "piscina-relvado": {
+    "original": "assets-originais/mulotane/real/gm-piscina-relvado.png",
+    "dimensoes_originais": [
+      1080,
+      809
+    ],
+    "dimensoes_tratadas": [
+      1080,
+      809
+    ],
+    "ajustes": {
+      "balanco": 0.1,
+      "gama": 1.0,
+      "contraste": 0.05,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": null
+    },
+    "luminancia_mediana": {
+      "antes": 87.7,
+      "depois": 86.7
+    },
+    "larguras": [
+      640,
+      1080
+    ],
+    "ficheiros": [
+      "piscina-relvado-640.avif",
+      "piscina-relvado-640.webp",
+      "piscina-relvado-1080.avif",
+      "piscina-relvado-1080.webp"
+    ]
+  },
+  "piscina-terraco": {
+    "original": "assets-originais/mulotane/real/gm-piscina-terraco.png",
+    "dimensoes_originais": [
+      1080,
+      809
+    ],
+    "dimensoes_tratadas": [
+      1080,
+      740
+    ],
+    "ajustes": {
+      "balanco": 0.1,
+      "gama": 1.0,
+      "contraste": 0.05,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": [
+        0,
+        0,
+        1080,
+        740
+      ]
+    },
+    "luminancia_mediana": {
+      "antes": 96.0,
+      "depois": 94.7
+    },
+    "larguras": [
+      640,
+      1080
+    ],
+    "ficheiros": [
+      "piscina-terraco-640.avif",
+      "piscina-terraco-640.webp",
+      "piscina-terraco-1080.avif",
+      "piscina-terraco-1080.webp"
+    ]
+  },
+  "piscina-vista-geral": {
+    "original": "assets-originais/mulotane/real/gm-piscina-vista-geral.png",
+    "dimensoes_originais": [
+      1080,
+      810
+    ],
+    "dimensoes_tratadas": [
+      1080,
+      810
+    ],
+    "ajustes": {
+      "balanco": 0.0,
+      "gama": 1.0,
+      "contraste": 0.04,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": null
+    },
+    "luminancia_mediana": {
+      "antes": 140.7,
+      "depois": 140.9
+    },
+    "larguras": [
+      640,
+      1080
+    ],
+    "ficheiros": [
+      "piscina-vista-geral-640.avif",
+      "piscina-vista-geral-640.webp",
+      "piscina-vista-geral-1080.avif",
+      "piscina-vista-geral-1080.webp"
+    ]
+  },
+  "placa-entrada": {
+    "original": "assets-originais/mulotane/real/gm-placa-entrada.png",
+    "dimensoes_originais": [
+      1080,
+      1709
+    ],
+    "dimensoes_tratadas": [
+      1080,
+      1709
+    ],
+    "ajustes": {
+      "balanco": 0.1,
+      "gama": 1.0,
+      "contraste": 0.05,
+      "saturacao": 1.0,
+      "ruido": 3.0,
+      "larguras": [
+        640,
+        "max"
+      ],
+      "recorte": null
+    },
+    "luminancia_mediana": {
+      "antes": 96.5,
+      "depois": 95.0
+    },
+    "larguras": [
+      640,
+      809
+    ],
+    "ficheiros": [
+      "placa-entrada-640.avif",
+      "placa-entrada-640.webp",
+      "placa-entrada-809.avif",
+      "placa-entrada-809.webp"
+    ]
+  }
+}

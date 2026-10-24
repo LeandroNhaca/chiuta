@@ -1,0 +1,38 @@
+---
+/**
+ * Fotografia real do lodge: <picture> com AVIF e WebP em várias larguras e dimensões explícitas
+ * (sem saltos de layout). O enquadramento por secção faz-se em CSS (object-position), nunca com estilos
+ * inline, para respeitar a Content-Security-Policy.
+ */
+import { fotografia, srcset, type IdFotografia } from '../data/fotografias';
+
+interface Props {
+  id: IdFotografia;
+  /** Atributo sizes; por omissão, a largura do ecrã. */
+  sizes?: string;
+  /** Primeiro ecrã: carrega já e com prioridade alta. */
+  prioridade?: boolean;
+  /** Texto alternativo próprio para o contexto (por omissão, o do catálogo). */
+  alt?: string;
+  class?: string;
+  classeImg?: string;
+}
+
+const { id, sizes = '100vw', prioridade = false, alt, class: classe, classeImg } = Astro.props;
+const f = fotografia(id);
+---
+
+<picture class={classe}>
+  <source type="image/avif" srcset={srcset(f, 'avif')} sizes={sizes} />
+  <source type="image/webp" srcset={srcset(f, 'webp')} sizes={sizes} />
+  <img
+    class={classeImg}
+    src={`/images/mulotane/real/${f.id}-${f.larguras[0]}.webp`}
+    width={f.largura}
+    height={f.altura}
+    alt={alt ?? f.alt}
+    loading={prioridade ? 'eager' : 'lazy'}
+    decoding={prioridade ? 'auto' : 'async'}
+    fetchpriority={prioridade ? 'high' : undefined}
+  />
+</picture>
