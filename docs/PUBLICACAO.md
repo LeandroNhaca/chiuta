@@ -5,7 +5,7 @@ Endereço da demonstração: **https://mulotane.onepromptstudio.com**
 ## Arquitectura
 
 ```
-GitHub (LeandroNhaca/chiuta, privado)
+GitHub (LeandroNhaca/chiuta)
   └─ push → GitHub Actions (.github/workflows/imagem.yml)
        ├─ testes: lint, Prettier, astro check, Vitest, build, Playwright (5 ecrãs + axe)
        └─ imagem: ghcr.io/leandronhaca/mulotane-lodge:{demo, sha-<commit>}  (pacote público)
@@ -24,7 +24,9 @@ O projecto `mulotane` não reutiliza código, imagens, volumes nem configuraçã
 
 ## Porque é que o servidor faz pull de uma imagem pública
 
-O repositório é privado e o servidor não tem (nem deve ter) credenciais do GitHub. A imagem só contém o site estático já construído (HTML, CSS, JS, fotografias, fontes) e a configuração do nginx: o mesmo conteúdo que o site serve publicamente, sem segredos. O pacote `mulotane-lodge` no GHCR foi tornado público pelo responsável.
+O servidor não tem (nem deve ter) credenciais do GitHub. A imagem só contém o site estático já construído (HTML, CSS, JS, fotografias, fontes) e a configuração do nginx: o mesmo conteúdo que o site serve publicamente, sem segredos. O pacote `mulotane-lodge` no GHCR foi tornado público pelo responsável.
+
+As imagens antigas (`sha-0650acf`, `sha-c9383d6`, `sha-eac3826`) ainda contêm as capturas do Google Maps retiradas a 26/10/2026. Convém apagá-las em GitHub → Packages → `mulotane-lodge`.
 
 ## Alterações feitas no servidor (23/10/2026)
 

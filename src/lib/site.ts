@@ -16,14 +16,18 @@ export const temContactosDirectos = Boolean(
   lodge.contactos.telefone || lodge.contactos.email || whatsappDisponivel,
 );
 
-/** "Obter direcções": ligação confirmada > coordenadas confirmadas > pesquisa pelo nome. */
+/**
+ * "Obter direcções" só com localização confirmada pela gerência (ligação própria ou coordenadas).
+ * Sem confirmação devolve '' e o site assinala a localização exacta como pendente: uma pesquisa pelo
+ * nome podia levar o visitante ao sítio errado.
+ */
 export function urlDireccoes(): string {
   if (lodge.mapa.urlDireccoes) return lodge.mapa.urlDireccoes;
   if (lodge.mapa.coordenadas) {
     const { lat, lng } = lodge.mapa.coordenadas;
     return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
   }
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lodge.mapa.pesquisa)}`;
+  return '';
 }
 
 /** Mapa incorporado (OpenStreetMap) só quando o ponto exacto está confirmado. */
@@ -71,3 +75,49 @@ export const navegacao = [
   { href: '/galeria/', nome: 'Galeria' },
   { href: '/contactos/', nome: 'Contactos' },
 ] as const;
+
+/**
+ * Destino dos dois pedidos a partir de cada página. O formulário de disponibilidade existe na página
+ * inicial e na de alojamento; o de orçamento, na página inicial (separador "Evento") e na de eventos.
+ */
+export function ligacoesPedido(caminho: string): { disponibilidade: string; evento: string } {
+  const inicio = caminho === '/';
+  return {
+    disponibilidade: inicio || caminho.startsWith('/alojamento/') ? '#disponibilidade' : '/#disponibilidade',
+    evento: inicio ? '#orcamento' : caminho.startsWith('/eventos/') ? '#pedido' : '/eventos/#pedido',
+  };
+}
+
+export interface CanalContacto {
+  id: 'telefone' | 'whatsapp' | 'email';
+  rotulo: string;
+  /** Texto mostrado; vazio enquanto o contacto não estiver confirmado. */
+  valor: string;
+  href: string;
+  externo: boolean;
+}
+
+/** Os três canais oficiais. Os que faltam aparecem como "Em breve", nunca com dados inventados. */
+export const canaisContacto: CanalContacto[] = [
+  {
+    id: 'telefone',
+    rotulo: 'Telefone',
+    valor: lodge.contactos.telefone,
+    href: lodge.contactos.telefone ? telefoneHref(lodge.contactos.telefone) : '',
+    externo: false,
+  },
+  {
+    id: 'whatsapp',
+    rotulo: 'WhatsApp',
+    valor: whatsappDisponivel ? lodge.contactos.whatsapp : '',
+    href: linkWhatsApp(lodge.contactos.whatsapp) ?? '',
+    externo: true,
+  },
+  {
+    id: 'email',
+    rotulo: 'E-mail',
+    valor: lodge.contactos.email,
+    href: lodge.contactos.email ? `mailto:${lodge.contactos.email}` : '',
+    externo: false,
+  },
+];

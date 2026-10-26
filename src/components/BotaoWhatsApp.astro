@@ -1,7 +1,7 @@
 ---
 /**
- * Botão de WhatsApp honesto: só é uma ligação quando o número oficial está configurado. Sem número, na
- * demonstração aparece desactivado e explicado; fora da demonstração não aparece de todo.
+ * Botão de WhatsApp honesto: só existe quando o número oficial está configurado em src/config/lodge.ts.
+ * Sem número não aparece; a página de contactos assinala o WhatsApp como pendente.
  */
 import { lodge } from '../config/lodge';
 import { linkWhatsApp } from '../lib/whatsapp';
@@ -9,14 +9,12 @@ import { linkWhatsApp } from '../lib/whatsapp';
 import Icone from './Icone.astro';
 
 interface Props {
-  id: string;
   texto?: string;
   mensagem?: string;
   variante?: 'principal' | 'contorno' | 'contorno-claro';
 }
 
 const {
-  id,
   texto = 'Falar pelo WhatsApp',
   mensagem = `Olá, ${lodge.nome}! Gostaria de obter mais informações.`,
   variante = 'contorno',
@@ -24,34 +22,9 @@ const {
 const href = linkWhatsApp(lodge.contactos.whatsapp, mensagem);
 ---
 
-{href ? (
+{href && (
   <a class={`botao botao--${variante}`} href={href} target="_blank" rel="noopener">
     <Icone nome="whatsapp" tamanho={18} />
     {texto}
   </a>
-) : (
-  lodge.demonstracao.activa && (
-    <div class="wa-pendente">
-      <button class={`botao botao--${variante}`} type="button" disabled aria-describedby={`${id}-nota`}>
-        <Icone nome="whatsapp" tamanho={18} />
-        {texto}
-      </button>
-      <p id={`${id}-nota`} class="wa-pendente__nota">
-        Disponível quando o número oficial de WhatsApp for configurado.
-      </p>
-    </div>
-  )
 )}
-
-<style>
-  .wa-pendente {
-    display: grid;
-    gap: 8px;
-    justify-items: start;
-  }
-  .wa-pendente__nota {
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    opacity: 0.8;
-  }
-</style>

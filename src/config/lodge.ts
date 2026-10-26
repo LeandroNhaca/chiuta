@@ -12,7 +12,7 @@ export interface Servico {
   id: 'alojamento' | 'restaurante' | 'bar' | 'piscinas' | 'eventos';
   nome: string;
   estado: EstadoConfirmacao;
-  /** O que já se sabe sobre o serviço e de onde vem (só para a gestão; não aparece como afirmação). */
+  /** O que já se sabe sobre o serviço e de onde vem (só para a gestão; não aparece no site). */
   evidencia: string;
 }
 
@@ -54,15 +54,13 @@ export interface ConfiguracaoLodge {
     coordenadas: { lat: number; lng: number } | null;
     /** Ligação de direcções confirmada (por exemplo, a partilha do Google Maps do próprio lodge). */
     urlDireccoes: string;
-    /** Pesquisa usada enquanto não há ponto confirmado. */
-    pesquisa: string;
   };
   pedidos: {
     /** Endpoint HTTPS que recebe os pedidos (POST JSON). Vazio = nada é enviado (demonstração). */
     endpoint: string;
   };
   demonstracao: {
-    /** Mostra o painel de demonstração e mantém o site fora dos motores de busca. */
+    /** Mantém o site fora dos motores de busca enquanto é uma demonstração (noindex e robots.txt). */
     activa: boolean;
     autor: string;
   };
@@ -83,7 +81,8 @@ export const lodge: ConfiguracaoLodge = {
     morada: '',
   },
   contactos: {
-    // Candidato a confirmar: a placa da entrada (fotografia de Setembro de 2026) mostra "+258 848 885556".
+    // Candidato a confirmar: a placa da entrada (captura do Google Maps, Setembro de 2026) mostra
+    // "+258 848 885556".
     // Só deve ser preenchido aqui depois de a gerência o confirmar (e indicar se também é WhatsApp).
     telefone: '',
     whatsapp: '',
@@ -97,7 +96,6 @@ export const lodge: ConfiguracaoLodge = {
   mapa: {
     coordenadas: null,
     urlDireccoes: '',
-    pesquisa: 'Mulotane Lodge, Boane, Moçambique',
   },
   pedidos: {
     endpoint: '',
@@ -111,31 +109,34 @@ export const lodge: ConfiguracaoLodge = {
       id: 'alojamento',
       nome: 'Alojamento',
       estado: 'por-confirmar',
-      evidencia: 'Uma fotografia de quarto com duas camas (a toalha tem a inscrição "ALD. TUR. MIXALI-XAU").',
+      evidencia:
+        'Uma fotografia de quarto com duas camas, fora do site até ser confirmada (a toalha tem a inscrição "ALD. TUR. MIXALI-XAU").',
     },
     {
       id: 'restaurante',
       nome: 'Restaurante',
       estado: 'por-confirmar',
-      evidencia: 'Fotografias da sala de refeições (Setembro de 2025) e do buffet.',
+      evidencia: 'Fotografias da sala de refeições e do buffet enviadas pelo cliente.',
     },
     {
       id: 'bar',
       nome: 'Bar',
       estado: 'por-confirmar',
-      evidencia: 'Balcão com garrafas ao fundo da sala de refeições (fotografia de Setembro de 2025).',
+      evidencia: 'Balcão com garrafas numa captura do Google Maps (Setembro de 2025). Não aparece no site.',
     },
     {
       id: 'piscinas',
       nome: 'Piscinas',
       estado: 'por-confirmar',
-      evidencia: 'Fotografias de uma piscina rectangular (2025) e de uma piscina de forma irregular.',
+      evidencia:
+        'Fotografia enviada de uma piscina de forma irregular; capturas do Google Maps mostram outra rectangular.',
     },
     {
       id: 'eventos',
       nome: 'Eventos e conferências',
       estado: 'por-confirmar',
-      evidencia: 'Fotografia de uma sala montada para conferência (cerca de 2020).',
+      evidencia:
+        'Captura do Google Maps de uma sala montada para conferência (cerca de 2020). Não aparece no site.',
     },
   ],
 };

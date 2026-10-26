@@ -1,0 +1,79 @@
+---
+/**
+ * Barra de pedidos no telemóvel: aparece depois do primeiro ecrã e esconde-se quando um formulário ou o
+ * rodapé estão à vista, para nunca tapar o que o visitante está a preencher.
+ */
+import { ligacoesPedido } from '../lib/site';
+
+import Icone from './Icone.astro';
+
+const pedidos = ligacoesPedido(Astro.url.pathname);
+---
+
+<nav class="rapidas" aria-label="Pedidos" data-accoes-rapidas inert>
+  <a class="rapidas__accao rapidas__accao--principal" href={pedidos.disponibilidade}>
+    <Icone nome="calendario" tamanho={18} />
+    Disponibilidade
+  </a>
+  <a class="rapidas__accao" href={pedidos.evento}>
+    <Icone nome="pessoas" tamanho={18} />
+    Orçamento de evento
+  </a>
+</nav>
+
+<script>
+  import '../scripts/accoes-rapidas';
+</script>
+
+<style>
+  .rapidas {
+    --foco: var(--dourado);
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 45;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 10px max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left));
+    background: rgb(8 40 32 / 0.96);
+    border-top: 1px solid rgb(199 161 90 / 0.35);
+    box-shadow: 0 -10px 30px rgb(5 22 18 / 0.18);
+    transform: translateY(110%);
+    transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .rapidas:global(.rapidas--visivel) {
+    transform: none;
+  }
+  @media (min-width: 760px) {
+    .rapidas {
+      display: none;
+    }
+  }
+  .rapidas__accao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 10px;
+    border: 1px solid rgb(250 248 243 / 0.5);
+    border-radius: var(--raio);
+    color: var(--branco);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .rapidas__accao--principal {
+    border-color: var(--dourado);
+    background: var(--dourado);
+    color: var(--verde);
+  }
+  .rapidas__accao :global(svg) {
+    flex: none;
+  }
+</style>

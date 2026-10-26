@@ -4,7 +4,10 @@ import { LIMITES, TIPOS_EVENTO } from '../lib/validacao';
 import Campo from './Campo.astro';
 import Pedido from './Pedido.astro';
 
-const prefixo = 'evento';
+interface Props {
+  prefixo?: string;
+}
+const { prefixo = 'evento' } = Astro.props;
 ---
 
 <Pedido tipo="evento" prefixo={prefixo} titulo="Pedido de orçamento" botao="Pedir orçamento">

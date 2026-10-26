@@ -4,7 +4,7 @@
  * O comportamento (validação, WhatsApp, envio) está em src/scripts/formularios.ts.
  */
 import { lodge } from '../config/lodge';
-import { normalizarNumero } from '../lib/whatsapp';
+import { linkWhatsApp, normalizarNumero } from '../lib/whatsapp';
 
 import Icone from './Icone.astro';
 
@@ -16,6 +16,9 @@ interface Props {
 }
 
 const { tipo, prefixo, botao, titulo } = Astro.props;
+// Sem destino configurado (endpoint ou WhatsApp oficial), o formulário só valida: o visitante tem de o
+// saber antes de preencher.
+const demonstrativo = !lodge.pedidos.endpoint && linkWhatsApp(lodge.contactos.whatsapp) === null;
 ---
 
 <div class="pedido" data-pedido>
@@ -28,10 +31,20 @@ const { tipo, prefixo, botao, titulo } = Astro.props;
     data-whatsapp={normalizarNumero(lodge.contactos.whatsapp)}
     data-lodge={lodge.nome}
     aria-labelledby={`${prefixo}-titulo`}
+    aria-describedby={demonstrativo ? `${prefixo}-demo` : undefined}
   >
     <h3 class="pedido__titulo" id={`${prefixo}-titulo`}>
       {titulo}
     </h3>
+    {demonstrativo && (
+      <p class="pedido__demo" id={`${prefixo}-demo`}>
+        <Icone nome="info" tamanho={18} />
+        <span>
+          <strong>Formulário de demonstração.</strong> Ainda não envia pedidos: pode preencher e validar os
+          dados, mas nada é transmitido nem guardado.
+        </span>
+      </p>
+    )}
     <p class="pedido__obrigatorios">
       Os campos com <span aria-hidden="true">*</span> são obrigatórios.
     </p>
@@ -106,9 +119,26 @@ const { tipo, prefixo, botao, titulo } = Astro.props;
     font-size: clamp(1.7rem, 1.4rem + 1vw, 2.2rem);
   }
   .pedido__obrigatorios {
-    margin-top: -10px;
     font-size: var(--t-pequeno);
     color: var(--texto-suave);
+  }
+  .pedido__demo {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgb(122 91 34 / 0.35);
+    border-radius: var(--raio);
+    background: rgb(199 161 90 / 0.12);
+    font-size: 0.875rem;
+    line-height: 1.55;
+  }
+  .pedido__demo :global(svg) {
+    flex: none;
+    margin-top: 2px;
+    color: var(--dourado-texto);
+  }
+  .pedido__demo strong {
+    color: var(--verde);
   }
   .pedido__campos {
     display: grid;

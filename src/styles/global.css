@@ -1,5 +1,7 @@
 /* Mulotane Lodge · sistema visual
-   Verde-floresta como identidade, branco quente para respirar, dourado só em acentos. */
+   Verde-floresta como identidade, branco quente para respirar, dourado só em acentos.
+   Linguagem editorial: tipografia serifada em grande escala, filetes finos, capítulos numerados e
+   fotografias em molduras de arco (um gesto orgânico, como a copa de uma árvore). */
 
 @font-face {
   font-family: 'Cormorant Garamond';
@@ -34,6 +36,7 @@
   --verde: #0b3027;
   --verde-2: #123d32;
   --verde-3: #1b4a3e;
+  --verde-profundo: #082820;
   --dourado: #c7a15a;
   --dourado-claro: #d6b678;
   --dourado-texto: #7a5b22; /* dourado legível sobre fundos claros (5,9:1) */
@@ -48,7 +51,7 @@
   --serif: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
   --sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  --t-hero: clamp(2.75rem, 1.5rem + 5.4vw, 6.5rem);
+  --t-hero: clamp(2.7rem, 1.45rem + 5.2vw, 6.25rem);
   --t-h1: clamp(2.5rem, 1.6rem + 3.8vw, 5rem);
   --t-h2: clamp(2.05rem, 1.4rem + 2.7vw, 3.85rem);
   --t-h3: clamp(1.45rem, 1.22rem + 0.85vw, 2rem);
@@ -62,6 +65,7 @@
   --espaco-secao: clamp(76px, 10vw, 148px);
   --raio: 3px;
   --raio-m: 8px;
+  --raio-arco: 999px 999px var(--raio) var(--raio);
   --cabecalho: 72px;
   --foco: var(--verde);
   --transicao: 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -331,8 +335,8 @@ a {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 50px;
-  padding: 0 26px;
+  min-height: 52px;
+  padding: 0 28px;
   border: 1px solid var(--b-borda);
   border-radius: var(--raio);
   background: var(--b-fundo);
@@ -340,7 +344,7 @@ a {
   font-family: var(--sans);
   font-size: 0.8125rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.13em;
   line-height: 1.2;
   text-align: center;
   text-transform: uppercase;
@@ -357,6 +361,10 @@ a {
 }
 .botao svg {
   flex: none;
+  transition: transform var(--transicao);
+}
+.botao:hover svg:last-child:not(:first-child) {
+  transform: translateX(3px);
 }
 
 .botao--principal {
@@ -411,6 +419,14 @@ a {
 
 .botao--bloco {
   width: 100%;
+}
+
+/* Ecrãs estreitos: rótulos longos ("Pedir orçamento para um evento") numa só linha. */
+@media (max-width: 479px) {
+  .botao {
+    padding-inline: 18px;
+    letter-spacing: 0.08em;
+  }
 }
 
 .ligacao-seta {
@@ -562,4 +578,138 @@ a {
     opacity: 1;
     transform: none;
   }
+}
+
+/* ---------- Molduras em arco ---------- */
+
+.arco {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--raio-arco);
+  background: var(--verde-2);
+}
+.arco img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* Filete dourado que acompanha o arco, ligeiramente desencontrado (só em ecrãs largos). */
+.arco-filete {
+  position: relative;
+  isolation: isolate;
+}
+@media (min-width: 900px) {
+  .arco-filete::before {
+    content: '';
+    position: absolute;
+    inset: -18px 18px 18px -18px;
+    z-index: -1;
+    border: 1px solid var(--dourado);
+    border-radius: var(--raio-arco);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+/* ---------- Cartões e estados ---------- */
+
+.cartao-verde {
+  --foco: var(--dourado);
+  position: relative;
+  display: grid;
+  gap: 22px;
+  align-content: start;
+  padding: clamp(28px, 4vw, 48px);
+  overflow: hidden;
+  border-radius: var(--raio);
+  background: var(--verde);
+  color: var(--branco);
+}
+.cartao-verde h3 {
+  font-size: var(--t-h3);
+}
+.cartao-verde .lista-numerada li {
+  border-color: var(--linha-clara);
+}
+.cartao-verde__folhagem {
+  position: absolute;
+  right: -70px;
+  bottom: -60px;
+  width: 260px;
+  height: auto;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.lista-numerada {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: item;
+}
+.lista-numerada li {
+  display: flex;
+  gap: 18px;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--linha);
+  counter-increment: item;
+}
+.lista-numerada li::before {
+  content: counter(item, decimal-leading-zero);
+  flex: none;
+  min-width: 1.6em;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--dourado-texto);
+}
+.secao--escura .lista-numerada li::before,
+.cartao-verde .lista-numerada li::before {
+  color: var(--dourado);
+}
+
+/* Informação que ainda não foi confirmada pela gerência: assinalada, nunca inventada. */
+.pendente {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border: 1px solid rgb(122 91 34 / 0.45);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--dourado-texto);
+}
+.secao--escura .pendente,
+.pendente--claro {
+  border-color: rgb(199 161 90 / 0.55);
+  color: var(--dourado);
+}
+
+.filete-titulo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: var(--t-etiqueta);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--dourado-texto);
+}
+.filete-titulo::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+.secao--escura .filete-titulo,
+.cartao-verde .filete-titulo {
+  color: var(--dourado);
 }

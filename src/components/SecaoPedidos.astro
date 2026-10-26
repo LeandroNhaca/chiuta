@@ -1,0 +1,166 @@
+---
+/**
+ * Pedidos na página inicial: disponibilidade e orçamento de eventos lado a lado, em separadores.
+ * Sem JavaScript os dois formulários aparecem um a seguir ao outro (os separadores ficam escondidos).
+ * As âncoras #disponibilidade e #orcamento abrem o separador certo (src/scripts/separadores.ts).
+ */
+import FormularioDisponibilidade from './FormularioDisponibilidade.astro';
+import FormularioEvento from './FormularioEvento.astro';
+import Icone from './Icone.astro';
+
+const separadores = [
+  { id: 'disponibilidade', rotulo: 'Estadia', icone: 'calendario' as const },
+  { id: 'orcamento', rotulo: 'Evento', icone: 'pessoas' as const },
+];
+---
+
+<section id="pedidos" class="secao secao--escura pedidos" aria-labelledby="pedidos-titulo">
+  <img
+    class="pedidos__folhagem"
+    src="/images/mulotane/conceptual/folhagem.svg"
+    alt=""
+    width="520"
+    height="600"
+    loading="lazy"
+  />
+  <div class="contentor pedidos__grelha">
+    <div class="bloco-titulo pedidos__titulo">
+      <p class="etiqueta">Pedidos</p>
+      <h2 id="pedidos-titulo">
+        Planeie a sua <em>visita.</em>
+      </h2>
+      <div class="texto">
+        <p>
+          Consulte a disponibilidade para a sua estadia ou peça um orçamento para um evento: reuniões,
+          conferências, celebrações e encontros de grupo.
+        </p>
+        <p>
+          Um pedido não é uma reserva. A estadia ou o evento só ficam garantidos depois de confirmados pelo
+          Mulotane Lodge.
+        </p>
+      </div>
+    </div>
+
+    <div class="pedidos__formularios" data-separadores>
+      <div
+        class="pedidos__separadores"
+        role="tablist"
+        aria-label="Tipo de pedido"
+        hidden
+        data-lista-separadores
+      >
+        {separadores.map((s, i) => (
+          <button
+            class="pedidos__separador"
+            type="button"
+            role="tab"
+            id={`separador-${s.id}`}
+            aria-controls={s.id}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+          >
+            <Icone nome={s.icone} tamanho={18} />
+            {s.rotulo}
+          </button>
+        ))}
+      </div>
+      <div class="pedidos__painel" id="disponibilidade" data-painel>
+        <FormularioDisponibilidade prefixo="disp" />
+      </div>
+      <div class="pedidos__painel" id="orcamento" data-painel>
+        <FormularioEvento prefixo="inicio-evento" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/separadores';
+</script>
+
+<style>
+  .pedidos {
+    overflow: hidden;
+  }
+  .pedidos__folhagem {
+    position: absolute;
+    left: -90px;
+    bottom: -40px;
+    width: clamp(260px, 34vw, 480px);
+    height: auto;
+    opacity: 0.09;
+    pointer-events: none;
+  }
+  .pedidos__grelha {
+    position: relative;
+    display: grid;
+    gap: 40px;
+    align-items: start;
+  }
+  @media (min-width: 1000px) {
+    .pedidos__grelha {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: clamp(48px, 6vw, 96px);
+    }
+    .pedidos__titulo {
+      position: sticky;
+      top: calc(var(--cabecalho) + 40px);
+    }
+  }
+  .pedidos__formularios {
+    display: grid;
+    gap: 28px;
+  }
+  /* Os separadores ficam colados ao formulário; a âncora deixa-os à vista. */
+  .pedidos__formularios:global(.separadores--activos) {
+    gap: 0;
+  }
+  .pedidos__painel {
+    scroll-margin-top: calc(var(--cabecalho) + 76px);
+  }
+  .pedidos__formularios:global(.separadores--activos) .pedidos__painel :global(.pedido) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  .pedidos__separadores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .pedidos__separadores[hidden] {
+    display: none;
+  }
+  .pedidos__separador {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 58px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: var(--raio-m) var(--raio-m) 0 0;
+    background: rgb(250 248 243 / 0.08);
+    color: rgb(250 248 243 / 0.82);
+    font: 700 0.8125rem/1.2 var(--sans);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background-color var(--transicao),
+      color var(--transicao);
+  }
+  .pedidos__separador:hover {
+    background: rgb(250 248 243 / 0.14);
+    color: var(--branco);
+  }
+  .pedidos__separador[aria-selected='true'] {
+    background: var(--branco);
+    color: var(--verde);
+  }
+  .pedidos__separador[aria-selected='true'] :global(svg) {
+    color: var(--dourado-texto);
+  }
+  .pedidos__separador:focus-visible {
+    outline-offset: -4px;
+  }
+</style>

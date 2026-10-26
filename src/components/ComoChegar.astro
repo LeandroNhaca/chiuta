@@ -1,8 +1,11 @@
 ---
+/**
+ * Como chegar. Com localização confirmada (coordenadas ou ligação própria) mostra o mapa e as direcções;
+ * sem ela, mostra só o que está confirmado (Boane, província de Maputo) e assinala o resto como pendente.
+ */
 import { lodge } from '../config/lodge';
 import { localizacaoCompleta, urlDireccoes, urlMapaIncorporado } from '../lib/site';
 
-import Foto from './Foto.astro';
 import Icone from './Icone.astro';
 
 interface Props {
@@ -11,6 +14,8 @@ interface Props {
 }
 const { semContacto = false } = Astro.props;
 const mapa = urlMapaIncorporado();
+const direccoes = urlDireccoes();
+const { morada, localidade, provincia, pais } = lodge.localizacao;
 ---
 
 <section id="como-chegar" class="secao secao--clara como-chegar" aria-labelledby="como-chegar-titulo">
@@ -21,14 +26,7 @@ const mapa = urlMapaIncorporado();
         Boane, <em>província de Maputo</em>.
       </h2>
       <div class="texto">
-        <p>
-          O Mulotane Lodge fica em Boane, na província de Maputo, em Moçambique.
-          {lodge.localizacao.morada && ` ${lodge.localizacao.morada}.`}
-        </p>
-        <p>
-          Antes de viajar, confirme o percurso com a equipa do lodge. Ao chegar, procure a placa do Mulotane
-          Lodge.
-        </p>
+        <p>O Mulotane Lodge fica em Boane, na província de Maputo, em Moçambique.</p>
       </div>
       <dl class="como-chegar__dados">
         <div>
@@ -37,30 +35,31 @@ const mapa = urlMapaIncorporado();
           </dt>
           <dd>{localizacaoCompleta}</dd>
         </div>
+        <div>
+          <dt>
+            <Icone nome="info" tamanho={18} /> Morada e acessos
+          </dt>
+          <dd>{morada ? morada : <span class="pendente">Em breve</span>}</dd>
+        </div>
       </dl>
-      {!lodge.mapa.coordenadas && lodge.demonstracao.activa && (
-        <p class="nota">
-          <Icone nome="info" tamanho={18} />
-          <span>
-            A localização exacta e as indicações de acesso estão a ser confirmadas com a gerência. Até lá, o
-            botão abaixo pesquisa o lodge no Google Maps.
-          </span>
-        </p>
+      {(direccoes || !semContacto) && (
+        <div class="accoes">
+          {direccoes && (
+            <a class="botao botao--verde" href={direccoes} target="_blank" rel="noopener">
+              Obter direcções
+              <Icone nome="externa" tamanho={18} />
+              <span class="visualmente-oculto">(abre numa nova janela)</span>
+            </a>
+          )}
+          {!semContacto && (
+            <a class="botao botao--contorno" href="/contactos/">
+              Fale connosco
+            </a>
+          )}
+        </div>
       )}
-      <div class="accoes">
-        <a class="botao botao--verde" href={urlDireccoes()} target="_blank" rel="noopener">
-          Obter direcções
-          <Icone nome="externa" tamanho={18} />
-          <span class="visualmente-oculto">(abre o Google Maps numa nova janela)</span>
-        </a>
-        {!semContacto && (
-          <a class="botao botao--contorno" href="/contactos/">
-            Fale connosco
-          </a>
-        )}
-      </div>
     </div>
-    <figure class="como-chegar__figura">
+    <div class="como-chegar__figura">
       {mapa ? (
         <iframe
           class="como-chegar__mapa"
@@ -69,18 +68,36 @@ const mapa = urlMapaIncorporado();
           loading="lazy"
         />
       ) : (
-        <Foto id="placa-entrada" sizes="(min-width: 900px) 560px, 92vw" class="como-chegar__foto" />
+        <div class="como-chegar__local">
+          <img
+            class="como-chegar__folhagem"
+            src="/images/mulotane/conceptual/folhagem.svg"
+            alt=""
+            width="520"
+            height="600"
+            loading="lazy"
+          />
+          <p class="como-chegar__pais">{pais}</p>
+          <p class="como-chegar__localidade">{localidade}</p>
+          <p class="como-chegar__provincia">Província de {provincia}</p>
+          <p class="como-chegar__mapa-pendente">
+            <span class="pendente pendente--claro">Mapa em breve</span>
+          </p>
+        </div>
       )}
-      {!mapa && <figcaption class="legenda">A placa do Mulotane Lodge, no muro exterior.</figcaption>}
-    </figure>
+    </div>
   </div>
 </section>
 
 <style>
   .como-chegar__dados {
     display: grid;
-    gap: 12px;
     margin: 0;
+    border-top: 1px solid var(--linha);
+  }
+  .como-chegar__dados > div {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--linha);
   }
   .como-chegar__dados dt {
     display: flex;
@@ -93,29 +110,64 @@ const mapa = urlMapaIncorporado();
     color: var(--dourado-texto);
   }
   .como-chegar__dados dd {
-    margin: 4px 0 0;
+    margin: 6px 0 0;
     font-family: var(--serif);
     font-size: 1.5rem;
     line-height: 1.2;
   }
+  .como-chegar__dados dd .pendente {
+    font-family: var(--sans);
+  }
   .como-chegar__figura {
-    margin: 0;
     justify-self: center;
     width: 100%;
     max-width: 520px;
   }
-  .como-chegar :global(.como-chegar__foto) {
-    display: block;
+  .como-chegar__local {
+    position: relative;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 10px;
     aspect-ratio: 4 / 5;
-    overflow: hidden;
-    border-radius: var(--raio);
-    background: var(--cinzento);
-  }
-  .como-chegar :global(.como-chegar__foto img) {
+    max-height: 640px;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 50% 40%;
+    padding: 40px 24px;
+    overflow: hidden;
+    border-radius: var(--raio-arco);
+    background: radial-gradient(circle at 50% 115%, rgb(199 161 90 / 0.25), transparent 55%), var(--verde);
+    color: var(--branco);
+    text-align: center;
+  }
+  .como-chegar__folhagem {
+    position: absolute;
+    left: 50%;
+    bottom: -60px;
+    width: 320px;
+    height: auto;
+    opacity: 0.16;
+    transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .como-chegar__pais,
+  .como-chegar__provincia {
+    position: relative;
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--dourado);
+  }
+  .como-chegar__localidade {
+    position: relative;
+    font-family: var(--serif);
+    font-size: clamp(3.2rem, 2.4rem + 3vw, 5rem);
+    font-style: italic;
+    line-height: 1;
+  }
+  .como-chegar__mapa-pendente {
+    position: relative;
+    margin-top: 18px;
   }
   .como-chegar__mapa {
     width: 100%;

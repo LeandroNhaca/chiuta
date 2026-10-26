@@ -104,10 +104,47 @@ test('evento: pedido de orçamento completo', async ({ page }) => {
   expect(envios).toEqual([]);
 });
 
-test('WhatsApp sem número oficial: botões desactivados e explicados', async ({ page }) => {
+test('formulários avisam que são de demonstração antes de serem preenchidos', async ({ page }) => {
+  for (const [caminho, seletor] of [
+    ['/', '#disponibilidade form'],
+    ['/eventos/', '#pedido form'],
+  ] as const) {
+    await page.goto(caminho);
+    const form = page.locator(seletor);
+    await expect(form.getByText('Formulário de demonstração.')).toBeVisible();
+    await expect(form).toHaveAccessibleDescription(/nada é transmitido nem guardado/);
+  }
+});
+
+test('evento a partir da página inicial: separador próprio e confirmação honesta', async ({ page }) => {
+  const envios = vigiarEnvios(page);
+  await page.goto('/');
+  await page.getByRole('tab', { name: 'Evento' }).click();
+  const bloco = page.locator('#orcamento [data-pedido]');
+  const form = bloco.locator('form');
+  await form.getByLabel('Nome').fill('Carlos Mondlane');
+  await form.getByLabel('Telefone ou WhatsApp').fill('+258 84 000 0000');
+  await form.getByLabel('Tipo de evento').selectOption('Reunião ou conferência');
+  await form.getByLabel('Data pretendida').fill(daquiA(20));
+  await form.getByLabel('Número estimado de participantes').fill('25');
+  await form.getByRole('button', { name: 'Pedir orçamento' }).click();
+  const resultado = bloco.locator('[data-resultado]');
+  await expect(resultado.getByRole('heading')).toHaveText('Pedido validado');
+  await expect(resultado).toContainText('nenhum dado foi enviado nem guardado');
+  expect(envios).toEqual([]);
+});
+
+test('contactos por confirmar aparecem como "Em breve", sem ligações inventadas', async ({ page }) => {
   await page.goto('/contactos/');
-  const botao = page.getByRole('button', { name: 'Falar pelo WhatsApp' });
-  await expect(botao).toBeDisabled();
-  await expect(botao).toHaveAccessibleDescription(/número oficial de WhatsApp/);
-  await expect(page.locator('a[href*="wa.me"], a[href^="tel:"], a[href^="mailto:"]')).toHaveCount(0);
+  const lista = page.locator('.contactos__lista');
+  for (const canal of ['Telefone', 'WhatsApp', 'E-mail']) {
+    await expect(lista.getByRole('listitem').filter({ hasText: canal })).toContainText('Em breve');
+  }
+  await expect(page.getByRole('link', { name: 'Obter direcções' })).toHaveCount(0);
+  await expect(page.locator('.como-chegar')).toContainText('Mapa em breve');
+  for (const caminho of ['/', '/contactos/', '/eventos/']) {
+    await page.goto(caminho);
+    await expect(page.locator('a[href*="wa.me"], a[href^="tel:"], a[href^="mailto:"]')).toHaveCount(0);
+    await expect(page.locator('a[href*="google."]')).toHaveCount(0);
+  }
 });

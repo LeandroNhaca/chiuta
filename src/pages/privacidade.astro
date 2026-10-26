@@ -19,13 +19,6 @@ const responsavel = lodge.contactos.email
 
   <section class="secao secao--clara">
     <div class="contentor politica">
-      {lodge.demonstracao.activa && (
-        <p class="nota">
-          Versão provisória, preparada para a demonstração. Deve ser revista com o proprietário antes da
-          publicação definitiva.
-        </p>
-      )}
-
       <h2>Responsável</h2>
       <p>O responsável pelo tratamento dos dados é o {responsavel}.</p>
 
@@ -87,7 +80,7 @@ const responsavel = lodge.contactos.email
     font-size: var(--t-h3);
     color: var(--texto);
   }
-  .politica .nota {
-    margin-bottom: 8px;
+  .politica h2:first-child {
+    margin-top: 0;
   }
 </style>

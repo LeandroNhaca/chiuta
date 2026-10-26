@@ -1,4 +1,8 @@
 ---
+/**
+ * Abertura das páginas interiores: título editorial sobre verde e, quando há fotografia autorizada, a
+ * fotografia ao lado (em arco ou em paisagem), num tamanho que respeita a resolução dos originais.
+ */
 import type { IdFotografia } from '../data/fotografias';
 
 import Foto from './Foto.astro';
@@ -7,11 +11,14 @@ interface Props {
   titulo: string;
   intro: string;
   foto?: IdFotografia;
+  /** Arco para fotografias verticais ou centradas; paisagem para as horizontais. */
+  formato?: 'arco' | 'paisagem';
   /** Classe de enquadramento da fotografia (ver os estilos abaixo). */
-  enquadramento?: 'centro' | 'baixo' | 'cima';
+  enquadramento?: 'centro' | 'baixo' | 'cima' | 'esquerda';
 }
 
-const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
+const { titulo, intro, foto, formato = 'arco', enquadramento = 'centro' } = Astro.props;
+const temAccoes = Astro.slots.has('accoes');
 ---
 
 <section class:list={['topo', { 'topo--com-foto': foto }]} aria-labelledby="topo-titulo">
@@ -22,27 +29,34 @@ const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
     width="520"
     height="600"
   />
-  <div class="contentor topo__texto">
-    <nav class="topo__caminho" aria-label="Caminho">
-      <a href="/">Início</a>
-      <span aria-hidden="true">/</span>
-      <span aria-current="page">{titulo}</span>
-    </nav>
-    <h1 id="topo-titulo">
-      <slot name="titulo">{titulo}</slot>
-    </h1>
-    <p class="lead">{intro}</p>
-  </div>
-  {foto && (
-    <div class="contentor">
-      <Foto
-        id={foto}
-        prioridade
-        sizes="(min-width: 1336px) 1240px, 92vw"
-        class:list={['topo__foto', `topo__foto--${enquadramento}`]}
-      />
+  <div class="contentor topo__grelha">
+    <div class="topo__texto">
+      <nav class="topo__caminho" aria-label="Caminho">
+        <a href="/">Início</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">{titulo}</span>
+      </nav>
+      <h1 id="topo-titulo">
+        <slot name="titulo">{titulo}</slot>
+      </h1>
+      <p class="lead">{intro}</p>
+      {temAccoes && (
+        <div class="accoes topo__accoes">
+          <slot name="accoes" />
+        </div>
+      )}
     </div>
-  )}
+    {foto && (
+      <div class:list={['topo__figura', `topo__figura--${formato}`, { 'arco-filete': formato === 'arco' }]}>
+        <Foto
+          id={foto}
+          prioridade
+          sizes={formato === 'arco' ? '(min-width: 900px) 420px, 92vw' : '(min-width: 900px) 560px, 92vw'}
+          class:list={['topo__foto', formato === 'arco' ? 'arco' : 'foto', `topo__foto--${enquadramento}`]}
+        />
+      </div>
+    )}
+  </div>
 </section>
 
 <style>
@@ -50,37 +64,43 @@ const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
     --foco: var(--dourado);
     position: relative;
     overflow: hidden;
-    padding-top: calc(var(--cabecalho) + clamp(48px, 7vw, 96px));
-    padding-bottom: clamp(56px, 7vw, 96px);
+    isolation: isolate;
+    padding-top: calc(var(--cabecalho) + clamp(40px, 7vw, 96px));
+    padding-bottom: clamp(56px, 8vw, 112px);
     background: var(--verde);
     color: var(--branco);
-  }
-  .topo--com-foto {
-    padding-bottom: 0;
-    background: linear-gradient(
-      to bottom,
-      var(--verde) 0,
-      var(--verde) calc(100% - clamp(80px, 12vw, 160px)),
-      var(--branco) calc(100% - clamp(80px, 12vw, 160px))
-    );
   }
   .topo__folhagem {
     position: absolute;
     top: 40px;
     right: -60px;
+    z-index: -1;
     width: clamp(220px, 30vw, 420px);
     height: auto;
-    opacity: 0.12;
+    opacity: 0.1;
     pointer-events: none;
+  }
+  .topo--com-foto .topo__folhagem {
+    right: auto;
+    left: -120px;
+    top: auto;
+    bottom: -80px;
+  }
+  .topo__grelha {
+    display: grid;
+    gap: clamp(40px, 6vw, 72px);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .topo--com-foto .topo__grelha {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
   }
   .topo__texto {
     position: relative;
     display: grid;
     gap: 24px;
-    margin-bottom: clamp(40px, 6vw, 72px);
-  }
-  .topo:not(.topo--com-foto) .topo__texto {
-    margin-bottom: 0;
+    justify-items: start;
   }
   .topo h1 {
     max-width: 14ch;
@@ -91,6 +111,9 @@ const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
   }
   .topo .lead {
     color: rgb(250 248 243 / 0.82);
+  }
+  .topo__accoes {
+    margin-top: 8px;
   }
   .topo__caminho {
     display: flex;
@@ -108,22 +131,29 @@ const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
   .topo__caminho a:hover {
     color: var(--branco);
   }
-  .topo :global(.topo__foto) {
+  .topo__figura {
     position: relative;
-    display: block;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    border-radius: var(--raio);
-    background: var(--verde-2);
+    width: 100%;
   }
-  @media (min-width: 700px) {
-    .topo :global(.topo__foto) {
-      aspect-ratio: 16 / 8;
+  .topo__figura--arco {
+    width: min(100%, 420px);
+    justify-self: center;
+  }
+  @media (min-width: 900px) {
+    .topo__figura {
+      justify-self: end;
     }
   }
-  @media (min-width: 1100px) {
-    .topo :global(.topo__foto) {
-      aspect-ratio: 21 / 9;
+  .topo :global(.topo__foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .topo :global(.topo__foto.arco) {
+    aspect-ratio: 4 / 5;
+  }
+  @media (max-width: 899px) {
+    .topo :global(.topo__foto.arco) {
+      aspect-ratio: 1 / 1;
     }
   }
   .topo :global(.topo__foto img) {
@@ -136,5 +166,8 @@ const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
   }
   .topo :global(.topo__foto--cima img) {
     object-position: 50% 30%;
+  }
+  .topo :global(.topo__foto--esquerda img) {
+    object-position: 35% 55%;
   }
 </style>

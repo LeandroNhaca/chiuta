@@ -1,7 +1,5 @@
 ---
-import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
-import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
 import Base from '../layouts/Base.astro';
@@ -13,64 +11,48 @@ import Base from '../layouts/Base.astro';
 >
   <CabecalhoPagina
     titulo="Piscinas"
-    intro="Desfrute de momentos de lazer ao ar livre, entre o jardim, as palmeiras e a esplanada."
-    foto="piscina-vista-geral"
-    enquadramento="baixo"
+    intro="Desfrute de momentos de lazer ao ar livre, entre o relvado e o jardim."
+    foto="piscina-jardim"
+    enquadramento="esquerda"
   />
 
   <section class="secao secao--clara" aria-labelledby="lazer-titulo">
-    <div class="contentor">
-      <div class="grelha grelha--metades lazer__topo">
-        <div class="bloco-titulo">
-          <p class="etiqueta">Lazer</p>
-          <h2 id="lazer-titulo">
-            Desfrute de momentos de <em>lazer.</em>
-          </h2>
-        </div>
+    <div class="contentor grelha grelha--metades lazer">
+      <div class="bloco-titulo">
+        <p class="etiqueta">Lazer</p>
+        <h2 id="lazer-titulo">
+          Desfrute de momentos de <em>lazer.</em>
+        </h2>
         <div class="texto">
           <p>Um espaço para descontrair, aproveitar o ambiente exterior e partilhar bons momentos.</p>
-          <p>
-            As fotografias mostram uma piscina rectangular com espreguiçadeiras e chapéus-de-sol, uma piscina
-            de forma irregular junto ao relvado e zonas de esplanada à sombra.
-          </p>
+          <p>A piscina, de forma irregular, fica no meio de um relvado, entre sebes e árvores.</p>
         </div>
       </div>
-      <div class="mosaico">
-        <Foto id="piscina-espreguicadeiras" sizes="(min-width: 900px) 760px, 92vw" class="foto mosaico__a" />
-        <Foto id="piscina-terraco" sizes="(min-width: 900px) 480px, 92vw" class="foto mosaico__b" />
-        <Foto id="esplanada-piscina" sizes="(min-width: 900px) 480px, 92vw" class="foto mosaico__c" />
-        <Foto id="piscina-relvado" sizes="(min-width: 900px) 620px, 92vw" class="foto mosaico__d" />
-        <Foto id="piscina-jardim" sizes="(min-width: 900px) 620px, 92vw" class="foto mosaico__e" />
-      </div>
-    </div>
-  </section>
-
-  <section id="condicoes" class="secao secao--escura" aria-labelledby="condicoes-titulo">
-    <div class="contentor grelha grelha--metades condicoes">
-      <div class="bloco-titulo">
-        <p class="etiqueta">Antes da visita</p>
-        <h2 id="condicoes-titulo">
-          Condições de utilização das <em>piscinas.</em>
-        </h2>
-      </div>
-      <div class="bloco-titulo">
-        <div class="texto">
-          <p>
-            Os horários, as regras de utilização e o acesso de visitantes que não estejam alojados são
-            indicados pela equipa do Mulotane Lodge.
-          </p>
-          <p>Confirme as condições antes da sua visita.</p>
-        </div>
+      <div id="condicoes" class="cartao-verde condicoes">
+        <img
+          class="cartao-verde__folhagem"
+          src="/images/mulotane/conceptual/folhagem.svg"
+          alt=""
+          width="520"
+          height="600"
+          loading="lazy"
+        />
+        <p class="filete-titulo">Antes da visita</p>
+        <h2 class="condicoes__titulo">Condições de utilização das piscinas</h2>
+        <p class="condicoes__texto">
+          Os horários, as regras de utilização e o acesso de visitantes que não estejam alojados são indicados
+          pela equipa do Mulotane Lodge. Confirme-os antes da sua visita.
+        </p>
+        <ol class="lista-numerada">
+          <li>Horários de utilização</li>
+          <li>Regras da piscina</li>
+          <li>Acesso de visitantes não alojados</li>
+        </ol>
         <div class="accoes">
-          <a class="botao botao--principal" href="/contactos/">
-            Fale connosco
+          <a class="botao botao--principal" href="/#disponibilidade">
+            Consultar disponibilidade
             <Icone nome="seta" tamanho={18} />
           </a>
-          <BotaoWhatsApp
-            id="piscinas-wa"
-            variante="contorno-claro"
-            mensagem="Olá, Mulotane Lodge! Gostaria de saber as condições de utilização das piscinas."
-          />
         </div>
       </div>
     </div>
@@ -88,49 +70,20 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  .lazer__topo {
-    align-items: end;
-    margin-bottom: clamp(40px, 6vw, 80px);
-  }
-  .mosaico {
-    display: grid;
-    gap: clamp(12px, 1.6vw, 20px);
-  }
-  .mosaico :global(.foto) {
-    display: block;
-    aspect-ratio: 4 / 3;
-  }
-  @media (min-width: 900px) {
-    .mosaico {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      grid-auto-rows: clamp(90px, 9vw, 130px);
-    }
-    .mosaico :global(.foto) {
-      aspect-ratio: auto;
-    }
-    .mosaico :global(.mosaico__a) {
-      grid-column: 1 / 8;
-      grid-row: 1 / 5;
-    }
-    .mosaico :global(.mosaico__b) {
-      grid-column: 8 / 13;
-      grid-row: 1 / 3;
-    }
-    .mosaico :global(.mosaico__c) {
-      grid-column: 8 / 13;
-      grid-row: 3 / 7;
-    }
-    .mosaico :global(.mosaico__d) {
-      grid-column: 1 / 4;
-      grid-row: 5 / 7;
-    }
-    .mosaico :global(.mosaico__e) {
-      grid-column: 4 / 8;
-      grid-row: 5 / 7;
-    }
+  .lazer {
+    align-items: start;
   }
   .condicoes {
-    align-items: start;
+    scroll-margin-top: calc(var(--cabecalho) + 24px);
+  }
+  .condicoes__titulo {
+    font-size: var(--t-h3);
+  }
+  .condicoes__texto {
+    color: rgb(250 248 243 / 0.82);
+  }
+  .condicoes .accoes {
+    margin-top: 6px;
   }
   .explorar__titulo {
     margin-bottom: clamp(36px, 5vw, 56px);
