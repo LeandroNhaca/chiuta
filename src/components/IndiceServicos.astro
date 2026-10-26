@@ -1,5 +1,9 @@
 ---
-/** Os quatro pilares do lodge, com o mesmo peso: alojamento, restaurante, piscinas e eventos. */
+/**
+ * Os quatro pilares do lodge, com o mesmo peso: alojamento, restaurante, piscinas e eventos.
+ * Nos cartões, um espaço sem fotografia autorizada mostra um painel tipográfico (nunca uma imagem
+ * que não seja do lodge).
+ */
 import type { IdFotografia } from '../data/fotografias';
 
 import Foto from './Foto.astro';
@@ -14,52 +18,69 @@ interface Props {
 
 const { variante = 'pilares', excluir } = Astro.props;
 
-const itens: { id: Id; icone: NomeIcone; titulo: string; texto: string; href: string; foto: IdFotografia }[] =
-  [
-    {
-      id: 'alojamento',
-      icone: 'cama',
-      titulo: 'Alojamento',
-      texto: 'Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração.',
-      href: '/alojamento/',
-      foto: 'quarto-twin',
-    },
-    {
-      id: 'restaurante',
-      icone: 'talheres',
-      titulo: 'Restaurante',
-      texto: 'Refeições numa sala ampla, com janelas largas sobre a vegetação.',
-      href: '/restaurante/',
-      foto: 'sala-refeicoes-bar',
-    },
-    {
-      id: 'piscinas',
-      icone: 'ondas',
-      titulo: 'Piscinas',
-      texto: 'Lazer ao ar livre, entre o jardim, as palmeiras e a esplanada.',
-      href: '/piscinas/',
-      foto: 'piscina-terraco',
-    },
-    {
-      id: 'eventos',
-      icone: 'pessoas',
-      titulo: 'Eventos e conferências',
-      texto: 'Um espaço para reunir equipas, famílias e amigos.',
-      href: '/eventos/',
-      foto: 'sala-conferencias',
-    },
-  ];
-const lista = itens.filter((i) => i.id !== excluir);
+const itens: {
+  id: Id;
+  icone: NomeIcone;
+  titulo: string;
+  texto: string;
+  href: string;
+  foto?: IdFotografia;
+}[] = [
+  {
+    id: 'alojamento',
+    icone: 'cama',
+    titulo: 'Alojamento',
+    texto: 'Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração.',
+    href: '/alojamento/',
+  },
+  {
+    id: 'restaurante',
+    icone: 'talheres',
+    titulo: 'Restaurante',
+    texto: 'Refeições numa sala ampla, com janelas largas sobre a vegetação.',
+    href: '/restaurante/',
+    foto: 'restaurante-buffet-sala',
+  },
+  {
+    id: 'piscinas',
+    icone: 'ondas',
+    titulo: 'Piscinas',
+    texto: 'Lazer ao ar livre, entre o relvado e o jardim.',
+    href: '/piscinas/',
+    foto: 'piscina-jardim',
+  },
+  {
+    id: 'eventos',
+    icone: 'pessoas',
+    titulo: 'Eventos e conferências',
+    texto: 'Um espaço para reunir equipas, famílias e amigos.',
+    href: '/eventos/',
+    foto: 'sala-refeicoes',
+  },
+];
+const lista = itens
+  .map((item, i) => ({ ...item, numero: String(i + 1).padStart(2, '0') }))
+  .filter((i) => i.id !== excluir);
 ---
 
 <ul class:list={['indice', `indice--${variante}`]}>
   {lista.map((i) => (
     <li>
       <a class="indice__item" href={i.href}>
-        {variante === 'cartoes' ? (
-          <Foto id={i.foto} sizes="(min-width: 900px) 400px, 92vw" class="indice__foto" alt="" />
-        ) : (
-          <Icone nome={i.icone} tamanho={30} class="indice__icone" />
+        {variante === 'cartoes' &&
+          (i.foto ? (
+            <Foto id={i.foto} sizes="(min-width: 900px) 400px, 92vw" class="indice__foto" alt="" />
+          ) : (
+            <span class="indice__foto indice__foto--tipografica" aria-hidden="true">
+              <Icone nome={i.icone} tamanho={40} />
+              <span>{i.titulo}</span>
+            </span>
+          ))}
+        {variante === 'pilares' && (
+          <span class="indice__cabeca" aria-hidden="true">
+            <span class="indice__numero">{i.numero}</span>
+            <Icone nome={i.icone} tamanho={26} class="indice__icone" />
+          </span>
         )}
         <span class="indice__titulo">{i.titulo}</span>
         <span class="indice__texto">{i.texto}</span>
@@ -105,12 +126,19 @@ const lista = itens.filter((i) => i.id !== excluir);
     gap: 12px;
     align-content: start;
     height: 100%;
-    padding: 32px 28px 32px 0;
+    padding: 30px 28px 34px 0;
     text-decoration: none;
     color: inherit;
+    transition: background-color var(--transicao);
   }
   .indice--pilares li {
     border-bottom: 1px solid var(--linha);
+  }
+  @media (min-width: 640px) and (max-width: 1099px) {
+    .indice--pilares li:nth-child(even) .indice__item {
+      padding-left: 28px;
+      border-left: 1px solid var(--linha);
+    }
   }
   @media (min-width: 1100px) {
     .indice--pilares li + li .indice__item {
@@ -121,9 +149,21 @@ const lista = itens.filter((i) => i.id !== excluir);
   .indice--cartoes .indice__item {
     padding: 0;
   }
+  .indice__cabeca {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .indice__numero {
+    font-family: var(--serif);
+    font-size: 2.6rem;
+    font-style: italic;
+    line-height: 1;
+    color: var(--dourado-texto);
+  }
   .indice :global(.indice__icone) {
     color: var(--dourado-texto);
-    margin-bottom: 8px;
   }
   .indice :global(.indice__foto) {
     display: block;
@@ -141,6 +181,17 @@ const lista = itens.filter((i) => i.id !== excluir);
   }
   .indice__item:hover :global(.indice__foto img) {
     transform: scale(1.04);
+  }
+  .indice .indice__foto--tipografica {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 14px;
+    background: radial-gradient(circle at 70% 120%, rgb(199 161 90 / 0.22), transparent 60%), var(--verde);
+    color: var(--dourado);
+    font-family: var(--serif);
+    font-size: 1.7rem;
+    font-style: italic;
   }
   .indice__titulo {
     font-family: var(--serif);
@@ -168,5 +219,8 @@ const lista = itens.filter((i) => i.id !== excluir);
   }
   .indice__item:hover .indice__seta :global(svg) {
     transform: translateX(4px);
+  }
+  .indice__item:hover .indice__titulo {
+    color: var(--verde-3);
   }
 </style>

@@ -1,6 +1,6 @@
 ---
-import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
 import SecaoDisponibilidade from '../components/SecaoDisponibilidade.astro';
 import Base from '../layouts/Base.astro';
@@ -13,9 +13,12 @@ import Base from '../layouts/Base.astro';
   <CabecalhoPagina
     titulo="Alojamento"
     intro="O seu espaço para descansar, depois de um dia de lazer, de trabalho ou de celebração."
-    foto="quarto-twin"
-    enquadramento="baixo"
-  />
+  >
+    <a slot="accoes" class="botao botao--principal" href="#disponibilidade">
+      Consultar disponibilidade
+      <Icone nome="seta" tamanho={18} />
+    </a>
+  </CabecalhoPagina>
 
   <section class="secao secao--clara" aria-labelledby="quartos-titulo">
     <div class="contentor grelha grelha--metades detalhe">
@@ -27,22 +30,20 @@ import Base from '../layouts/Base.astro';
         <div class="texto">
           <p>Conheça as opções de alojamento e consulte a disponibilidade para as datas da sua visita.</p>
           <p>
-            Na fotografia, um quarto com duas camas individuais, cabeceiras estofadas e roupa de cama branca.
-            A equipa do lodge indica os tipos de quarto disponíveis e as condições da estadia.
+            A equipa do lodge indica os tipos de quarto disponíveis, a capacidade de cada um e as condições da
+            estadia.
           </p>
         </div>
         <div class="accoes">
           <a class="botao botao--verde" href="#disponibilidade">
             Consultar disponibilidade
+            <Icone nome="seta" tamanho={18} />
           </a>
-          <BotaoWhatsApp
-            id="alojamento-wa"
-            mensagem="Olá, Mulotane Lodge! Gostaria de saber mais sobre o alojamento."
-          />
         </div>
       </div>
       <div class="detalhe__caixa">
-        <h3>Pode pedir-nos informações sobre</h3>
+        <p class="filete-titulo">Antes de reservar</p>
+        <h3>Pode pedir informações sobre</h3>
         <ul class="lista-traco">
           <li>Tipos de quarto disponíveis</li>
           <li>Tarifas e condições de reserva</li>

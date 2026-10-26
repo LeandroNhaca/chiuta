@@ -1,16 +1,14 @@
 ---
 import { lodge } from '../config/lodge';
-import { navegacao, telefoneHref, temContactosDirectos, whatsappDisponivel } from '../lib/site';
-import { linkWhatsApp } from '../lib/whatsapp';
+import { canaisContacto, navegacao } from '../lib/site';
 
 import Assinatura from './Assinatura.astro';
 import Icone from './Icone.astro';
 
 const ano = new Date().getFullYear();
-const { telefone, email, whatsapp } = lodge.contactos;
 ---
 
-<footer class="rodape" class:list={{ 'rodape--demo': lodge.demonstracao.activa }}>
+<footer class="rodape">
   <div class="contentor rodape__grelha">
     <div class="rodape__marca">
       <Assinatura />
@@ -49,36 +47,28 @@ const { telefone, email, whatsapp } = lodge.contactos;
 
     <div class="rodape__coluna">
       <h2>Contactos</h2>
-      {temContactosDirectos ? (
-        <ul class="rodape__contactos">
-          {telefone && (
-            <li>
-              <a href={telefoneHref(telefone)}>
-                <Icone nome="telefone" tamanho={18} />
-                {telefone}
+      <ul class="rodape__contactos">
+        {canaisContacto.map((c) => (
+          <li>
+            {c.href ? (
+              <a
+                href={c.href}
+                target={c.externo ? '_blank' : undefined}
+                rel={c.externo ? 'noopener' : undefined}
+              >
+                <Icone nome={c.id} tamanho={18} />
+                {c.valor}
               </a>
-            </li>
-          )}
-          {whatsappDisponivel && (
-            <li>
-              <a href={linkWhatsApp(whatsapp)} rel="noopener" target="_blank">
-                <Icone nome="whatsapp" tamanho={18} />
-                WhatsApp
-              </a>
-            </li>
-          )}
-          {email && (
-            <li>
-              <a href={`mailto:${email}`}>
-                <Icone nome="email" tamanho={18} />
-                {email}
-              </a>
-            </li>
-          )}
-        </ul>
-      ) : (
-        <p class="rodape__pendente">Contactos oficiais em confirmação com a gerência.</p>
-      )}
+            ) : (
+              <span class="rodape__canal">
+                <Icone nome={c.id} tamanho={18} />
+                {c.rotulo}
+                <span class="pendente pendente--claro">Em breve</span>
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
       {lodge.redesSociais.length > 0 && (
         <ul class="rodape__redes">
           {lodge.redesSociais.map((r) => (
@@ -105,7 +95,7 @@ const { telefone, email, whatsapp } = lodge.contactos;
       <li>
         <a href="/privacidade/">Política de privacidade</a>
       </li>
-      {lodge.demonstracao.activa && <li>Demonstração preparada por {lodge.demonstracao.autor}</li>}
+      <li>Website por {lodge.demonstracao.autor}</li>
     </ul>
   </div>
 </footer>
@@ -118,9 +108,6 @@ const { telefone, email, whatsapp } = lodge.contactos;
     color: rgb(250 248 243 / 0.78);
     font-size: 0.95rem;
     border-top: 1px solid rgb(199 161 90 / 0.4);
-  }
-  .rodape--demo {
-    padding-bottom: 72px;
   }
   .rodape a {
     text-decoration: none;
@@ -193,9 +180,12 @@ const { telefone, email, whatsapp } = lodge.contactos;
     gap: 10px;
     min-height: 40px;
   }
-  .rodape__pendente {
-    max-width: 20rem;
-    font-size: var(--t-pequeno);
+  .rodape__canal {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    min-height: 40px;
   }
   .rodape__base {
     display: flex;

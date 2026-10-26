@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 
 import { lodge } from '../../src/config/lodge';
 import { fotografias, srcset } from '../../src/data/fotografias';
-import { politicaSeguranca, urlDireccoes, urlMapaIncorporado } from '../../src/lib/site';
+import {
+  canaisContacto,
+  ligacoesPedido,
+  politicaSeguranca,
+  urlDireccoes,
+  urlMapaIncorporado,
+} from '../../src/lib/site';
 
 describe('configuração sem dados inventados', () => {
   it('mantém vazios os contactos que ainda não foram confirmados', () => {
@@ -13,11 +19,31 @@ describe('configuração sem dados inventados', () => {
 });
 
 describe('direcções e mapa', () => {
-  it('sem ponto confirmado, pesquisa o lodge pelo nome e não incorpora mapa', () => {
-    expect(urlDireccoes()).toBe(
-      'https://www.google.com/maps/search/?api=1&query=Mulotane%20Lodge%2C%20Boane%2C%20Mo%C3%A7ambique',
-    );
+  it('sem localização confirmada, não há direcções nem mapa (o site assinala-os como pendentes)', () => {
+    expect(urlDireccoes()).toBe('');
     expect(urlMapaIncorporado()).toBeNull();
+  });
+});
+
+describe('contactos', () => {
+  it('os três canais existem e, sem confirmação, não têm destino', () => {
+    expect(canaisContacto.map((c) => c.id)).toEqual(['telefone', 'whatsapp', 'email']);
+    for (const c of canaisContacto) {
+      expect(c.valor, c.id).toBe('');
+      expect(c.href, c.id).toBe('');
+    }
+  });
+});
+
+describe('ligações para os pedidos', () => {
+  it('usa o formulário da própria página quando existe', () => {
+    expect(ligacoesPedido('/')).toEqual({ disponibilidade: '#disponibilidade', evento: '#orcamento' });
+    expect(ligacoesPedido('/alojamento/').disponibilidade).toBe('#disponibilidade');
+    expect(ligacoesPedido('/eventos/').evento).toBe('#pedido');
+    expect(ligacoesPedido('/piscinas/')).toEqual({
+      disponibilidade: '/#disponibilidade',
+      evento: '/eventos/#pedido',
+    });
   });
 });
 
@@ -34,7 +60,7 @@ describe('Content-Security-Policy', () => {
 
 describe('catálogo de fotografias', () => {
   it('tem texto alternativo e dimensões para todas as fotografias', () => {
-    expect(fotografias.length).toBe(15);
+    expect(fotografias.length).toBe(4);
     for (const f of fotografias) {
       expect(f.alt.length).toBeGreaterThan(20);
       expect(f.largura).toBeGreaterThan(0);
@@ -43,10 +69,16 @@ describe('catálogo de fotografias', () => {
     }
   });
 
-  it('identifica a autoria de todas as capturas do Google Maps', () => {
-    for (const f of fotografias.filter((x) => x.origem === 'google-maps')) {
-      expect(f.autor, f.id).toBeTruthy();
-      expect(f.data, f.id).toBeTruthy();
+  it('só publica fotografias enviadas pelo cliente e deixa de fora as que estão por autorizar', () => {
+    expect(fotografias.every((f) => f.origem === 'cliente')).toBe(true);
+    const ids = fotografias.map((f) => f.id as string);
+    for (const retirada of [
+      'quarto-twin',
+      'piscina-espreguicadeiras',
+      'sala-conferencias',
+      'placa-entrada',
+    ]) {
+      expect(ids).not.toContain(retirada);
     }
   });
 });

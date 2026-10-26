@@ -1,8 +1,7 @@
 ---
-import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
-import Foto from '../components/Foto.astro';
 import FormularioEvento from '../components/FormularioEvento.astro';
+import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
 import Base from '../layouts/Base.astro';
 ---
@@ -14,62 +13,62 @@ import Base from '../layouts/Base.astro';
   <CabecalhoPagina
     titulo="Eventos e conferências"
     intro="Um espaço para reunir e celebrar: reuniões de trabalho, celebrações familiares e encontros de grupo."
-    foto="sala-conferencias"
-  />
+    foto="sala-refeicoes"
+  >
+    <a slot="accoes" class="botao botao--principal" href="#pedido">
+      Pedir orçamento
+      <Icone nome="seta" tamanho={18} />
+    </a>
+  </CabecalhoPagina>
 
-  <section class="secao secao--clara" aria-labelledby="reunir-titulo">
-    <div class="contentor grelha grelha--texto-foto">
-      <div class="bloco-titulo">
-        <p class="etiqueta">Reunir e celebrar</p>
-        <h2 id="reunir-titulo">
-          Um espaço para reunir <em>e celebrar.</em>
-        </h2>
-        <div class="texto">
-          <p>
-            Está a planear uma reunião, uma celebração ou um encontro de grupo? Entre em contacto com a nossa
-            equipa para conhecer as opções disponíveis.
-          </p>
-        </div>
-        <h3 class="eventos__subtitulo">Para preparar o seu pedido</h3>
-        <ul class="lista-traco">
-          <li>A data pretendida e o horário aproximado</li>
-          <li>O número estimado de participantes</li>
-          <li>O tipo de evento e o formato da sala</li>
-          <li>Refeições, equipamento ou outras necessidades</li>
-        </ul>
-        <div class="accoes">
-          <a class="botao botao--verde" href="#pedido">
-            Pedir orçamento para um evento
-          </a>
-        </div>
-      </div>
-      <figure class="moldura">
-        <Foto id="sala-refeicoes" sizes="(min-width: 900px) 560px, 92vw" class="foto eventos__foto" />
-        <figcaption class="legenda">Sala com janelas amplas sobre a vegetação.</figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section id="pedido" class="secao secao--escura pedido-evento" aria-labelledby="pedido-titulo">
+  <section id="pedido" class="secao secao--cinza pedido-evento" aria-labelledby="pedido-titulo">
     <div class="contentor grelha pedido-evento__grelha">
-      <div class="bloco-titulo">
+      <div class="bloco-titulo pedido-evento__intro">
         <p class="etiqueta">Orçamento</p>
         <h2 id="pedido-titulo">
           Pedir orçamento para um <em>evento.</em>
         </h2>
         <div class="texto">
           <p>
-            Conte-nos o que está a planear. A equipa do Mulotane Lodge analisa o pedido e responde com as
-            opções disponíveis para a data indicada.
+            Conte-nos o que está a planear. O orçamento é preparado pela equipa do Mulotane Lodge de acordo
+            com a disponibilidade do espaço na data pretendida.
           </p>
         </div>
-        <BotaoWhatsApp
-          id="evento-wa"
-          variante="contorno-claro"
-          mensagem="Olá, Mulotane Lodge! Gostaria de pedir informações para um evento."
-        />
       </div>
-      <FormularioEvento />
+      <div class="pedido-evento__form">
+        <FormularioEvento />
+      </div>
+      <div class="pedido-evento__lista">
+        <p class="filete-titulo">Para preparar o seu pedido</p>
+        <ol class="lista-numerada">
+          <li>A data pretendida e o horário aproximado</li>
+          <li>O número estimado de participantes</li>
+          <li>O tipo de evento e o formato da sala</li>
+          <li>Refeições, equipamento ou outras necessidades</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao secao--clara" aria-labelledby="reunir-titulo">
+    <div class="contentor grelha grelha--metades reunir">
+      <div class="bloco-titulo">
+        <p class="etiqueta">Reunir e celebrar</p>
+        <h2 id="reunir-titulo">
+          Um espaço para cada <em>ocasião.</em>
+        </h2>
+        <div class="texto">
+          <p>
+            Está a planear uma reunião, uma celebração ou um encontro de grupo? Indique-nos o que precisa e a
+            equipa do lodge apresenta as opções disponíveis para a data.
+          </p>
+        </div>
+      </div>
+      <ul class="lista-traco reunir__tipos">
+        <li>Reuniões, formações e conferências</li>
+        <li>Celebrações familiares e aniversários</li>
+        <li>Encontros de grupo e eventos de empresa</li>
+      </ul>
     </div>
   </section>
 
@@ -85,33 +84,40 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  .grelha figure {
-    margin: 0;
-  }
-  .eventos__subtitulo {
-    margin-top: 8px;
-    font-family: var(--sans);
-    font-size: var(--t-etiqueta);
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--dourado-texto);
-  }
-  .grelha :global(.eventos__foto) {
-    display: block;
-    aspect-ratio: 4 / 5;
-  }
+  /* Telemóvel: título, formulário e só depois a lista de apoio. Computador: duas colunas. */
   .pedido-evento__grelha {
     align-items: start;
+    row-gap: 40px;
+  }
+  .pedido-evento__lista {
+    display: grid;
+    gap: 6px;
   }
   @media (min-width: 1000px) {
     .pedido-evento__grelha {
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-rows: auto 1fr;
+      row-gap: 40px;
     }
-    .pedido-evento .bloco-titulo {
-      position: sticky;
-      top: calc(var(--cabecalho) + 32px);
+    .pedido-evento__intro {
+      grid-column: 1;
+      grid-row: 1;
     }
+    .pedido-evento__lista {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .pedido-evento__form {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+  }
+  .reunir {
+    align-items: end;
+  }
+  .reunir__tipos {
+    font-family: var(--serif);
+    font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.6rem);
   }
   .explorar__titulo {
     margin-bottom: clamp(36px, 5vw, 56px);

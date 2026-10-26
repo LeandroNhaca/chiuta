@@ -42,6 +42,7 @@ test.describe('imagens, ligações e SEO', () => {
   }) => {
     test.setTimeout(120_000);
     const internas = new Set<string>();
+    const externas = new Set<string>();
     for (const caminho of PAGINAS) {
       await page.goto(caminho);
       const hrefs = await page.locator('a[href]').evaluateAll((as) =>
@@ -53,7 +54,7 @@ test.describe('imagens, ligações e SEO', () => {
       );
       for (const { href, alvo, rel } of hrefs) {
         if (/^https?:/.test(href)) {
-          expect(new URL(href).hostname, href).toBe('www.google.com');
+          externas.add(href);
           expect(alvo, href).toBe('_blank');
           expect(rel, href).toContain('noopener');
         } else {
@@ -61,6 +62,8 @@ test.describe('imagens, ligações e SEO', () => {
         }
       }
     }
+    // Sem localização nem contactos confirmados, não há ligações para fora do site.
+    expect([...externas]).toEqual([]);
     for (const url of internas) {
       const u = new URL(url);
       const resposta = await request.get(u.pathname);
@@ -81,7 +84,26 @@ test.describe('imagens, ligações e SEO', () => {
     expect(og.status()).toBe(200);
     expect(og.headers()['content-type']).toContain('image/jpeg');
 
+    // Favicon e manifesto (pedidos que antes davam 404 nos registos do servidor).
+    for (const [caminho, tipo] of [
+      ['/favicon.ico', /image\/(x-icon|vnd\.microsoft\.icon)/],
+      ['/favicon.png', /image\/png/],
+      ['/favicon.svg', /image\/svg\+xml/],
+      ['/apple-touch-icon.png', /image\/png/],
+    ] as const) {
+      const r = await request.get(caminho);
+      expect(r.status(), caminho).toBe(200);
+      expect(r.headers()['content-type'], caminho).toMatch(tipo);
+    }
+    const manifesto = await (await request.get('/site.webmanifest')).json();
+    expect(manifesto.name).toBe('Mulotane Lodge');
+    for (const icone of manifesto.icons) {
+      expect((await request.get(icone.src)).status(), icone.src).toBe(200);
+    }
+
     await page.goto('/');
+    await expect(page.locator('link[rel="icon"][href="/favicon.ico"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="manifest"]')).toHaveAttribute('href', '/site.webmanifest');
     const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}');
     expect(ld['@type']).toBe('LodgingBusiness');
     expect(ld.address.addressLocality).toBe('Boane');

@@ -47,9 +47,8 @@ const TEXTOS: Record<Estado, { titulo: string; texto: (nome: string) => string }
   demonstracao: {
     titulo: 'Pedido validado',
     texto: () =>
-      'Os dados estão correctos. Nesta demonstração o envio ainda não está activo: nenhum dado foi enviado nem ' +
-      'guardado. Depois da configuração, o pedido seguirá para a equipa do Mulotane Lodge, que confirma a ' +
-      'disponibilidade.',
+      'Os dados estão correctos. Este formulário ainda é de demonstração: nenhum dado foi enviado nem ' +
+      'guardado, por isso o pedido não chegou à equipa do Mulotane Lodge.',
   },
 };
 

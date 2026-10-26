@@ -5,7 +5,7 @@ Fora de `public/`: estes ficheiros nunca são servidos pelo site. São a fonte d
 
 ## Enviadas no início do projecto (JPEG, 900 px)
 
-Copiadas sem alterações (SHA-256 idêntico ao recebido). Metadados EXIF com "software=Google": confirmar a origem.
+Copiadas sem alterações (SHA-256 idêntico ao recebido). Metadados EXIF com "software=Google": confirmar a origem. As quatro primeiras estão publicadas no site; `quarto-twin.jpg` não (ver abaixo).
 
 | Ficheiro | SHA-256 |
 | --- | --- |
@@ -15,21 +15,10 @@ Copiadas sem alterações (SHA-256 idêntico ao recebido). Metadados EXIF com "s
 | `real/restaurante-buffet-sala.jpg` | `feb3a268769be5935545fbfac9f7ce367ffcc797b3a3f2fb729298efba0b1508` |
 | `real/quarto-twin.jpg` | `5ff50c8beacc59ca31da3ca0cbf0365f063f77baf7251ee552aae52e14f57694` |
 
-## Capturas do Google Maps (PNG, 1080 px)
+## Capturas do Google Maps (retiradas)
 
-Recebidas como capturas de ecrã de telemóvel (1080×2400). Guardou-se só a área da fotografia, sem
-reescalar nem comprimir (PNG sem perdas), cortando a barra de estado, os botões e o nome do autor.
-A autoria está em `src/data/fotografias.ts` e em `docs/VALIDACAO.md`.
+As 10 capturas de contribuições de visitantes no Google Maps (`gm-*.png`) foram apagadas desta pasta em 26/10/2026: não há autorização dos autores. A lista, com autores e motivos, está em `docs/VALIDACAO.md`.
 
-| Ficheiro | Autor (Google Maps) | Área recortada da captura (y, px) |
-| --- | --- | --- |
-| `real/gm-piscina-espreguicadeiras.png` | Ahmet Dinler | 795–1604 |
-| `real/gm-sala-conferencias.png` | Paulino Venâncio Josine | 795–1604 |
-| `real/gm-esplanada-piscina.png` | abilio chambisso | 480–1919 |
-| `real/gm-edificio-exterior.png` | Zy | 480–1919 |
-| `real/gm-entrada-coberta.png` | Ahmet Dinler | 795–1604 |
-| `real/gm-sala-refeicoes-bar.png` | Ahmet Dinler | 795–1604 |
-| `real/gm-piscina-relvado.png` | Orlando Nhabetse | 795–1604 |
-| `real/gm-piscina-terraco.png` | Carlos Teixeira | 795–1604 |
-| `real/gm-piscina-vista-geral.png` | Paulino Venâncio Josine | 665–1475 |
-| `real/gm-placa-entrada.png` | Dique Mateus | 241–1950 |
+## Guardadas mas não publicadas
+
+- `real/quarto-twin.jpg`: enviada pelo cliente, mas a roupa de cama tem a inscrição "ALD. TUR. MIXALI-XAU". Fica fora do site até a gerência confirmar que é um quarto do Mulotane Lodge.

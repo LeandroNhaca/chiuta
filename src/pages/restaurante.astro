@@ -1,7 +1,7 @@
 ---
-import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
 import Foto from '../components/Foto.astro';
+import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
 import Base from '../layouts/Base.astro';
 ---
@@ -13,7 +13,8 @@ import Base from '../layouts/Base.astro';
   <CabecalhoPagina
     titulo="Restaurante"
     intro="Sabores e momentos à mesa, numa sala ampla com janelas largas sobre a vegetação."
-    foto="sala-refeicoes-bar"
+    foto="restaurante-buffet-sala"
+    formato="paisagem"
   />
 
   <section class="secao secao--clara" aria-labelledby="mesa-titulo">
@@ -25,9 +26,10 @@ import Base from '../layouts/Base.astro';
         </h2>
         <div class="texto">
           <p>
-            Descubra o espaço de restauração do Mulotane Lodge e entre em contacto para conhecer a oferta
-            disponível.
+            Descubra o espaço de restauração do Mulotane Lodge: uma sala ampla, com janelas largas sobre a
+            vegetação.
           </p>
+          <p>A oferta, os horários e as refeições para grupos são indicados pela equipa do lodge.</p>
         </div>
         <h3 class="restaurante__subtitulo">Pergunte-nos sobre</h3>
         <ul class="lista-traco">
@@ -36,13 +38,14 @@ import Base from '../layouts/Base.astro';
           <li>Pedidos especiais</li>
         </ul>
         <div class="accoes">
-          <a class="botao botao--verde" href="/contactos/">
-            Consultar o serviço de restauração
+          <a class="botao botao--verde" href="/eventos/#pedido">
+            Pedir orçamento para um grupo
+            <Icone nome="seta" tamanho={18} />
           </a>
-          <BotaoWhatsApp
-            id="restaurante-wa"
-            mensagem="Olá, Mulotane Lodge! Gostaria de saber mais sobre o restaurante."
-          />
+          <a class="ligacao-seta" href="/contactos/">
+            <span>Contactos</span>
+            <Icone nome="seta" />
+          </a>
         </div>
       </div>
       <div class="restaurante__par">
@@ -50,7 +53,7 @@ import Base from '../layouts/Base.astro';
           <Foto
             id="restaurante-buffet"
             sizes="(min-width: 900px) 340px, 46vw"
-            class="foto restaurante__alta"
+            class="arco restaurante__alta"
           />
           <figcaption class="legenda">Buffet.</figcaption>
         </figure>

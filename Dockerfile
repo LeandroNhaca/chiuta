@@ -1,6 +1,6 @@
 # Imagem do website do Mulotane Lodge a partir do código-fonte (para qualquer servidor com Docker).
-# No VPS da One Prompt Studio usa-se deploy/gerar-compose.mjs, que gera um compose autónomo com o site
-# já construído (o repositório é privado e o servidor não precisa de acesso ao GitHub).
+# O GitHub Actions constrói-a e publica-a no GHCR; o VPS da One Prompt Studio só faz pull da imagem
+# (ver docs/PUBLICACAO.md).
 
 FROM node:22.23.4-alpine AS build
 WORKDIR /app

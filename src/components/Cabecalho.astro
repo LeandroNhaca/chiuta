@@ -1,14 +1,12 @@
 ---
-import { navegacao } from '../lib/site';
+import { ligacoesPedido, navegacao } from '../lib/site';
 
 import Assinatura from './Assinatura.astro';
 import Icone from './Icone.astro';
 
 const caminho = Astro.url.pathname;
 const actual = (href: string) => (href === '/' ? caminho === '/' : caminho.startsWith(href));
-// O formulário de disponibilidade existe na página inicial e na página de alojamento.
-const ctaHref =
-  caminho === '/' || caminho.startsWith('/alojamento/') ? '#disponibilidade' : '/#disponibilidade';
+const pedidos = ligacoesPedido(caminho);
 ---
 
 <header class="cabecalho" data-cabecalho>
@@ -25,7 +23,7 @@ const ctaHref =
         ))}
       </ul>
     </nav>
-    <a class="botao botao--principal cabecalho__cta" href={ctaHref}>
+    <a class="botao botao--principal cabecalho__cta" href={pedidos.disponibilidade}>
       Consultar disponibilidade
     </a>
     <button
@@ -68,8 +66,11 @@ const ctaHref =
     </ol>
   </nav>
   <div class="menu-movel__rodape contentor">
-    <a class="botao botao--principal botao--bloco" href={ctaHref} data-fechar-menu-ao-navegar>
+    <a class="botao botao--principal botao--bloco" href={pedidos.disponibilidade} data-fechar-menu-ao-navegar>
       Consultar disponibilidade
+    </a>
+    <a class="botao botao--contorno-claro botao--bloco" href={pedidos.evento} data-fechar-menu-ao-navegar>
+      Pedir orçamento para um evento
     </a>
     <p>Boane · Província de Maputo · Moçambique</p>
   </div>
@@ -228,7 +229,7 @@ const ctaHref =
     display: flex;
     align-items: baseline;
     gap: 18px;
-    padding: 12px 0;
+    padding: 10px 0;
     font-family: var(--serif);
     font-size: clamp(1.9rem, 1.4rem + 2.4vw, 2.6rem);
     font-weight: 500;
@@ -248,9 +249,12 @@ const ctaHref =
   }
   .menu-movel__rodape {
     display: grid;
-    gap: 18px;
+    gap: 12px;
     padding-block: 8px max(28px, env(safe-area-inset-bottom));
     font-size: var(--t-pequeno);
     color: rgb(250 248 243 / 0.72);
+  }
+  .menu-movel__rodape p {
+    margin-top: 6px;
   }
 </style>

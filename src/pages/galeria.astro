@@ -4,18 +4,16 @@ import Galeria from '../components/Galeria.astro';
 import { fotografias } from '../data/fotografias';
 import Base from '../layouts/Base.astro';
 
-const autores = [
-  ...new Set(fotografias.filter((f) => f.origem === 'google-maps' && f.autor).map((f) => f.autor)),
-];
+const autores = [...new Set(fotografias.filter((f) => f.autor).map((f) => f.autor))];
 ---
 
 <Base
   titulo="Galeria"
-  descricao="Fotografias reais do Mulotane Lodge, em Boane: piscinas e exteriores, alojamento, restaurante e espaços para eventos."
+  descricao="Fotografias reais do Mulotane Lodge, em Boane: a piscina e o jardim, o restaurante e as salas com janelas amplas."
 >
   <CabecalhoPagina
     titulo="Galeria"
-    intro="Os espaços do Mulotane Lodge em fotografias reais: piscinas e exteriores, alojamento, restaurante e salas."
+    intro="Os espaços do Mulotane Lodge em fotografias reais: a piscina e o jardim, o restaurante e as salas."
   />
 
   <section class="secao secao--clara" aria-label="Fotografias">
@@ -24,10 +22,7 @@ const autores = [
       {autores.length > 0 && (
         <aside class="creditos" aria-labelledby="creditos-titulo">
           <h2 id="creditos-titulo">Créditos fotográficos</h2>
-          <p>
-            Algumas fotografias foram publicadas por visitantes no Google Maps e são apresentadas com
-            indicação de autoria: {autores.join(', ')}.
-          </p>
+          <p>Fotografias de {autores.join(', ')}, publicadas com autorização.</p>
         </aside>
       )}
     </div>

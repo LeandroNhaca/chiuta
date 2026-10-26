@@ -2,7 +2,7 @@
 import '../styles/global.css';
 
 import Cabecalho from '../components/Cabecalho.astro';
-import PainelDemonstracao from '../components/PainelDemonstracao.astro';
+import AccoesRapidas from '../components/AccoesRapidas.astro';
 import Rodape from '../components/Rodape.astro';
 import { lodge } from '../config/lodge';
 import { politicaSeguranca } from '../lib/site';
@@ -36,8 +36,10 @@ const imagemPartilha = new URL('/og/mulotane-lodge.jpg', Astro.site).href;
     {!indexavel && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#0b3027" />
     <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link
       rel="preload"
       href="/fonts/cormorant-garamond-latin-500-normal.woff2"
@@ -62,7 +64,7 @@ const imagemPartilha = new URL('/og/mulotane-lodge.jpg', Astro.site).href;
     <meta property="og:image" content={imagemPartilha} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Piscina do Mulotane Lodge, com espreguiçadeiras e palmeiras." />
+    <meta property="og:image:alt" content="Piscina e jardim do Mulotane Lodge, em Boane." />
     <meta name="twitter:card" content="summary_large_image" />
 
     {dadosEstruturados && (
@@ -78,6 +80,6 @@ const imagemPartilha = new URL('/og/mulotane-lodge.jpg', Astro.site).href;
       <slot />
     </main>
     <Rodape />
-    {lodge.demonstracao.activa && <PainelDemonstracao />}
+    <AccoesRapidas />
   </body>
 </html>

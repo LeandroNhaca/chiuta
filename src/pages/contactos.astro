@@ -3,11 +3,8 @@ import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
 import ComoChegar from '../components/ComoChegar.astro';
 import Icone from '../components/Icone.astro';
-import { lodge } from '../config/lodge';
-import { telefoneHref, temContactosDirectos } from '../lib/site';
+import { canaisContacto, temContactosDirectos } from '../lib/site';
 import Base from '../layouts/Base.astro';
-
-const { telefone, email } = lodge.contactos;
 ---
 
 <Base
@@ -16,7 +13,7 @@ const { telefone, email } = lodge.contactos;
 >
   <CabecalhoPagina
     titulo="Fale connosco"
-    intro="Peça informações, consulte a disponibilidade ou prepare o seu evento. A equipa do Mulotane Lodge responde ao seu pedido."
+    intro="Peça informações, consulte a disponibilidade ou prepare o seu evento no Mulotane Lodge, em Boane."
   />
 
   <section class="secao secao--clara" aria-labelledby="contactos-titulo">
@@ -26,44 +23,38 @@ const { telefone, email } = lodge.contactos;
         <h2 id="contactos-titulo">
           Estamos em <em>Boane.</em>
         </h2>
-        {temContactosDirectos ? (
-          <ul class="contactos__lista">
-            {telefone && (
-              <li>
-                <Icone nome="telefone" tamanho={22} />
-                <span>
-                  <span class="contactos__rotulo">Telefone</span>
-                  <a href={telefoneHref(telefone)}>{telefone}</a>
-                </span>
-              </li>
-            )}
-            {email && (
-              <li>
-                <Icone nome="email" tamanho={22} />
-                <span>
-                  <span class="contactos__rotulo">E-mail</span>
-                  <a href={`mailto:${email}`}>{email}</a>
-                </span>
-              </li>
-            )}
-          </ul>
-        ) : (
-          lodge.demonstracao.activa && (
-            <p class="nota">
-              <Icone nome="info" tamanho={18} />
-              <span>
-                Os contactos oficiais do Mulotane Lodge (telefone, WhatsApp e e-mail) são publicados aqui
-                depois de confirmados com a gerência.
+        <ul class="contactos__lista">
+          {canaisContacto.map((c) => (
+            <li>
+              <Icone nome={c.id} tamanho={22} />
+              <span class="contactos__canal">
+                <span class="contactos__rotulo">{c.rotulo}</span>
+                {c.href ? (
+                  <a
+                    href={c.href}
+                    target={c.externo ? '_blank' : undefined}
+                    rel={c.externo ? 'noopener' : undefined}
+                  >
+                    {c.valor}
+                  </a>
+                ) : (
+                  <span class="pendente">Em breve</span>
+                )}
               </span>
-            </p>
-          )
+            </li>
+          ))}
+        </ul>
+        {!temContactosDirectos && (
+          <p class="contactos__nota">
+            Os contactos oficiais do Mulotane Lodge serão publicados aqui em breve.
+          </p>
         )}
-        <BotaoWhatsApp id="contactos-wa" />
+        <BotaoWhatsApp />
       </div>
 
       <ul class="contactos__accoes">
         <li>
-          <a class="contactos__cartao" href="/alojamento/#disponibilidade">
+          <a class="contactos__cartao" href="/#disponibilidade">
             <Icone nome="calendario" tamanho={28} />
             <span class="contactos__titulo">Consultar disponibilidade</span>
             <span class="contactos__texto">Indique as datas e o número de hóspedes.</span>
@@ -99,31 +90,44 @@ const { telefone, email } = lodge.contactos;
   }
   .contactos__lista {
     display: grid;
-    gap: 18px;
     margin: 0;
     padding: 0;
     list-style: none;
+    border-top: 1px solid var(--linha);
   }
   .contactos__lista li {
     display: flex;
     gap: 16px;
-    align-items: start;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--linha);
   }
-  .contactos__lista :global(svg) {
-    margin-top: 4px;
+  .contactos__lista > li > :global(svg) {
+    flex: none;
     color: var(--dourado-texto);
+  }
+  .contactos__canal {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: center;
+    justify-content: space-between;
   }
   .contactos__lista a {
     font-family: var(--serif);
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     text-decoration: none;
   }
   .contactos__rotulo {
-    display: block;
     font-size: var(--t-etiqueta);
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: var(--texto-suave);
+  }
+  .contactos__nota {
+    font-size: var(--t-pequeno);
     color: var(--texto-suave);
   }
   .contactos__accoes {
