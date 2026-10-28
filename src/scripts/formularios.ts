@@ -31,24 +31,37 @@ const ROTULOS: Record<string, string> = {
   mensagem: 'Mensagem',
 };
 
-const TEXTOS: Record<Estado, { titulo: string; texto: (nome: string) => string }> = {
+// O que a equipa responde, conforme o tipo de pedido.
+const RESPOSTA: Record<TipoPedido, string> = {
+  alojamento: 'com a disponibilidade e as condições da estadia',
+  evento: 'com as opções disponíveis e o orçamento para a data indicada',
+};
+const NAO_E_RESERVA: Record<TipoPedido, string> = {
+  alojamento:
+    'Este pedido não é uma reserva: a estadia só fica garantida depois de confirmada pelo Mulotane Lodge.',
+  evento:
+    'Este pedido não é uma reserva: o evento só fica garantido depois de confirmado pelo Mulotane Lodge.',
+};
+
+// Nunca se diz que um pedido foi enviado ou guardado sem a resposta do servidor o confirmar.
+const TEXTOS: Record<Estado, { titulo: string; texto: (nome: string, tipo: TipoPedido) => string }> = {
   enviado: {
     titulo: 'Pedido enviado',
-    texto: (nome) =>
-      `Obrigado, ${nome}. A equipa do Mulotane Lodge vai responder com a disponibilidade e as condições. ` +
-      'Este pedido ainda não é uma reserva confirmada.',
+    texto: (nome, tipo) =>
+      `Obrigado, ${nome}. A equipa do Mulotane Lodge vai responder ${RESPOSTA[tipo]}. ${NAO_E_RESERVA[tipo]}`,
   },
   whatsapp: {
     titulo: 'Mensagem pronta para o WhatsApp',
-    texto: () =>
-      'Para concluir, envie a mensagem preparada pelo WhatsApp. A disponibilidade só fica garantida depois de ' +
-      'confirmada pela equipa do Mulotane Lodge.',
+    texto: (_nome, tipo) =>
+      'O pedido ainda não foi enviado: para concluir, toque em "Continuar no WhatsApp" e envie a mensagem ' +
+      `ao Mulotane Lodge. ${NAO_E_RESERVA[tipo]}`,
   },
   demonstracao: {
     titulo: 'Pedido validado',
     texto: () =>
-      'Os dados estão correctos. Este formulário ainda é de demonstração: nenhum dado foi enviado nem ' +
-      'guardado, por isso o pedido não chegou à equipa do Mulotane Lodge.',
+      'Os dados estão correctos, mas este formulário ainda é de demonstração: nenhum dado foi enviado nem ' +
+      'guardado, por isso o pedido não chegou à equipa do Mulotane Lodge. O envio pelo WhatsApp aguarda a ' +
+      'configuração do número oficial; esta é a mensagem que vai ser preparada.',
   },
 };
 
@@ -109,12 +122,21 @@ function iniciar(form: HTMLFormElement): void {
 
   const mostrarResultado = (estado: Estado, dados: Record<string, string>, wa: string | null) => {
     const t = TEXTOS[estado];
+    const blocoMensagem = resultado.querySelector<HTMLElement>('[data-resultado-mensagem]');
+    const textoMensagem = resultado.querySelector('[data-mensagem-texto]');
+    const estadoCopia = resultado.querySelector('[data-copiar-estado]');
+    if (blocoMensagem && textoMensagem) {
+      // Depois de um envio real não há mensagem a mostrar; nos outros casos mostra-se o que seguirá.
+      blocoMensagem.hidden = estado === 'enviado';
+      textoMensagem.textContent = estado === 'enviado' ? '' : mensagemPedido(tipo, dados, nomeLodge);
+    }
+    if (estadoCopia) estadoCopia.textContent = '';
     const titulo = resultado.querySelector('[data-resultado-titulo]');
     const texto = resultado.querySelector('[data-resultado-texto]');
     const resumo = resultado.querySelector('[data-resultado-resumo]');
     const botaoWa = resultado.querySelector<HTMLAnchorElement>('[data-resultado-whatsapp]');
     if (titulo) titulo.textContent = t.titulo;
-    if (texto) texto.textContent = t.texto(dados.nome);
+    if (texto) texto.textContent = t.texto(dados.nome, tipo);
     if (resumo) {
       resumo.replaceChildren();
       for (const nome of campos) {
@@ -142,9 +164,12 @@ function iniciar(form: HTMLFormElement): void {
     const dados = ler();
     const erros = validar(dados, hojeISO());
     mostrarErros(erros);
-    const primeiro = campos.find((c) => erros[c]);
+    // Foco no primeiro erro pela ordem em que os campos aparecem no ecrã.
+    const primeiro = [...form.elements].find(
+      (el): el is HTMLInputElement => 'name' in el && Boolean(erros[(el as HTMLInputElement).name]),
+    );
     if (primeiro) {
-      campo(primeiro)?.focus();
+      primeiro.focus();
       return;
     }
 
@@ -175,13 +200,26 @@ function iniciar(form: HTMLFormElement): void {
     }
   });
 
+  resultado.querySelector('[data-copiar-mensagem]')?.addEventListener('click', async () => {
+    const texto = resultado.querySelector('[data-mensagem-texto]')?.textContent ?? '';
+    const estado = resultado.querySelector('[data-copiar-estado]');
+    try {
+      await navigator.clipboard.writeText(texto);
+      if (estado) estado.textContent = 'Mensagem copiada.';
+    } catch {
+      if (estado) estado.textContent = 'Não foi possível copiar. Seleccione o texto e copie-o manualmente.';
+    }
+  });
+
   contentor.querySelector('[data-novo-pedido]')?.addEventListener('click', () => {
     form.reset();
     tentou = false;
     mostrarErros({});
     resultado.hidden = true;
     form.hidden = false;
-    campo('nome')?.focus();
+    form
+      .querySelector<HTMLElement>('input:not([type="hidden"]):not([tabindex="-1"]), select, textarea')
+      ?.focus();
   });
 }
 

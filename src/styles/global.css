@@ -234,6 +234,27 @@ a {
 .secao--cinza {
   background: var(--cinzento);
 }
+/* Transição para as secções cor de areia: um losango dourado sobre a fronteira, com um filete curto. */
+.secao--cinza::before,
+.secao--cinza::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  pointer-events: none;
+}
+.secao--cinza::before {
+  width: min(220px, 40vw);
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgb(199 161 90 / 0.8), transparent);
+  transform: translateX(-50%);
+}
+.secao--cinza::after {
+  width: 9px;
+  height: 9px;
+  background: var(--dourado);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
 .secao--escura {
   --foco: var(--dourado);
   background: var(--verde);
@@ -310,7 +331,7 @@ a {
   color: var(--texto-suave);
 }
 .secao--escura .texto {
-  color: rgb(250 248 243 / 0.8);
+  color: rgb(250 248 243 / 0.86);
 }
 
 .bloco-titulo {

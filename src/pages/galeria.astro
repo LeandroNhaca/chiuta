@@ -9,11 +9,11 @@ const autores = [...new Set(fotografias.filter((f) => f.autor).map((f) => f.auto
 
 <Base
   titulo="Galeria"
-  descricao="Fotografias reais do Mulotane Lodge, em Boane: a piscina e o jardim, o restaurante e as salas com janelas amplas."
+  descricao="Fotografias reais do Mulotane Lodge, em Boane: as piscinas e o jardim, a entrada, o restaurante e as salas para eventos."
 >
   <CabecalhoPagina
     titulo="Galeria"
-    intro="Os espaços do Mulotane Lodge em fotografias reais: a piscina e o jardim, o restaurante e as salas."
+    intro="Os espaços do Mulotane Lodge em fotografias reais: as piscinas e o jardim, a entrada, o restaurante e as salas."
   />
 
   <section class="secao secao--clara" aria-label="Fotografias">
@@ -22,7 +22,10 @@ const autores = [...new Set(fotografias.filter((f) => f.autor).map((f) => f.auto
       {autores.length > 0 && (
         <aside class="creditos" aria-labelledby="creditos-titulo">
           <h2 id="creditos-titulo">Créditos fotográficos</h2>
-          <p>Fotografias de {autores.join(', ')}, publicadas com autorização.</p>
+          <p>
+            Algumas fotografias são contribuições de visitantes no Google Maps e são apresentadas com
+            indicação de autoria: {autores.join(', ')}.
+          </p>
         </aside>
       )}
     </div>

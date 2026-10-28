@@ -60,7 +60,7 @@ class Ajustes:
 FOTOGRAFIAS: dict[str, Ajustes] = {
     # Só as fotografias enviadas pelo cliente (JPEG 900 px). Ajustes limitados a luz (exposição e
     # temperatura de cor parcial), contraste, ruído e nitidez: a saturação fica intacta.
-    # Piscina e jardim (hero e imagem de partilha): ganha uma versão de 1280 px para ecrãs densos
+    # Piscina e jardim: em destaque na página das piscinas, com uma versão de 1280 px para ecrãs densos
     # (só reamostragem, não acrescenta conteúdo).
     "piscina-jardim": Ajustes(balanco=0.15, gama=0.97, contraste=0.10, ruido=3.0,
                               larguras=[640, "max", 1280]),
@@ -70,13 +70,37 @@ FOTOGRAFIAS: dict[str, Ajustes] = {
     "restaurante-buffet": Ajustes(balanco=0.30, gama=0.95, contraste=0.06, ruido=4.0),
     # Buffet com vista da sala: neutros um pouco azulados, sombras fechadas.
     "restaurante-buffet-sala": Ajustes(balanco=0.25, gama=0.88, contraste=0.06, ruido=4.0),
+    # --- Capturas do Google Maps (contribuições de visitantes, publicadas com crédito por decisão do
+    #     responsável a 28/10/2026; ver docs/VALIDACAO.md). Só a área da fotografia, sem a interface. ---
+    # Piscina rectangular com espreguiçadeiras (Set. 2025). Hero e imagem de partilha: versões maiores.
+    # Recorte: tira o carimbo "09/23/2025 14:46" no canto inferior.
+    "piscina-espreguicadeiras": Ajustes(origem="gm-piscina-espreguicadeiras.png", recorte=(0, 0, 1080, 740),
+                                        balanco=0.10, contraste=0.08, ruido=3.0,
+                                        larguras=[640, 1080, 1600]),
+    # Recorte: tira "REDMI 12" e o carimbo "02/03/2025 08:48".
+    "piscina-terraco": Ajustes(origem="gm-piscina-terraco.png", recorte=(0, 0, 1080, 740),
+                               balanco=0.10, contraste=0.05, ruido=3.0),
+    # Recorte: tira o carimbo "09/23/2025 14:52".
+    "entrada-coberta": Ajustes(origem="gm-entrada-coberta.png", recorte=(0, 0, 1080, 740),
+                               balanco=0.10, gama=0.97, contraste=0.10, ruido=3.0),
+    # Recorte: tira uma pessoa em pé no limite direito e o carimbo "09/23/2025 14:41".
+    "sala-refeicoes-bar": Ajustes(origem="gm-sala-refeicoes-bar.png", recorte=(0, 0, 950, 740),
+                                  balanco=0.15, contraste=0.05, ruido=3.0),
+    "placa-entrada": Ajustes(origem="gm-placa-entrada.png", balanco=0.10, contraste=0.05, ruido=3.0),
+    "piscina-relvado": Ajustes(origem="gm-piscina-relvado.png", balanco=0.10, contraste=0.05, ruido=3.0),
+    # Recorte: tira a marca "AI Triple Camera" no canto inferior direito.
+    "esplanada-piscina": Ajustes(origem="gm-esplanada-piscina.png", recorte=(0, 0, 1080, 1340),
+                                 balanco=0.10, gama=0.97, contraste=0.05, ruido=3.0),
+    # Recorte: tira o púlpito com emblema no limite direito.
+    "sala-conferencias": Ajustes(origem="gm-sala-conferencias.png", recorte=(0, 0, 1020, 809),
+                                 balanco=0.20, gama=0.97, contraste=0.05, ruido=3.0),
 }
 
 # Fora da versão pública (ver docs/VALIDACAO.md):
 # - quarto-twin.jpg: a roupa de cama tem a inscrição "ALD. TUR. MIXALI-XAU"; até a gerência confirmar que
 #   é um quarto do Mulotane Lodge, pode representar mal o alojamento. O original fica guardado.
-# - capturas do Google Maps: contribuições de visitantes sem autorização dos autores. Retiradas do site e
-#   do repositório.
+# - capturas do Google Maps não escolhidas: piscina antes da renovação (desactualizada), edifício por
+#   identificar, fotografias com pessoas identificáveis, à noite ou de pratos e decorações de eventos.
 
 # Retiradas da versão pública (ver docs/VALIDACAO.md):
 # - quarto-twin.jpg (enviada): toalha e lençol com a inscrição "ALD. TUR. MIXALI-XAU", que não corresponde
@@ -204,7 +228,7 @@ def main() -> None:
         info["larguras"] = larguras
         info["ficheiros"] = ficheiros
         relatorio[nome] = info
-        if nome == "piscina-jardim":
+        if nome == "piscina-espreguicadeiras":
             imagem_partilha(tratada)
         print(f"{nome}: {info['luminancia_mediana']} -> {', '.join(ficheiros)}")
     RELATORIO.parent.mkdir(parents=True, exist_ok=True)

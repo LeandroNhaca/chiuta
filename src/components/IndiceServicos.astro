@@ -39,15 +39,15 @@ const itens: {
     titulo: 'Restaurante',
     texto: 'Refeições numa sala ampla, com janelas largas sobre a vegetação.',
     href: '/restaurante/',
-    foto: 'restaurante-buffet-sala',
+    foto: 'sala-refeicoes-bar',
   },
   {
     id: 'piscinas',
     icone: 'ondas',
     titulo: 'Piscinas',
-    texto: 'Lazer ao ar livre, entre o relvado e o jardim.',
+    texto: 'Lazer ao ar livre, entre as palmeiras, o relvado e o jardim.',
     href: '/piscinas/',
-    foto: 'piscina-jardim',
+    foto: 'piscina-terraco',
   },
   {
     id: 'eventos',
@@ -55,7 +55,7 @@ const itens: {
     titulo: 'Eventos e conferências',
     texto: 'Um espaço para reunir equipas, famílias e amigos.',
     href: '/eventos/',
-    foto: 'sala-refeicoes',
+    foto: 'sala-conferencias',
   },
 ];
 const lista = itens
@@ -219,6 +219,39 @@ const lista = itens
   }
   .indice__item:hover .indice__seta :global(svg) {
     transform: translateX(4px);
+  }
+  /* Telemóvel: cada espaço numa linha compacta (número, título e texto, seta). */
+  @media (max-width: 639px) {
+    .indice--pilares .indice__item {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      column-gap: 18px;
+      row-gap: 4px;
+      align-items: baseline;
+      padding: 22px 0;
+    }
+    .indice--pilares .indice__cabeca {
+      grid-row: span 2;
+      margin: 0;
+    }
+    .indice--pilares .indice__numero {
+      font-size: 1.9rem;
+    }
+    .indice--pilares :global(.indice__icone) {
+      display: none;
+    }
+    .indice--pilares .indice__titulo {
+      grid-column: 2;
+    }
+    .indice--pilares .indice__texto {
+      grid-column: 2;
+    }
+    .indice--pilares .indice__seta {
+      grid-column: 3;
+      grid-row: 1 / span 2;
+      align-self: center;
+      margin: 0;
+      font-size: 0;
+    }
   }
   .indice__item:hover .indice__titulo {
     color: var(--verde-3);

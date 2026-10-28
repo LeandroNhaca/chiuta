@@ -1,0 +1,100 @@
+---
+/**
+ * Tipos de quarto confirmados (src/config/lodge.ts → `quartos`). Sem quartos confirmados não mostra nada:
+ * a ficha do alojamento assinala esses dados como "A confirmar".
+ */
+import { lodge, type TipoQuarto } from '../config/lodge';
+
+import Foto from './Foto.astro';
+import Icone from './Icone.astro';
+
+interface Props {
+  quartos?: TipoQuarto[];
+}
+
+const { quartos = lodge.quartos } = Astro.props;
+---
+
+{quartos.length > 0 && (
+  <ul class="quartos">
+    {quartos.map((q) => (
+      <li class="quarto">
+        {q.fotografia ? (
+          <Foto id={q.fotografia} sizes="(min-width: 900px) 400px, 92vw" class="foto quarto__foto" />
+        ) : (
+          <span class="quarto__foto quarto__foto--vazia" aria-hidden="true">
+            <Icone nome="cama" tamanho={36} />
+          </span>
+        )}
+        <h3 class="quarto__nome">{q.nome}</h3>
+        <dl class="quarto__dados">
+          <div>
+            <dt>Capacidade</dt>
+            <dd>{q.capacidade || <span class="pendente">A confirmar</span>}</dd>
+          </div>
+          <div>
+            <dt>Tarifa</dt>
+            <dd>{q.tarifa || <span class="pendente">A confirmar</span>}</dd>
+          </div>
+        </dl>
+        {q.comodidades.length > 0 && (
+          <ul class="lista-traco quarto__comodidades" aria-label={`Comodidades: ${q.nome}`}>
+            {q.comodidades.map((c) => (
+              <li>{c}</li>
+            ))}
+          </ul>
+        )}
+      </li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .quartos {
+    display: grid;
+    gap: 32px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 760px) {
+    .quartos {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+  }
+  .quarto {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+  .quarto :global(.quarto__foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .quarto .quarto__foto--vazia {
+    display: grid;
+    place-items: center;
+    border-radius: var(--raio);
+    background: var(--verde);
+    color: var(--dourado);
+  }
+  .quarto__nome {
+    font-size: var(--t-h3);
+  }
+  .quarto__dados {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin: 0;
+  }
+  .quarto__dados dt {
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--dourado-texto);
+  }
+  .quarto__dados dd {
+    margin: 4px 0 0;
+  }
+</style>

@@ -53,8 +53,10 @@ test.describe('imagens, ligações e SEO', () => {
         })),
       );
       for (const { href, alvo, rel } of hrefs) {
-        if (/^https?:/.test(href)) {
-          externas.add(href);
+        if (/^tel:/.test(href)) {
+          expect(href).toBe('tel:+258848885556');
+        } else if (/^https?:/.test(href)) {
+          externas.add(new URL(href).origin);
           expect(alvo, href).toBe('_blank');
           expect(rel, href).toContain('noopener');
         } else {
@@ -62,8 +64,8 @@ test.describe('imagens, ligações e SEO', () => {
         }
       }
     }
-    // Sem localização nem contactos confirmados, não há ligações para fora do site.
-    expect([...externas]).toEqual([]);
+    // Só os destinos confirmados: o WhatsApp oficial e a ficha do lodge no Google Maps.
+    expect([...externas].sort()).toEqual(['https://maps.app.goo.gl', 'https://wa.me']);
     for (const url of internas) {
       const u = new URL(url);
       const resposta = await request.get(u.pathname);
@@ -107,12 +109,40 @@ test.describe('imagens, ligações e SEO', () => {
     const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}');
     expect(ld['@type']).toBe('LodgingBusiness');
     expect(ld.address.addressLocality).toBe('Boane');
+    expect(ld.telephone).toBe('+258 848 885556');
+    expect(ld.hasMap).toBe('https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6');
     // Nada de dados não confirmados.
-    for (const campo of ['telephone', 'aggregateRating', 'review', 'priceRange', 'starRating', 'geo']) {
+    for (const campo of ['aggregateRating', 'review', 'priceRange', 'starRating', 'geo', 'email']) {
       expect(ld, campo).not.toHaveProperty(campo);
     }
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
   });
+});
+
+test('hierarquia de títulos sem saltos, um h1 por página e descrições com tamanho adequado', async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== 'portatil', 'verificação única (portátil)');
+  for (const caminho of [...PAGINAS, '/nao-existe/']) {
+    await page.goto(caminho);
+    const niveis = await page
+      .locator('h1, h2, h3, h4, h5, h6')
+      .evaluateAll((hs) => hs.map((h) => Number(h.tagName[1])));
+    expect(
+      niveis.filter((n) => n === 1),
+      caminho,
+    ).toHaveLength(1);
+    expect(niveis[0], `${caminho}: o primeiro título é o h1`).toBe(1);
+    niveis.forEach((n, i) => {
+      if (i > 0)
+        expect(n - niveis[i - 1], `${caminho}: salto de h${niveis[i - 1]} para h${n}`).toBeLessThanOrEqual(1);
+    });
+    const titulo = await page.title();
+    expect(titulo.length, `${caminho}: título`).toBeLessThanOrEqual(70);
+    const descricao = (await page.locator('meta[name="description"]').getAttribute('content')) ?? '';
+    expect(descricao.length, `${caminho}: descrição`).toBeGreaterThanOrEqual(70);
+    expect(descricao.length, `${caminho}: descrição`).toBeLessThanOrEqual(170);
+  }
 });
 
 test.describe('acessibilidade (axe, WCAG 2.1 AA)', () => {
