@@ -40,3 +40,32 @@ test('visualizador: abre, navega com teclado, fecha com Esc e devolve o foco', a
   await expect(caixa).toBeHidden();
   await expect(primeiro).toBeFocused();
 });
+
+test('filtros por categoria: mostram só as fotografias escolhidas e o visualizador respeita o filtro', async ({
+  page,
+}) => {
+  await page.goto('/galeria/');
+  const filtros = page.getByRole('group', { name: 'Filtrar por categoria' });
+  await expect(filtros).toBeVisible();
+  const todas = filtros.getByRole('button', { name: /^Todas/ });
+  const restaurante = filtros.getByRole('button', { name: /^Restaurante/ });
+  await expect(todas).toHaveAttribute('aria-pressed', 'true');
+
+  await restaurante.click();
+  await expect(restaurante).toHaveAttribute('aria-pressed', 'true');
+  await expect(todas).toHaveAttribute('aria-pressed', 'false');
+  const visiveis = page.locator('[data-galeria-item]:visible');
+  await expect(visiveis).toHaveCount(2);
+  await expect(page.locator('[data-filtro-estado]')).toHaveText('2 fotografias: Restaurante');
+
+  await visiveis.first().click();
+  const caixa = page.locator('[data-lightbox]');
+  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('1 de 2');
+  await page.keyboard.press('ArrowRight');
+  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('2 de 2');
+  await expect(caixa.locator('[data-lightbox-legenda]')).toHaveText(/Buffet/);
+  await page.keyboard.press('Escape');
+
+  await todas.click();
+  await expect(page.locator('[data-galeria-item]:visible')).toHaveCount(4);
+});

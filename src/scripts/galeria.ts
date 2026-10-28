@@ -1,10 +1,34 @@
 export {};
 
-// Visualizador ampliado da galeria: <dialog> nativo (foco preso, Esc), setas do teclado, botões e
-// deslizar no ecrã táctil. Ao fechar, o foco volta à miniatura de onde se abriu.
+// Galeria: filtros por categoria e visualizador ampliado. O visualizador é um <dialog> nativo (foco preso,
+// Esc), com setas do teclado, botões e deslizar no ecrã táctil; percorre só as fotografias do filtro
+// activo e, ao fechar, devolve o foco à miniatura de onde se abriu.
 
 const itens = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-galeria-item]'));
 const caixa = document.querySelector<HTMLDialogElement>('[data-lightbox]');
+const filtros = document.querySelector<HTMLElement>('[data-filtros]');
+const estadoFiltro = document.querySelector<HTMLElement>('[data-filtro-estado]');
+
+const visiveis = () => itens.filter((a) => !a.closest('li')?.hidden);
+
+if (filtros) {
+  const botoes = Array.from(filtros.querySelectorAll<HTMLButtonElement>('[data-filtro]'));
+  filtros.classList.remove('galeria__filtros--espera');
+  botoes.forEach((botao) =>
+    botao.addEventListener('click', () => {
+      const escolhido = botao.dataset.filtro ?? 'todas';
+      botoes.forEach((b) => b.setAttribute('aria-pressed', String(b === botao)));
+      itens.forEach((a) => {
+        const li = a.closest('li');
+        if (li) li.hidden = escolhido !== 'todas' && li.dataset.categoria !== escolhido;
+      });
+      const n = visiveis().length;
+      const nome = botao.firstChild?.textContent?.trim() ?? '';
+      if (estadoFiltro)
+        estadoFiltro.textContent = `${n === 1 ? '1 fotografia' : `${n} fotografias`}${escolhido === 'todas' ? '' : `: ${nome}`}`;
+    }),
+  );
+}
 
 if (caixa && itens.length > 0) {
   const img = caixa.querySelector<HTMLImageElement>('[data-lightbox-img]');
@@ -12,31 +36,34 @@ if (caixa && itens.length > 0) {
   const legenda = caixa.querySelector<HTMLElement>('[data-lightbox-legenda]');
   const credito = caixa.querySelector<HTMLElement>('[data-lightbox-credito]');
   const contador = caixa.querySelector<HTMLElement>('[data-lightbox-contador]');
+  let lista = itens;
   let actual = 0;
   let origem: HTMLElement | null = null;
 
   const mostrar = (i: number) => {
-    actual = (i + itens.length) % itens.length;
-    const d = itens[actual].dataset;
+    actual = (i + lista.length) % lista.length;
+    const item = lista[actual];
+    const d = item.dataset;
     if (avif) avif.srcset = d.avif ?? '';
     if (img) {
       img.srcset = d.webp ?? '';
-      img.src = itens[actual].href;
+      img.src = item.href;
       img.alt = d.alt ?? '';
       img.width = Number(d.largura);
       img.height = Number(d.altura);
     }
     if (legenda) legenda.textContent = d.legenda ?? '';
     if (credito) credito.textContent = d.credito ?? '';
-    if (contador) contador.textContent = `${actual + 1} de ${itens.length}`;
+    if (contador) contador.textContent = `${actual + 1} de ${lista.length}`;
   };
 
-  itens.forEach((item, i) =>
+  itens.forEach((item) =>
     item.addEventListener('click', (e) => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       e.preventDefault();
       origem = item;
-      mostrar(i);
+      lista = visiveis();
+      mostrar(lista.indexOf(item));
       caixa.showModal();
     }),
   );

@@ -10,10 +10,10 @@ import geradas from './imagens-geradas.json';
 export type Categoria = 'exteriores' | 'alojamento' | 'restaurante' | 'eventos';
 
 export const categorias: Record<Categoria, string> = {
-  exteriores: 'Piscinas e exteriores',
+  exteriores: 'Piscina e exteriores',
   alojamento: 'Alojamento',
   restaurante: 'Restaurante',
-  eventos: 'Eventos e espaços interiores',
+  eventos: 'Salas',
 };
 
 interface Metadados {

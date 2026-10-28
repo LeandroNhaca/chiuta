@@ -6,6 +6,8 @@
  * apresentado como se fosse real. A lista completa do que falta confirmar está em docs/VALIDACAO.md.
  */
 
+import type { IdFotografia } from '../data/fotografias';
+
 export type EstadoConfirmacao = 'confirmado' | 'por-confirmar';
 
 export interface Servico {
@@ -14,6 +16,24 @@ export interface Servico {
   estado: EstadoConfirmacao;
   /** O que já se sabe sobre o serviço e de onde vem (só para a gestão; não aparece no site). */
   evidencia: string;
+}
+
+/** Uma linha da ficha de um serviço. `valor` vazio = aparece "A confirmar" no site. */
+export interface Detalhe {
+  rotulo: string;
+  valor: string;
+}
+
+/** Tipo de quarto confirmado pela gerência. Só aparece no site quando existir pelo menos um. */
+export interface TipoQuarto {
+  nome: string;
+  /** Por exemplo "2 adultos". */
+  capacidade: string;
+  comodidades: string[];
+  /** Tarifa confirmada, com moeda e condições (por exemplo "4 500 MZN por noite, com pequeno-almoço"). */
+  tarifa: string;
+  /** Identificador de uma fotografia autorizada em src/data/fotografias.ts. */
+  fotografia?: IdFotografia;
 }
 
 export interface RedeSocial {
@@ -65,6 +85,9 @@ export interface ConfiguracaoLodge {
     autor: string;
   };
   servicos: Servico[];
+  /** Fichas dos serviços: o que o visitante quer saber e que só a gerência pode confirmar. */
+  detalhes: Record<'alojamento' | 'restaurante' | 'piscinas' | 'eventos', Detalhe[]>;
+  quartos: TipoQuarto[];
 }
 
 export const lodge: ConfiguracaoLodge = {
@@ -139,4 +162,36 @@ export const lodge: ConfiguracaoLodge = {
         'Captura do Google Maps de uma sala montada para conferência (cerca de 2020). Não aparece no site.',
     },
   ],
+  // Fichas dos serviços. Preencher `valor` só com informação confirmada pela gerência.
+  detalhes: {
+    alojamento: [
+      { rotulo: 'Tipos de quarto', valor: '' },
+      { rotulo: 'Capacidade por quarto', valor: '' },
+      { rotulo: 'Comodidades', valor: '' },
+      { rotulo: 'Tarifas', valor: '' },
+      { rotulo: 'Horário de entrada e de saída', valor: '' },
+    ],
+    restaurante: [
+      { rotulo: 'Horário', valor: '' },
+      { rotulo: 'Tipo de cozinha', valor: '' },
+      { rotulo: 'Menu', valor: '' },
+      { rotulo: 'Preços', valor: '' },
+      { rotulo: 'Aberto a visitantes não alojados', valor: '' },
+    ],
+    piscinas: [
+      { rotulo: 'Horário', valor: '' },
+      { rotulo: 'Regras de utilização', valor: '' },
+      { rotulo: 'Acesso de visitantes não alojados', valor: '' },
+      { rotulo: 'Preço de entrada', valor: '' },
+    ],
+    eventos: [
+      { rotulo: 'Salas disponíveis', valor: '' },
+      { rotulo: 'Capacidade', valor: '' },
+      { rotulo: 'Equipamento', valor: '' },
+      { rotulo: 'Refeições e catering', valor: '' },
+      { rotulo: 'Pacotes e preços', valor: '' },
+    ],
+  },
+  // Tipos de quarto confirmados (ver a interface TipoQuarto). Vazio até a gerência os indicar.
+  quartos: [],
 };

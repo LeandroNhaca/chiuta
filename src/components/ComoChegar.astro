@@ -39,7 +39,7 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
           <dt>
             <Icone nome="info" tamanho={18} /> Morada e acessos
           </dt>
-          <dd>{morada ? morada : <span class="pendente">Em breve</span>}</dd>
+          <dd>{morada ? morada : <span class="pendente">A confirmar</span>}</dd>
         </div>
       </dl>
       {(direccoes || !semContacto) && (
@@ -81,7 +81,11 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
           <p class="como-chegar__localidade">{localidade}</p>
           <p class="como-chegar__provincia">Província de {provincia}</p>
           <p class="como-chegar__mapa-pendente">
-            <span class="pendente pendente--claro">Mapa em breve</span>
+            <span class="pendente pendente--claro">Localização exacta a confirmar</span>
+          </p>
+          <p class="como-chegar__explicacao">
+            O mapa e a ligação para obter direcções ficam disponíveis assim que o ponto exacto for confirmado
+            pelo Mulotane Lodge.
           </p>
         </div>
       )}
@@ -168,6 +172,13 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
   .como-chegar__mapa-pendente {
     position: relative;
     margin-top: 18px;
+  }
+  .como-chegar__explicacao {
+    position: relative;
+    max-width: 22rem;
+    font-size: var(--t-pequeno);
+    line-height: 1.55;
+    color: rgb(250 248 243 / 0.8);
   }
   .como-chegar__mapa {
     width: 100%;

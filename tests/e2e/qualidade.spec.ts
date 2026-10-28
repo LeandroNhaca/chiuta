@@ -115,6 +115,32 @@ test.describe('imagens, ligações e SEO', () => {
   });
 });
 
+test('hierarquia de títulos sem saltos, um h1 por página e descrições com tamanho adequado', async ({
+  page,
+}, info) => {
+  test.skip(info.project.name !== 'portatil', 'verificação única (portátil)');
+  for (const caminho of [...PAGINAS, '/nao-existe/']) {
+    await page.goto(caminho);
+    const niveis = await page
+      .locator('h1, h2, h3, h4, h5, h6')
+      .evaluateAll((hs) => hs.map((h) => Number(h.tagName[1])));
+    expect(
+      niveis.filter((n) => n === 1),
+      caminho,
+    ).toHaveLength(1);
+    expect(niveis[0], `${caminho}: o primeiro título é o h1`).toBe(1);
+    niveis.forEach((n, i) => {
+      if (i > 0)
+        expect(n - niveis[i - 1], `${caminho}: salto de h${niveis[i - 1]} para h${n}`).toBeLessThanOrEqual(1);
+    });
+    const titulo = await page.title();
+    expect(titulo.length, `${caminho}: título`).toBeLessThanOrEqual(70);
+    const descricao = (await page.locator('meta[name="description"]').getAttribute('content')) ?? '';
+    expect(descricao.length, `${caminho}: descrição`).toBeGreaterThanOrEqual(70);
+    expect(descricao.length, `${caminho}: descrição`).toBeLessThanOrEqual(170);
+  }
+});
+
 test.describe('acessibilidade (axe, WCAG 2.1 AA)', () => {
   test.beforeEach(({}, info) =>
     test.skip(!['telemovel', 'portatil'].includes(info.project.name), 'axe: telemóvel e portátil'),

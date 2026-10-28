@@ -7,32 +7,44 @@ Website premium de demonstração comercial para o **Mulotane Lodge** (Boane, pr
 - O que falta confirmar com o proprietário: [`docs/VALIDACAO.md`](docs/VALIDACAO.md)
 - Publicação no VPS: [`docs/PUBLICACAO.md`](docs/PUBLICACAO.md)
 - Testes executados: [`docs/RELATORIO-TESTES.md`](docs/RELATORIO-TESTES.md)
+- Auditoria de 28/10/2026: [`docs/AUDITORIA.md`](docs/AUDITORIA.md)
 
 ## O que tem
 
 | Página | Conteúdo |
 | --- | --- |
-| `/` | Hero editorial com a fotografia real da piscina, o lodge e os quatro espaços, alojamento, restaurante, piscinas, eventos, **pedidos em separadores (estadia / evento)**, como chegar |
-| `/alojamento/` | O que se pode pedir, formulário de disponibilidade |
-| `/restaurante/` | Sala de refeições e buffet, pedido de orçamento para grupos |
-| `/piscinas/` | A piscina e o jardim, condições de utilização (a indicar pela equipa) |
-| `/eventos/` | **Formulário de orçamento logo a seguir à abertura**, tipos de evento |
-| `/galeria/` | 4 fotografias reais autorizadas, grelha editorial, visualizador ampliado acessível |
-| `/contactos/` | Telefone, WhatsApp e e-mail assinalados "Em breve" até serem confirmados, atalhos para pedidos, como chegar |
+| `/` | Hero com a fotografia real da piscina até à borda do ecrã, o lodge e os quatro espaços, alojamento, restaurante, piscinas (com as condições), eventos, **pedidos em separadores (estadia / evento)**, como chegar |
+| `/alojamento/` | Ficha do alojamento (tipos de quarto, capacidade, comodidades, tarifas, horários), lista de quartos quando houver dados confirmados, formulário de disponibilidade |
+| `/restaurante/` | Sala de refeições e buffet, ficha do restaurante (horário, cozinha, menu, preços), pedido para grupos |
+| `/piscinas/` | Fotografia da piscina em destaque, ficha das condições de utilização |
+| `/eventos/` | **Formulário de orçamento logo a seguir à abertura** (primeiro o evento, depois os contactos), ficha das salas e do serviço |
+| `/galeria/` | 4 fotografias reais autorizadas, grelha editorial, **filtros por categoria**, visualizador ampliado acessível |
+| `/contactos/` | Telefone, WhatsApp e e-mail assinalados **"A confirmar"**, atalhos para pedidos, como chegar |
 | `/privacidade/` | Política de privacidade (o que os formulários fazem hoje) |
 
 No telemóvel, uma barra fixa com "Disponibilidade" e "Orçamento de evento" aparece depois do primeiro ecrã e esconde-se sobre os formulários e o rodapé.
 
 ### Estado actual (interno; não aparece no site)
 
-Testado e a funcionar: navegação (incluindo menu móvel e separadores de pedidos), galeria com teclado e gestos, validação completa dos dois formulários, favicon e manifesto, SEO técnico, acessibilidade WCAG 2.1 AA verificada com axe.
+Testado e a funcionar:
 
-Preparado mas **inactivo** (precisa de dados do proprietário; nunca foi testado contra um serviço real):
+- navegação, incluindo o menu móvel, os separadores de pedidos e a barra móvel;
+- galeria com filtros, teclado e gestos;
+- validação completa dos dois formulários;
+- mensagem preparada para o WhatsApp, com botão para a copiar;
+- favicon e manifesto;
+- SEO técnico, com hierarquia de títulos verificada;
+- acessibilidade WCAG 2.1 AA verificada com axe.
+
+Preparado mas **inactivo** (precisa de dados do proprietário):
 
 - **Envio dos pedidos**: os formulários são de demonstração e dizem-no ao visitante antes de preencher. Não enviam nem guardam nada. Activa-se com `pedidos.endpoint` (backend aprovado) ou com o número oficial de WhatsApp.
-- **WhatsApp**: mensagens pré-preenchidas prontas; activa-se com `contactos.whatsapp`.
-- **Contactos oficiais** (telefone, WhatsApp, e-mail): aparecem como "Em breve".
-- **Localização exacta, mapa e direcções**: aparecem como "Em breve"; não há pesquisa no Google Maps (podia levar ao sítio errado).
+  - O envio para um endpoint foi testado num browser contra um **servidor simulado pelo teste**: carregamento, sucesso, erro 429 e erro 500.
+  - Não existe ainda serviço real (ver `docs/AUDITORIA.md`).
+- **WhatsApp**: a mensagem já é preparada e mostrada; a ligação `wa.me` activa-se com `contactos.whatsapp`.
+- **Contactos oficiais** (telefone, WhatsApp, e-mail): aparecem como "A confirmar".
+- **Localização exacta, mapa e direcções**: aparecem como "A confirmar"; não há pesquisa no Google Maps (podia levar ao sítio errado). Com `mapa.coordenadas` aparecem o mapa e o botão "Obter direcções" (testado com coordenadas de teste).
+- **Fichas dos serviços e tipos de quarto**: estrutura pronta em `detalhes` e `quartos`; tudo "A confirmar".
 - **Domínio definitivo e indexação**: o site está em `noindex` e o `robots.txt` bloqueia tudo.
 - **Logótipo oficial**: a assinatura tipográfica "Mulotane Lodge" é temporária.
 
@@ -72,11 +84,11 @@ Todos os dados do estabelecimento estão num único ficheiro: [`src/config/lodge
 
 | Campo | Efeito quando preenchido |
 | --- | --- |
-| `contactos.telefone` | Telefone no rodapé, na página de contactos e nos dados estruturados (deixa de aparecer "Em breve") |
+| `contactos.telefone` | Telefone no rodapé, na página de contactos e nos dados estruturados (deixa de aparecer "A confirmar") |
 | `contactos.whatsapp` | Botões de WhatsApp activos e mensagens pré-preenchidas depois de cada pedido |
 | `contactos.email` | E-mail no rodapé, contactos e política de privacidade |
 | `redesSociais` | Ligações no rodapé (`{ nome: 'Instagram', url: 'https://…' }`) |
-| `localizacao.morada` | Morada na secção "Como chegar" (deixa de aparecer "Em breve") |
+| `localizacao.morada` | Morada na secção "Como chegar" (deixa de aparecer "A confirmar") |
 | `mapa.coordenadas` | Mapa incorporado (OpenStreetMap) e botão "Obter direcções"; a CSP é ajustada sozinha |
 | `mapa.urlDireccoes` | Ligação "Obter direcções" confirmada (por exemplo, a partilha do Google Maps do próprio lodge) |
 | `pedidos.endpoint` | Os formulários passam a enviar os pedidos (POST JSON) para esse endereço e o aviso "Formulário de demonstração" desaparece |
@@ -84,12 +96,14 @@ Todos os dados do estabelecimento estão num único ficheiro: [`src/config/lodge
 | `demonstracao.activa` | `false` com `dominioFinal` preenchido: o site passa a ser indexável (robots.txt e meta robots) |
 | `marca.logotipo` | Caminho do logótipo oficial em `public/` (substitui a assinatura tipográfica temporária) |
 | `servicos[].estado` | Estado de confirmação de cada serviço (só para a gestão; não aparece no site) |
+| `detalhes.<serviço>[].valor` | Preenche a linha da ficha (alojamento, restaurante, piscinas, eventos); vazio = "A confirmar" |
+| `quartos` | Lista de tipos de quarto (`nome`, `capacidade`, `comodidades`, `tarifa`, `fotografia` opcional) mostrada no alojamento |
 
 Formatos: números em formato internacional (`+258 84 …`). Nunca colocar dados que não tenham sido confirmados pela gerência.
 
 ### Pedidos (endpoint)
 
-Sem `pedidos.endpoint`, os formulários só validam no browser e mostram uma confirmação honesta ("nenhum dado foi enviado nem guardado"). Com endpoint, enviam:
+Sem `pedidos.endpoint`, os formulários só validam no browser e mostram uma confirmação honesta ("nenhum dado foi enviado nem guardado"), com a mensagem que seguirá pelo WhatsApp e um botão para a copiar. Com endpoint, enviam (com o botão em estado de carregamento até haver resposta):
 
 ```json
 POST <endpoint>

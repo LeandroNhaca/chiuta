@@ -2,6 +2,7 @@
 import { LIMITES } from '../lib/validacao';
 
 import Campo from './Campo.astro';
+import GrupoCampos from './GrupoCampos.astro';
 import Pedido from './Pedido.astro';
 
 interface Props {
@@ -16,48 +17,53 @@ const { prefixo = 'disp' } = Astro.props;
   titulo="Pedido de disponibilidade"
   botao="Consultar disponibilidade"
 >
-  <Campo
-    prefixo={prefixo}
-    nome="nome"
-    rotulo="Nome"
-    obrigatorio
-    largo
-    atributos={{ autocomplete: 'name', maxlength: 80 }}
-  />
-  <Campo
-    prefixo={prefixo}
-    nome="telefone"
-    rotulo="Telefone ou WhatsApp"
-    tipo="tel"
-    obrigatorio
-    ajuda="Com o indicativo do país, por exemplo +258."
-    atributos={{ autocomplete: 'tel', inputmode: 'tel', maxlength: 24 }}
-  />
-  <Campo
-    prefixo={prefixo}
-    nome="email"
-    rotulo="E-mail"
-    tipo="email"
-    atributos={{ autocomplete: 'email', maxlength: 160 }}
-  />
-  <Campo prefixo={prefixo} nome="entrada" rotulo="Data de entrada" tipo="date" obrigatorio />
-  <Campo prefixo={prefixo} nome="saida" rotulo="Data de saída" tipo="date" obrigatorio />
-  <Campo
-    prefixo={prefixo}
-    nome="hospedes"
-    rotulo="Número de hóspedes"
-    tipo="number"
-    obrigatorio
-    atributos={{ min: LIMITES.hospedes.min, max: LIMITES.hospedes.max, step: 1, inputmode: 'numeric' }}
-  />
-  <Campo
-    prefixo={prefixo}
-    nome="mensagem"
-    rotulo="Mensagem"
-    tipo="textarea"
-    largo
-    atributos={{ maxlength: LIMITES.mensagem.max }}
-  />
+  <GrupoCampos numero={1} legenda="A sua estadia">
+    <Campo prefixo={prefixo} nome="entrada" rotulo="Data de entrada" tipo="date" obrigatorio />
+    <Campo prefixo={prefixo} nome="saida" rotulo="Data de saída" tipo="date" obrigatorio />
+    <Campo
+      prefixo={prefixo}
+      nome="hospedes"
+      rotulo="Número de hóspedes"
+      tipo="number"
+      obrigatorio
+      atributos={{ min: LIMITES.hospedes.min, max: LIMITES.hospedes.max, step: 1, inputmode: 'numeric' }}
+    />
+    <Campo
+      prefixo={prefixo}
+      nome="mensagem"
+      rotulo="Mensagem"
+      tipo="textarea"
+      largo
+      ajuda="Hora prevista de chegada, pedidos especiais ou outras informações."
+      atributos={{ maxlength: LIMITES.mensagem.max }}
+    />
+  </GrupoCampos>
+  <GrupoCampos numero={2} legenda="Os seus contactos">
+    <Campo
+      prefixo={prefixo}
+      nome="nome"
+      rotulo="Nome"
+      obrigatorio
+      largo
+      atributos={{ autocomplete: 'name', maxlength: 80 }}
+    />
+    <Campo
+      prefixo={prefixo}
+      nome="telefone"
+      rotulo="Telefone ou WhatsApp"
+      tipo="tel"
+      obrigatorio
+      ajuda="Com o indicativo do país, por exemplo +258."
+      atributos={{ autocomplete: 'tel', inputmode: 'tel', maxlength: 24 }}
+    />
+    <Campo
+      prefixo={prefixo}
+      nome="email"
+      rotulo="E-mail"
+      tipo="email"
+      atributos={{ autocomplete: 'email', maxlength: 160 }}
+    />
+  </GrupoCampos>
   <Fragment slot="aviso">
     Este pedido serve para consultar disponibilidade e não constitui uma reserva. A reserva só fica garantida
     depois de confirmada pelo Mulotane Lodge.

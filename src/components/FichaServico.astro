@@ -1,0 +1,128 @@
+---
+/**
+ * Ficha de um serviço com os dados de src/config/lodge.ts (`detalhes`). O que ainda não foi confirmado
+ * aparece como "A confirmar": a estrutura fica visível para o proprietário e nada é inventado.
+ */
+import { lodge } from '../config/lodge';
+
+interface Props {
+  servico: keyof typeof lodge.detalhes;
+  titulo: string;
+  /** Verde sobre fundos claros; clara sobre fundos verdes. */
+  tom?: 'verde' | 'clara';
+}
+
+const { servico, titulo, tom = 'verde' } = Astro.props;
+const detalhes = lodge.detalhes[servico];
+const pendentes = detalhes.filter((d) => !d.valor).length;
+---
+
+<div class:list={['ficha', `ficha--${tom}`]}>
+  <img
+    class="ficha__folhagem"
+    src="/images/mulotane/conceptual/folhagem.svg"
+    alt=""
+    width="520"
+    height="600"
+    loading="lazy"
+  />
+  <p class="filete-titulo">{titulo}</p>
+  <dl class="ficha__lista">
+    {detalhes.map((d) => (
+      <div class="ficha__linha">
+        <dt>{d.rotulo}</dt>
+        <dd>
+          {d.valor ? (
+            d.valor
+          ) : (
+            <span class:list={['pendente', { 'pendente--claro': tom === 'verde' }]}>A confirmar</span>
+          )}
+        </dd>
+      </div>
+    ))}
+  </dl>
+  {pendentes > 0 && (
+    <p class="ficha__nota">
+      {pendentes === detalhes.length
+        ? 'Estes dados estão a ser confirmados pelo Mulotane Lodge.'
+        : 'Os dados assinalados estão a ser confirmados pelo Mulotane Lodge.'}
+    </p>
+  )}
+</div>
+
+<style>
+  .ficha {
+    --foco: var(--dourado);
+    position: relative;
+    display: grid;
+    gap: 18px;
+    align-content: start;
+    padding: clamp(28px, 4vw, 44px);
+    overflow: hidden;
+    border-radius: var(--raio);
+    isolation: isolate;
+  }
+  .ficha--verde {
+    background: var(--verde);
+    color: var(--branco);
+  }
+  .ficha--clara {
+    border: 1px solid var(--linha);
+    background: #fff;
+    color: var(--texto);
+  }
+  .ficha--clara .filete-titulo {
+    color: var(--dourado-texto);
+  }
+  /* Uma ficha clara pode estar numa secção verde: os selos ficam no tom legível sobre branco. */
+  .ficha--clara .pendente {
+    border-color: rgb(122 91 34 / 0.45);
+    color: var(--dourado-texto);
+  }
+  .ficha--verde .filete-titulo {
+    color: var(--dourado);
+  }
+  .ficha__folhagem {
+    position: absolute;
+    right: -80px;
+    bottom: -70px;
+    z-index: -1;
+    width: 260px;
+    height: auto;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+  .ficha--clara .ficha__folhagem {
+    opacity: 0.18;
+  }
+  .ficha__lista {
+    display: grid;
+    margin: 0;
+  }
+  .ficha__linha {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .ficha--verde .ficha__linha {
+    border-color: var(--linha-clara);
+  }
+  .ficha__linha dt {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    line-height: 1.25;
+  }
+  .ficha__linha dd {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+  .ficha__nota {
+    font-size: var(--t-pequeno);
+    line-height: 1.55;
+    opacity: 0.85;
+  }
+</style>

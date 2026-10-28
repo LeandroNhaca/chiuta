@@ -102,10 +102,25 @@ test('barra de pedidos do telemóvel: aparece depois do hero e nunca tapa um for
 });
 
 test('a interface pública não mostra notas internas de desenvolvimento', async ({ page }) => {
-  for (const caminho of ['/', '/alojamento/', '/eventos/', '/contactos/', '/privacidade/']) {
+  for (const caminho of [
+    '/',
+    '/alojamento/',
+    '/restaurante/',
+    '/piscinas/',
+    '/eventos/',
+    '/contactos/',
+    '/privacidade/',
+  ]) {
     await page.goto(caminho);
     const texto = await page.locator('body').innerText();
-    for (const interno of ['Falta configurar', 'MIXALI', 'Google Maps', 'gerência', 'provisória']) {
+    for (const interno of [
+      'Falta configurar',
+      'MIXALI',
+      'Google Maps',
+      'gerência',
+      'provisória',
+      'Em breve',
+    ]) {
       expect(texto, `${caminho}: ${interno}`).not.toContain(interno);
     }
   }

@@ -1,5 +1,6 @@
 ---
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import FichaServico from '../components/FichaServico.astro';
 import FormularioEvento from '../components/FormularioEvento.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
@@ -63,12 +64,19 @@ import Base from '../layouts/Base.astro';
             equipa do lodge apresenta as opções disponíveis para a data.
           </p>
         </div>
+        <ul class="lista-traco reunir__tipos">
+          <li>Reuniões, formações e conferências</li>
+          <li>Celebrações familiares e aniversários</li>
+          <li>Encontros de grupo e eventos de empresa</li>
+        </ul>
+        <div class="accoes">
+          <a class="botao botao--verde" href="#pedido">
+            Pedir orçamento
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </div>
       </div>
-      <ul class="lista-traco reunir__tipos">
-        <li>Reuniões, formações e conferências</li>
-        <li>Celebrações familiares e aniversários</li>
-        <li>Encontros de grupo e eventos de empresa</li>
-      </ul>
+      <FichaServico servico="eventos" titulo="As salas e o serviço" />
     </div>
   </section>
 
@@ -113,7 +121,7 @@ import Base from '../layouts/Base.astro';
     }
   }
   .reunir {
-    align-items: end;
+    align-items: start;
   }
   .reunir__tipos {
     font-family: var(--serif);

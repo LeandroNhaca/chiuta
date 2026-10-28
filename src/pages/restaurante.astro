@@ -1,5 +1,6 @@
 ---
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import FichaServico from '../components/FichaServico.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
@@ -29,14 +30,8 @@ import Base from '../layouts/Base.astro';
             Descubra o espaço de restauração do Mulotane Lodge: uma sala ampla, com janelas largas sobre a
             vegetação.
           </p>
-          <p>A oferta, os horários e as refeições para grupos são indicados pela equipa do lodge.</p>
+          <p>As fotografias mostram a sala de refeições e o serviço de buffet.</p>
         </div>
-        <h3 class="restaurante__subtitulo">Pergunte-nos sobre</h3>
-        <ul class="lista-traco">
-          <li>Refeições disponíveis e horários</li>
-          <li>Refeições para grupos e eventos</li>
-          <li>Pedidos especiais</li>
-        </ul>
         <div class="accoes">
           <a class="botao botao--verde" href="/eventos/#pedido">
             Pedir orçamento para um grupo
@@ -65,6 +60,25 @@ import Base from '../layouts/Base.astro';
     </div>
   </section>
 
+  <section class="secao secao--escura" aria-labelledby="oferta-titulo">
+    <div class="contentor grelha grelha--metades oferta">
+      <div class="bloco-titulo">
+        <p class="etiqueta">A oferta</p>
+        <h2 id="oferta-titulo">
+          Horários, menu e <em>preços.</em>
+        </h2>
+        <div class="texto">
+          <p>
+            O horário do restaurante, o tipo de cozinha, o menu e os preços são publicados aqui assim que
+            forem confirmados pelo Mulotane Lodge.
+          </p>
+          <p>Para refeições de grupo ou de um evento, indique-o no pedido de orçamento.</p>
+        </div>
+      </div>
+      <FichaServico servico="restaurante" titulo="Informação do restaurante" tom="clara" />
+    </div>
+  </section>
+
   <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
     <div class="contentor">
       <p class="etiqueta">Continue a explorar</p>
@@ -77,14 +91,8 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  .restaurante__subtitulo {
-    margin-top: 8px;
-    font-family: var(--sans);
-    font-size: var(--t-etiqueta);
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--dourado-texto);
+  .oferta {
+    align-items: start;
   }
   .restaurante__par {
     display: grid;

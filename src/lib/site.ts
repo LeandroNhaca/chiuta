@@ -16,24 +16,27 @@ export const temContactosDirectos = Boolean(
   lodge.contactos.telefone || lodge.contactos.email || whatsappDisponivel,
 );
 
+type Mapa = typeof lodge.mapa;
+
 /**
- * "Obter direcções" só com localização confirmada pela gerência (ligação própria ou coordenadas).
- * Sem confirmação devolve '' e o site assinala a localização exacta como pendente: uma pesquisa pelo
- * nome podia levar o visitante ao sítio errado.
+ * "Obter direcções" só com localização confirmada pela gerência: a ligação própria do lodge (HTTPS) ou,
+ * na falta dela, direcções do Google Maps até às coordenadas confirmadas. Sem confirmação devolve '' e o
+ * site assinala a localização exacta como "a confirmar": uma pesquisa pelo nome podia levar o visitante
+ * ao sítio errado.
  */
-export function urlDireccoes(): string {
-  if (lodge.mapa.urlDireccoes) return lodge.mapa.urlDireccoes;
-  if (lodge.mapa.coordenadas) {
-    const { lat, lng } = lodge.mapa.coordenadas;
+export function urlDireccoes(mapa: Mapa = lodge.mapa): string {
+  if (/^https:\/\//.test(mapa.urlDireccoes)) return mapa.urlDireccoes;
+  if (mapa.coordenadas) {
+    const { lat, lng } = mapa.coordenadas;
     return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
   }
   return '';
 }
 
 /** Mapa incorporado (OpenStreetMap) só quando o ponto exacto está confirmado. */
-export function urlMapaIncorporado(): string | null {
-  if (!lodge.mapa.coordenadas) return null;
-  const { lat, lng } = lodge.mapa.coordenadas;
+export function urlMapaIncorporado(mapa: Mapa = lodge.mapa): string | null {
+  if (!mapa.coordenadas) return null;
+  const { lat, lng } = mapa.coordenadas;
   const d = 0.01;
   const bbox = [lng - d, lat - d, lng + d, lat + d].map((n) => n.toFixed(5)).join('%2C');
   return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lng}`;
@@ -48,9 +51,9 @@ function origem(url: string): string {
 }
 
 /** Content-Security-Policy gerada a partir da configuração (endpoint de pedidos e mapa). */
-export function politicaSeguranca(): string {
-  const endpoint = lodge.pedidos.endpoint ? origem(lodge.pedidos.endpoint) : '';
-  const mapa = lodge.mapa.coordenadas ? 'https://www.openstreetmap.org' : '';
+export function politicaSeguranca(config: Pick<typeof lodge, 'pedidos' | 'mapa'> = lodge): string {
+  const endpoint = config.pedidos.endpoint ? origem(config.pedidos.endpoint) : '';
+  const mapa = config.mapa.coordenadas ? 'https://www.openstreetmap.org' : '';
   return [
     "default-src 'self'",
     "script-src 'self'",
@@ -97,7 +100,7 @@ export interface CanalContacto {
   externo: boolean;
 }
 
-/** Os três canais oficiais. Os que faltam aparecem como "Em breve", nunca com dados inventados. */
+/** Os três canais oficiais. Os que faltam aparecem como "A confirmar", nunca com dados inventados. */
 export const canaisContacto: CanalContacto[] = [
   {
     id: 'telefone',

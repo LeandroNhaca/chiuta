@@ -1,5 +1,7 @@
 ---
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import FichaServico from '../components/FichaServico.astro';
+import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
 import Base from '../layouts/Base.astro';
@@ -12,9 +14,27 @@ import Base from '../layouts/Base.astro';
   <CabecalhoPagina
     titulo="Piscinas"
     intro="Desfrute de momentos de lazer ao ar livre, entre o relvado e o jardim."
-    foto="piscina-jardim"
-    enquadramento="esquerda"
-  />
+  >
+    <a slot="accoes" class="botao botao--principal" href="#condicoes">
+      Condições de utilização
+      <Icone nome="seta" tamanho={18} />
+    </a>
+  </CabecalhoPagina>
+
+  <section class="destaque" aria-label="Fotografia da piscina">
+    <div class="contentor">
+      <figure class="destaque__figura">
+        <Foto id="piscina-jardim" sizes="(min-width: 1240px) 1160px, 94vw" class="foto destaque__foto" />
+        <figcaption class="legenda destaque__legenda">
+          <span>A piscina, no meio do relvado e do jardim.</span>
+          <a class="ligacao-seta" href="/galeria/">
+            <span>Ver a galeria</span>
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
 
   <section class="secao secao--clara" aria-labelledby="lazer-titulo">
     <div class="contentor grelha grelha--metades lazer">
@@ -26,34 +46,20 @@ import Base from '../layouts/Base.astro';
         <div class="texto">
           <p>Um espaço para descontrair, aproveitar o ambiente exterior e partilhar bons momentos.</p>
           <p>A piscina, de forma irregular, fica no meio de um relvado, entre sebes e árvores.</p>
+          <p>
+            Antes da visita, confirme os horários, as regras de utilização e o acesso de visitantes que não
+            estejam alojados.
+          </p>
         </div>
-      </div>
-      <div id="condicoes" class="cartao-verde condicoes">
-        <img
-          class="cartao-verde__folhagem"
-          src="/images/mulotane/conceptual/folhagem.svg"
-          alt=""
-          width="520"
-          height="600"
-          loading="lazy"
-        />
-        <p class="filete-titulo">Antes da visita</p>
-        <h2 class="condicoes__titulo">Condições de utilização das piscinas</h2>
-        <p class="condicoes__texto">
-          Os horários, as regras de utilização e o acesso de visitantes que não estejam alojados são indicados
-          pela equipa do Mulotane Lodge. Confirme-os antes da sua visita.
-        </p>
-        <ol class="lista-numerada">
-          <li>Horários de utilização</li>
-          <li>Regras da piscina</li>
-          <li>Acesso de visitantes não alojados</li>
-        </ol>
         <div class="accoes">
-          <a class="botao botao--principal" href="/#disponibilidade">
+          <a class="botao botao--verde" href="/#disponibilidade">
             Consultar disponibilidade
             <Icone nome="seta" tamanho={18} />
           </a>
         </div>
+      </div>
+      <div id="condicoes" class="condicoes">
+        <FichaServico servico="piscinas" titulo="Condições de utilização" />
       </div>
     </div>
   </section>
@@ -70,20 +76,40 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
+  /* A fotografia sobe sobre o fim do cabeçalho verde, para lhe dar o destaque principal da página. */
+  .destaque {
+    position: relative;
+    background: linear-gradient(to bottom, var(--verde) 0, var(--verde) 34%, var(--branco) 34%);
+  }
+  .destaque__figura {
+    margin: 0;
+  }
+  .destaque :global(.destaque__foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+    max-height: 82vh;
+    width: 100%;
+  }
+  .destaque :global(.destaque__foto img) {
+    object-position: 45% 50%;
+  }
+  @media (min-width: 900px) {
+    .destaque :global(.destaque__foto) {
+      aspect-ratio: 16 / 10;
+    }
+  }
+  .destaque__legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    align-items: center;
+    justify-content: space-between;
+  }
   .lazer {
     align-items: start;
   }
   .condicoes {
     scroll-margin-top: calc(var(--cabecalho) + 24px);
-  }
-  .condicoes__titulo {
-    font-size: var(--t-h3);
-  }
-  .condicoes__texto {
-    color: rgb(250 248 243 / 0.82);
-  }
-  .condicoes .accoes {
-    margin-top: 6px;
   }
   .explorar__titulo {
     margin-bottom: clamp(36px, 5vw, 56px);

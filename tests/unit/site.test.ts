@@ -16,12 +16,46 @@ describe('configuração sem dados inventados', () => {
     expect(lodge.redesSociais).toEqual([]);
     expect(lodge.mapa.coordenadas).toBeNull();
   });
+
+  it('fichas dos serviços e tipos de quarto existem, mas sem valores por confirmar', () => {
+    for (const servico of ['alojamento', 'restaurante', 'piscinas', 'eventos'] as const) {
+      expect(lodge.detalhes[servico].length, servico).toBeGreaterThan(2);
+      for (const d of lodge.detalhes[servico]) expect(d.valor, `${servico}: ${d.rotulo}`).toBe('');
+    }
+    expect(lodge.quartos).toEqual([]);
+  });
 });
 
 describe('direcções e mapa', () => {
   it('sem localização confirmada, não há direcções nem mapa (o site assinala-os como pendentes)', () => {
     expect(urlDireccoes()).toBe('');
     expect(urlMapaIncorporado()).toBeNull();
+  });
+
+  // Coordenadas fictícias, só para o teste: nunca entram na configuração do site.
+  const confirmada = { coordenadas: { lat: -26.04, lng: 32.32 }, urlDireccoes: '' };
+
+  it('com coordenadas confirmadas: direcções do Google Maps, mapa do OpenStreetMap e CSP ajustada', () => {
+    expect(urlDireccoes(confirmada)).toBe('https://www.google.com/maps/dir/?api=1&destination=-26.04,32.32');
+    const mapa = urlMapaIncorporado(confirmada);
+    expect(mapa).toMatch(/^https:\/\/www\.openstreetmap\.org\/export\/embed\.html\?bbox=/);
+    expect(mapa).toContain('marker=-26.04%2C32.32');
+    const csp = politicaSeguranca({ mapa: confirmada, pedidos: { endpoint: '' } });
+    expect(csp).toContain('frame-src https://www.openstreetmap.org');
+  });
+
+  it('a ligação própria do lodge tem prioridade, mas só se for HTTPS', () => {
+    const propria = 'https://maps.app.goo.gl/exemplo';
+    expect(urlDireccoes({ ...confirmada, urlDireccoes: propria })).toBe(propria);
+    expect(urlDireccoes({ coordenadas: null, urlDireccoes: 'javascript:alert(1)' })).toBe('');
+  });
+
+  it('um endpoint de pedidos acrescenta só a sua origem ao connect-src', () => {
+    const csp = politicaSeguranca({
+      mapa: { coordenadas: null, urlDireccoes: '' },
+      pedidos: { endpoint: 'https://pedidos.exemplo.co.mz/v1/pedidos' },
+    });
+    expect(csp).toContain("connect-src 'self' https://pedidos.exemplo.co.mz;");
   });
 });
 

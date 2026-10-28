@@ -80,6 +80,19 @@ const demonstrativo = !lodge.pedidos.endpoint && linkWhatsApp(lodge.contactos.wh
     <h3 data-resultado-titulo></h3>
     <p data-resultado-texto></p>
     <dl class="pedido__resumo" data-resultado-resumo></dl>
+    <div class="pedido__mensagem" data-resultado-mensagem hidden>
+      <p class="pedido__mensagem-titulo">
+        <Icone nome="whatsapp" tamanho={16} />
+        Mensagem preparada para o WhatsApp
+      </p>
+      <pre class="pedido__mensagem-texto" data-mensagem-texto></pre>
+      <div class="pedido__mensagem-accoes">
+        <button class="botao botao--contorno" type="button" data-copiar-mensagem>
+          Copiar mensagem
+        </button>
+        <p class="pedido__mensagem-estado" role="status" data-copiar-estado></p>
+      </div>
+    </div>
     <div class="accoes">
       <a class="botao botao--principal" data-resultado-whatsapp hidden target="_blank" rel="noopener">
         <Icone nome="whatsapp" tamanho={18} />
@@ -142,12 +155,49 @@ const demonstrativo = !lodge.pedidos.endpoint && linkWhatsApp(lodge.contactos.wh
   }
   .pedido__campos {
     display: grid;
-    gap: 18px 20px;
+    gap: 30px;
+    margin-top: 4px;
   }
-  @media (min-width: 560px) {
-    .pedido__campos {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+  .pedido__mensagem {
+    display: grid;
+    gap: 12px;
+    padding: 18px;
+    border-radius: var(--raio);
+    background: var(--cinzento);
+  }
+  .pedido__mensagem[hidden] {
+    display: none;
+  }
+  .pedido__mensagem-titulo {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: var(--t-etiqueta);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--verde);
+  }
+  .pedido__mensagem-texto {
+    margin: 0;
+    padding: 14px 16px;
+    border-left: 2px solid var(--dourado);
+    background: #fff;
+    font: 500 0.9rem/1.6 var(--sans);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--texto);
+  }
+  .pedido__mensagem-accoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    align-items: center;
+  }
+  .pedido__mensagem-estado {
+    font-size: var(--t-pequeno);
+    font-weight: 600;
+    color: var(--verde);
   }
   .pedido__erros,
   .pedido__falha {

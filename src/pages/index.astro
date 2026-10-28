@@ -1,5 +1,6 @@
 ---
 import ComoChegar from '../components/ComoChegar.astro';
+import FichaServico from '../components/FichaServico.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
@@ -66,14 +67,12 @@ const atalhos = [
           </a>
         </div>
       </div>
-      <figure class="hero__figura arco-filete">
-        <Foto
-          id="piscina-jardim"
-          prioridade
-          sizes="(min-width: 1200px) 500px, (min-width: 760px) 40vw, 92vw"
-          class="arco hero__foto"
-        />
-        <figcaption class="hero__legenda">Piscina e jardim</figcaption>
+      <figure class="hero__figura">
+        <Foto id="piscina-jardim" prioridade sizes="(min-width: 1024px) 55vw, 100vw" class="hero__foto" />
+        <figcaption class="hero__legenda">
+          <Icone nome="ondas" tamanho={16} />
+          Piscina e jardim do Mulotane Lodge
+        </figcaption>
       </figure>
     </div>
     <nav class="contentor hero__atalhos" aria-label="Espaços do lodge">
@@ -199,10 +198,10 @@ const atalhos = [
   </section>
 
   <section class="secao secao--clara piscinas" aria-labelledby="piscinas-titulo">
-    <div class="contentor grelha grelha--foto-texto">
-      <figure class="moldura moldura--esquerda piscinas__figura revelar">
-        <Foto id="piscina-jardim" sizes="(min-width: 900px) 700px, 92vw" class="foto piscinas__foto" />
-      </figure>
+    <div class="contentor grelha grelha--metades">
+      <div class="piscinas__ficha revelar">
+        <FichaServico servico="piscinas" titulo="Condições de utilização" />
+      </div>
       <div class="bloco-titulo revelar">
         <p class="etiqueta">
           <span class="etiqueta__numero">03</span> Piscinas
@@ -214,13 +213,10 @@ const atalhos = [
           <p>
             Um espaço para descontrair ao ar livre, entre o relvado e o jardim, e partilhar bons momentos.
           </p>
-          <p>
-            Os horários, as regras de utilização e o acesso de visitantes não alojados são indicados pela
-            equipa do lodge.
-          </p>
+          <p>A piscina, de forma irregular, fica no meio de um relvado, entre sebes e árvores.</p>
         </div>
-        <a class="ligacao-seta" href="/piscinas/#condicoes">
-          <span>Condições de utilização</span>
+        <a class="ligacao-seta" href="/piscinas/">
+          <span>Conhecer as piscinas</span>
           <Icone nome="seta" />
         </a>
       </div>
@@ -268,18 +264,18 @@ const atalhos = [
 
   <ComoChegar />
 
-  <section class="secao secao--escura fecho" aria-labelledby="fecho-titulo">
+  <section class="secao secao--cinza fecho" aria-labelledby="fecho-titulo">
     <div class="contentor fecho__conteudo">
       <p class="etiqueta">Mulotane Lodge · Boane</p>
       <h2 id="fecho-titulo">
         Prepare a sua próxima <em>visita.</em>
       </h2>
       <div class="accoes">
-        <a class="botao botao--principal" href="#disponibilidade">
+        <a class="botao botao--verde" href="#disponibilidade">
           Consultar disponibilidade
           <Icone nome="seta" tamanho={18} />
         </a>
-        <a class="botao botao--contorno-claro" href="#orcamento">
+        <a class="botao botao--contorno" href="#orcamento">
           Pedir orçamento para um evento
         </a>
       </div>
@@ -288,13 +284,15 @@ const atalhos = [
 </Base>
 
 <style>
-  /* ---------- Hero ---------- */
+  /* ---------- Hero ----------
+     Telemóvel: texto e, por baixo, a fotografia de margem a margem.
+     Computador: texto à esquerda; a fotografia ocupa a metade direita até à borda do ecrã, com um arco
+     largo no canto (o gesto das molduras do site), e a faixa dos espaços fecha a secção. */
   .hero {
     --foco: var(--dourado);
     position: relative;
     display: grid;
-    gap: clamp(40px, 6vw, 72px);
-    padding-top: calc(var(--cabecalho) + clamp(28px, 6vw, 64px));
+    padding-top: var(--cabecalho);
     background: var(--verde);
     color: var(--branco);
     overflow: hidden;
@@ -302,7 +300,7 @@ const atalhos = [
   }
   .hero__folhagem {
     position: absolute;
-    top: 12%;
+    top: 14%;
     left: -120px;
     z-index: -1;
     width: clamp(280px, 36vw, 560px);
@@ -312,13 +310,13 @@ const atalhos = [
   }
   .hero__grelha {
     display: grid;
-    gap: 48px;
-    align-items: center;
+    gap: clamp(36px, 6vw, 56px);
   }
   .hero__texto {
     display: grid;
     gap: 24px;
     justify-items: start;
+    padding-top: clamp(28px, 6vw, 48px);
   }
   .hero__texto .etiqueta {
     margin: 0;
@@ -332,65 +330,66 @@ const atalhos = [
     color: var(--dourado);
   }
   .hero__sub {
-    max-width: 32rem;
+    max-width: 31rem;
     font-size: var(--t-lead);
     line-height: 1.6;
-    color: rgb(250 248 243 / 0.84);
+    color: rgb(250 248 243 / 0.88);
   }
   .hero__accoes {
     margin-top: 6px;
   }
   .hero__figura {
     position: relative;
-    margin: 0;
-    width: min(100%, 520px);
-    justify-self: center;
+    margin: 0 calc(-1 * var(--margem));
   }
   .hero :global(.hero__foto) {
-    aspect-ratio: 4 / 5;
-    animation: hero-entrada 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--verde-2);
+    border-radius: clamp(120px, 34vw, 200px) 0 0 0;
+    animation: hero-entrada 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
   .hero :global(.hero__foto img) {
-    object-position: 40% 30%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 38% 42%;
   }
   @keyframes hero-entrada {
     from {
       opacity: 0;
-      transform: translateY(18px);
     }
   }
   .hero__legenda {
-    margin-top: 14px;
-    font-size: var(--t-etiqueta);
+    position: absolute;
+    left: var(--margem);
+    bottom: 16px;
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgb(8 40 32 / 0.78);
+    font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.2em;
-    text-align: right;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgb(250 248 243 / 0.6);
+    color: var(--branco);
+  }
+  .hero__legenda :global(svg) {
+    color: var(--dourado);
   }
   .hero__atalhos {
     display: none;
   }
   @media (max-width: 759px) {
-    .hero {
-      padding-bottom: clamp(48px, 10vw, 72px);
-    }
     .hero__accoes {
       display: grid;
       width: 100%;
     }
-    .hero :global(.hero__foto) {
-      aspect-ratio: 5 / 6;
-    }
   }
   @media (min-width: 760px) {
-    .hero__grelha {
-      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-      min-height: min(calc(100svh - var(--cabecalho) - 160px), 760px);
-    }
-    .hero__figura {
-      justify-self: end;
-    }
     .hero__atalhos {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -407,7 +406,7 @@ const atalhos = [
       letter-spacing: 0.18em;
       text-transform: uppercase;
       text-decoration: none;
-      color: rgb(250 248 243 / 0.82);
+      color: rgb(250 248 243 / 0.85);
       border-left: 1px solid var(--linha-clara);
       transition: color var(--transicao);
     }
@@ -428,9 +427,48 @@ const atalhos = [
       color: var(--dourado);
     }
   }
+  @media (min-width: 760px) and (max-width: 1023px) {
+    .hero :global(.hero__foto) {
+      aspect-ratio: 16 / 10;
+    }
+  }
   @media (min-width: 1024px) {
+    .hero h1 {
+      font-size: clamp(3.4rem, 1.2rem + 3.6vw, 5.6rem);
+    }
     .hero__grelha {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+      gap: clamp(40px, 5vw, 80px);
+      min-height: clamp(560px, calc(100svh - var(--cabecalho) - 73px), 820px);
+    }
+    .hero__texto {
+      align-self: center;
+      padding-block: 56px;
+    }
+    /* Até à borda direita do ecrã: a margem do contentor mais o espaço fora dele. */
+    .hero__figura {
+      margin: 0 calc(-1 * (var(--margem) + max(0px, (100vw - var(--contentor) - 2 * var(--margem)) / 2))) 0 0;
+    }
+    .hero :global(.hero__foto) {
+      height: 100%;
+      aspect-ratio: auto;
+      border-radius: clamp(180px, 16vw, 280px) 0 0 0;
+    }
+    /* Moldura quase quadrada: aproxima ligeiramente a piscina e deixa de fora parte do pavimento. */
+    .hero :global(.hero__foto img) {
+      transform: scale(1.12);
+      transform-origin: 34% 30%;
+    }
+    .hero__legenda {
+      left: clamp(48px, 6vw, 96px);
+      bottom: 24px;
+    }
+  }
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    /* Moldura mais estreita: a piscina fica à esquerda da fotografia original. */
+    .hero :global(.hero__foto img) {
+      transform: none;
+      object-position: 26% 50%;
     }
   }
 
@@ -493,15 +531,14 @@ const atalhos = [
   }
 
   /* ---------- Piscinas ---------- */
-  .piscinas__figura {
-    margin: 0;
+  .piscinas__ficha {
+    max-width: 560px;
   }
-  .piscinas :global(.piscinas__foto) {
-    display: block;
-    aspect-ratio: 3 / 2;
-  }
-  .piscinas :global(.piscinas__foto img) {
-    object-position: 50% 35%;
+  @media (max-width: 899px) {
+    /* No telemóvel, o texto vem antes da ficha. */
+    .piscinas__ficha {
+      order: 1;
+    }
   }
 
   /* ---------- Eventos ---------- */

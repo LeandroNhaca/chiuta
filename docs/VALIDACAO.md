@@ -1,6 +1,6 @@
 # Validação com o proprietário · Mulotane Lodge
 
-Lista do que tem de ser confirmado antes de o site deixar de ser uma demonstração. Nada nesta lista foi inventado no site: enquanto não houver confirmação, os campos ficam vazios em `src/config/lodge.ts` e o site assinala-os como "Em breve" (contactos, morada, mapa) ou não os mostra. Estas notas são internas: desde 26/10/2026 já não aparecem na interface pública.
+Lista do que tem de ser confirmado antes de o site deixar de ser uma demonstração. Nada nesta lista foi inventado no site: enquanto não houver confirmação, os campos ficam vazios em `src/config/lodge.ts` e o site assinala-os como "A confirmar" (contactos, morada, mapa, fichas dos serviços) ou não os mostra. Estas notas são internas e não aparecem na interface pública.
 
 ## 1. Dados do estabelecimento
 
@@ -11,7 +11,7 @@ Lista do que tem de ser confirmado antes de o site deixar de ser uma demonstraç
 | Morada completa | **Por confirmar** | `localizacao.morada` |
 | Ponto exacto no mapa | **Por confirmar** | `mapa.coordenadas` ou `mapa.urlDireccoes`. Até lá o site mostra "Mapa em breve" e não tem botão de direcções. |
 | Indicações de acesso / estado da estrada | **Por confirmar** | Não foi escrito nada sobre a estrada. Se a gerência quiser, acrescentar um texto validado. |
-| Telefone | **Por confirmar** | A placa da entrada (captura do Google Maps, Setembro de 2026) mostra **+258 848 885556**. Confirmar se é o número oficial e se pode ser publicado. Hoje aparece "Em breve". |
+| Telefone | **Por confirmar** | A placa da entrada (captura do Google Maps, Setembro de 2026) mostra **+258 848 885556**. Confirmar se é o número oficial e se pode ser publicado. Hoje aparece "A confirmar". |
 | WhatsApp | **Por confirmar** | Indicar se é o mesmo número. Activa os botões de WhatsApp e a continuação dos pedidos por WhatsApp. |
 | E-mail | **Por confirmar** | |
 | Redes sociais oficiais | **Por confirmar** | |
@@ -20,7 +20,13 @@ Lista do que tem de ser confirmado antes de o site deixar de ser uma demonstraç
 
 ## 2. Serviços
 
-Os serviços aparecem no site com textos neutros ("entre em contacto para conhecer as opções disponíveis"), sem preços, horários, capacidades, menus nem comodidades.
+Os serviços aparecem no site com textos neutros, sem preços, horários, capacidades, menus nem comodidades. Cada página tem uma **ficha** com os dados que o visitante procura, todos "A confirmar" até a gerência os indicar. Preenchem-se em `src/config/lodge.ts`:
+
+- `detalhes.alojamento`: tipos de quarto, capacidade, comodidades, tarifas, horário de entrada e de saída.
+- `quartos`: um cartão por tipo de quarto (nome, capacidade, comodidades, tarifa e, opcionalmente, uma fotografia autorizada).
+- `detalhes.restaurante`: horário, tipo de cozinha, menu, preços, abertura a visitantes não alojados.
+- `detalhes.piscinas`: horário, regras, acesso de visitantes não alojados, preço de entrada.
+- `detalhes.eventos`: salas, capacidade, equipamento, refeições e catering, pacotes e preços.
 
 | Serviço | Evidência actual | A confirmar |
 | --- | --- | --- |
@@ -32,7 +38,7 @@ Os serviços aparecem no site com textos neutros ("entre em contacto para conhec
 
 ## 3. Fotografias
 
-**Regra desde 26/10/2026:** só aparecem no site fotografias com origem e autorização confirmadas e que representem bem as instalações. Todas as que estão publicadas são reais e foram apenas melhoradas tecnicamente (luz, contraste, ruído, nitidez e optimização para a web). A saturação e o conteúdo ficam intactos. Nenhuma foi gerada por IA.
+**Regra desde 26/10/2026 (confirmada pelo responsável a 28/10/2026):** só aparecem no site fotografias com origem e autorização confirmadas e que representem bem as instalações. Todas as que estão publicadas são reais e foram apenas melhoradas tecnicamente (luz, contraste, ruído, nitidez e optimização para a web). A saturação e o conteúdo ficam intactos. Nenhuma foi gerada por IA.
 
 ### Publicadas (4, enviadas pelo cliente)
 

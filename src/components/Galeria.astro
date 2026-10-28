@@ -1,65 +1,66 @@
 ---
 /**
- * Galeria só com fotografias reais e autorizadas, sem repetições. Com poucas fotografias, uma grelha
- * editorial única (proporções originais, sem cortes); com muitas, agrupadas por categoria. Cada
- * miniatura é uma ligação para a imagem (funciona sem JavaScript); com JavaScript abre o visualizador.
+ * Galeria só com fotografias reais e autorizadas, sem repetições: grelha editorial (proporções originais,
+ * sem cortes) com filtros por categoria. Cada miniatura é uma ligação para a imagem (funciona sem
+ * JavaScript); com JavaScript abre o visualizador, que percorre só as fotografias do filtro escolhido.
  */
 import { categorias, credito, fotografias, srcset, urlFotografia, type Categoria } from '../data/fotografias';
 
 import Foto from './Foto.astro';
 import Icone from './Icone.astro';
 
-// A partir deste número, os grupos por categoria ajudam mais do que atrapalham.
-const MINIMO_PARA_AGRUPAR = 9;
-const ordem = Object.keys(categorias) as Categoria[];
-const grupos =
-  fotografias.length >= MINIMO_PARA_AGRUPAR
-    ? ordem
-        .map((c) => ({ id: c, nome: categorias[c], fotos: fotografias.filter((f) => f.categoria === c) }))
-        .filter((g) => g.fotos.length > 0)
-    : [{ id: 'todas', nome: '', fotos: fotografias }];
-const Grupo = grupos.length > 1 ? 'section' : 'div';
+const usadas = (Object.keys(categorias) as Categoria[])
+  .map((c) => ({ id: c, nome: categorias[c], total: fotografias.filter((f) => f.categoria === c).length }))
+  .filter((c) => c.total > 0);
 ---
 
 <div class="galeria" data-galeria>
-  {grupos.map((g) => (
-    <Grupo class="galeria__grupo" aria-labelledby={g.nome ? `galeria-${g.id}` : undefined}>
-      {g.nome && (
-        <div class="galeria__cabeca">
-          <h2 id={`galeria-${g.id}`}>{g.nome}</h2>
-          <p>{g.fotos.length === 1 ? '1 fotografia' : `${g.fotos.length} fotografias`}</p>
-        </div>
-      )}
-      <ul class:list={['galeria__grelha', { 'galeria__grelha--editorial': !g.nome }]}>
-        {g.fotos.map((f) => (
-          <li>
-            <a
-              class="galeria__item"
-              href={urlFotografia(f)}
-              data-galeria-item
-              data-avif={srcset(f, 'avif')}
-              data-webp={srcset(f, 'webp')}
-              data-alt={f.alt}
-              data-legenda={f.legenda}
-              data-credito={credito(f)}
-              data-largura={f.largura}
-              data-altura={f.altura}
-            >
-              <Foto id={f.id} sizes="(min-width: 1100px) 600px, (min-width: 640px) 46vw, 92vw" class="foto" />
-              <span class="galeria__legenda">
-                <span>
-                  {!g.nome && <span class="galeria__categoria">{categorias[f.categoria]}</span>}
-                  {f.legenda}
-                </span>
-                <Icone nome="ampliar" tamanho={16} />
-              </span>
-              <span class="visualmente-oculto">(ampliar)</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </Grupo>
-  ))}
+  {usadas.length > 1 && (
+    <div
+      class="galeria__filtros galeria__filtros--espera"
+      role="group"
+      aria-label="Filtrar por categoria"
+      data-filtros
+    >
+      <button class="galeria__filtro" type="button" aria-pressed="true" data-filtro="todas">
+        Todas <span class="galeria__total">{fotografias.length}</span>
+      </button>
+      {usadas.map((c) => (
+        <button class="galeria__filtro" type="button" aria-pressed="false" data-filtro={c.id}>
+          {c.nome} <span class="galeria__total">{c.total}</span>
+        </button>
+      ))}
+    </div>
+  )}
+  <p class="visualmente-oculto" role="status" data-filtro-estado></p>
+  <ul class="galeria__grelha">
+    {fotografias.map((f) => (
+      <li data-categoria={f.categoria}>
+        <a
+          class="galeria__item"
+          href={urlFotografia(f)}
+          data-galeria-item
+          data-avif={srcset(f, 'avif')}
+          data-webp={srcset(f, 'webp')}
+          data-alt={f.alt}
+          data-legenda={f.legenda}
+          data-credito={credito(f)}
+          data-largura={f.largura}
+          data-altura={f.altura}
+        >
+          <Foto id={f.id} sizes="(min-width: 1100px) 600px, (min-width: 640px) 46vw, 92vw" class="foto" />
+          <span class="galeria__legenda">
+            <span>
+              <span class="galeria__categoria">{categorias[f.categoria]}</span>
+              {f.legenda}
+            </span>
+            <Icone nome="ampliar" tamanho={16} />
+          </span>
+          <span class="visualmente-oculto">(ampliar)</span>
+        </a>
+      </li>
+    ))}
+  </ul>
 </div>
 
 <dialog class="lightbox" aria-label="Fotografia ampliada" data-lightbox>
@@ -97,61 +98,78 @@ const Grupo = grupos.length > 1 ? 'section' : 'div';
 <style>
   .galeria {
     display: grid;
-    gap: clamp(64px, 8vw, 112px);
+    gap: clamp(28px, 4vw, 48px);
   }
-  .galeria__cabeca {
+  .galeria__filtros {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 24px;
-    align-items: baseline;
-    justify-content: space-between;
-    margin-bottom: 28px;
-    padding-bottom: 18px;
-    border-bottom: 1px solid var(--linha);
+    gap: 10px;
   }
-  .galeria__cabeca h2 {
-    font-size: var(--t-h3);
+  /* Até o JavaScript os activar, os filtros ocupam o espaço mas não se vêem (sem saltos de layout). */
+  .galeria__filtros--espera {
+    visibility: hidden;
   }
-  .galeria__cabeca p {
-    font-size: var(--t-pequeno);
-    color: var(--texto-suave);
+  .galeria__filtro {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 1px solid rgb(11 48 39 / 0.35);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--verde);
+    font: 700 0.78rem/1 var(--sans);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition:
+      background-color var(--transicao),
+      color var(--transicao),
+      border-color var(--transicao);
   }
+  .galeria__filtro:hover {
+    border-color: var(--verde);
+  }
+  .galeria__filtro[aria-pressed='true'] {
+    border-color: var(--verde);
+    background: var(--verde);
+    color: var(--branco);
+  }
+  .galeria__total {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-style: italic;
+    letter-spacing: 0;
+    color: var(--dourado-texto);
+  }
+  .galeria__filtro[aria-pressed='true'] .galeria__total {
+    color: var(--dourado);
+  }
+  /* Grelha editorial: colunas desencontradas, cada fotografia na sua proporção original. */
   .galeria__grelha {
-    display: grid;
-    gap: clamp(12px, 1.8vw, 24px);
     margin: 0;
     padding: 0;
     list-style: none;
-  }
-  @media (min-width: 640px) {
-    .galeria__grelha {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-  @media (min-width: 1100px) {
-    .galeria__grelha {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-  /* Grelha editorial: duas colunas desencontradas, cada fotografia na sua proporção original. */
-  .galeria__grelha--editorial {
-    display: block;
     columns: 1;
     column-gap: clamp(16px, 3vw, 40px);
   }
   @media (min-width: 640px) {
-    .galeria__grelha--editorial {
+    .galeria__grelha {
       columns: 2;
     }
   }
-  .galeria__grelha--editorial li {
+  @media (min-width: 1100px) {
+    .galeria__grelha:has(> li:nth-child(7)) {
+      columns: 3;
+    }
+  }
+  .galeria__grelha li {
     break-inside: avoid;
     margin-bottom: clamp(28px, 4vw, 56px);
   }
-  @media (min-width: 640px) {
-    .galeria__grelha--editorial li:nth-child(odd) {
-      padding-right: clamp(0px, 3vw, 48px);
-    }
+  .galeria__grelha li[hidden] {
+    display: none;
   }
   .galeria__item {
     display: grid;
@@ -161,10 +179,6 @@ const Grupo = grupos.length > 1 ? 'section' : 'div';
   }
   .galeria__item :global(.foto) {
     display: block;
-    aspect-ratio: 4 / 3;
-  }
-  .galeria__grelha--editorial .galeria__item :global(.foto) {
-    aspect-ratio: auto;
   }
   .galeria__categoria {
     display: block;
