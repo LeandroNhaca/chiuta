@@ -1,11 +1,13 @@
 ---
 /**
- * Como chegar. Com localização confirmada (coordenadas ou ligação própria) mostra o mapa e as direcções;
- * sem ela, mostra só o que está confirmado (Boane, província de Maputo) e assinala o resto como pendente.
+ * Como chegar. Com coordenadas confirmadas mostra o mapa incorporado; com a ligação do Google Maps do lodge,
+ * a fotografia da placa da entrada e o botão de direcções; sem nenhuma das duas, só o que está confirmado
+ * (Boane, província de Maputo) e o resto assinalado como pendente.
  */
 import { lodge } from '../config/lodge';
 import { localizacaoCompleta, urlDireccoes, urlMapaIncorporado } from '../lib/site';
 
+import Foto from './Foto.astro';
 import Icone from './Icone.astro';
 
 interface Props {
@@ -27,6 +29,12 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
       </h2>
       <div class="texto">
         <p>O Mulotane Lodge fica em Boane, na província de Maputo, em Moçambique.</p>
+        {direccoes && (
+          <p>
+            Abra a localização no Google Maps para ver o percurso a partir de onde está. À chegada, procure a
+            placa do Mulotane Lodge no muro da entrada.
+          </p>
+        )}
       </div>
       <dl class="como-chegar__dados">
         <div>
@@ -39,7 +47,18 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
           <dt>
             <Icone nome="info" tamanho={18} /> Morada e acessos
           </dt>
-          <dd>{morada ? morada : <span class="pendente">A confirmar</span>}</dd>
+          <dd>
+            {morada ? (
+              morada
+            ) : direccoes ? (
+              <a class="como-chegar__mapa-ligacao" href={direccoes} target="_blank" rel="noopener">
+                Ver no Google Maps
+                <span class="visualmente-oculto">(abre numa nova janela)</span>
+              </a>
+            ) : (
+              <span class="pendente">A confirmar</span>
+            )}
+          </dd>
         </div>
       </dl>
       {(direccoes || !semContacto) && (
@@ -48,7 +67,7 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
             <a class="botao botao--verde" href={direccoes} target="_blank" rel="noopener">
               Obter direcções
               <Icone nome="externa" tamanho={18} />
-              <span class="visualmente-oculto">(abre numa nova janela)</span>
+              <span class="visualmente-oculto">(abre o Google Maps numa nova janela)</span>
             </a>
           )}
           {!semContacto && (
@@ -67,6 +86,11 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
           title={`Mapa da localização do ${lodge.nome}`}
           loading="lazy"
         />
+      ) : direccoes ? (
+        <figure class="como-chegar__placa">
+          <Foto id="placa-entrada" sizes="(min-width: 900px) 520px, 92vw" class="foto como-chegar__foto" />
+          <figcaption class="legenda">A placa do Mulotane Lodge, no muro da entrada.</figcaption>
+        </figure>
       ) : (
         <div class="como-chegar__local">
           <img
@@ -179,6 +203,22 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
     font-size: var(--t-pequeno);
     line-height: 1.55;
     color: rgb(250 248 243 / 0.8);
+  }
+  .como-chegar__mapa-ligacao {
+    color: var(--verde);
+    text-underline-offset: 4px;
+    text-decoration-color: rgb(11 48 39 / 0.4);
+  }
+  .como-chegar__placa {
+    margin: 0;
+  }
+  .como-chegar :global(.como-chegar__foto) {
+    display: block;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--raio-arco);
+  }
+  .como-chegar :global(.como-chegar__foto img) {
+    object-position: 50% 40%;
   }
   .como-chegar__mapa {
     width: 100%;

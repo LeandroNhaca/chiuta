@@ -53,7 +53,8 @@ const TEXTOS: Record<Estado, { titulo: string; texto: (nome: string, tipo: TipoP
   whatsapp: {
     titulo: 'Mensagem pronta para o WhatsApp',
     texto: (_nome, tipo) =>
-      `Para concluir, envie a mensagem abaixo pelo WhatsApp do Mulotane Lodge. ${NAO_E_RESERVA[tipo]}`,
+      'O pedido ainda não foi enviado: para concluir, toque em "Continuar no WhatsApp" e envie a mensagem ' +
+      `ao Mulotane Lodge. ${NAO_E_RESERVA[tipo]}`,
   },
   demonstracao: {
     titulo: 'Pedido validado',

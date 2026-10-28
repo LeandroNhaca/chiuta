@@ -18,8 +18,8 @@ Website premium de demonstração comercial para o **Mulotane Lodge** (Boane, pr
 | `/restaurante/` | Sala de refeições e buffet, ficha do restaurante (horário, cozinha, menu, preços), pedido para grupos |
 | `/piscinas/` | Fotografia da piscina em destaque, ficha das condições de utilização |
 | `/eventos/` | **Formulário de orçamento logo a seguir à abertura** (primeiro o evento, depois os contactos), ficha das salas e do serviço |
-| `/galeria/` | 4 fotografias reais autorizadas, grelha editorial, **filtros por categoria**, visualizador ampliado acessível |
-| `/contactos/` | Telefone, WhatsApp e e-mail assinalados **"A confirmar"**, atalhos para pedidos, como chegar |
+| `/galeria/` | 12 fotografias reais (4 do cliente e 8 capturas do Google Maps com crédito), grelha editorial, **filtros por categoria**, visualizador ampliado acessível |
+| `/contactos/` | Número oficial (telefone e WhatsApp), e-mail "A confirmar", atalhos para pedidos, como chegar com a ficha do Google Maps |
 | `/privacidade/` | Política de privacidade (o que os formulários fazem hoje) |
 
 No telemóvel, uma barra fixa com "Disponibilidade" e "Orçamento de evento" aparece depois do primeiro ecrã e esconde-se sobre os formulários e o rodapé.
@@ -36,14 +36,21 @@ Testado e a funcionar:
 - SEO técnico, com hierarquia de títulos verificada;
 - acessibilidade WCAG 2.1 AA verificada com axe.
 
+Activo desde 28/10/2026 (dados indicados pelo responsável):
+
+- **Número oficial +258 848 885556**: telefone (`tel:`) e WhatsApp (`wa.me`) no rodapé, nos contactos e nos dados estruturados.
+- **Pedidos pelo WhatsApp**:
+  - os formulários validam os dados e preparam a mensagem com eles;
+  - "Continuar no WhatsApp" abre a conversa com a mensagem pré-preenchida;
+  - o visitante sabe, antes de preencher, que o pedido só segue quando o enviar no WhatsApp;
+  - o site não envia nem guarda dados.
+- **Direcções**: o botão "Obter direcções" abre a ficha do lodge no Google Maps.
+
 Preparado mas **inactivo** (precisa de dados do proprietário):
 
-- **Envio dos pedidos**: os formulários são de demonstração e dizem-no ao visitante antes de preencher. Não enviam nem guardam nada. Activa-se com `pedidos.endpoint` (backend aprovado) ou com o número oficial de WhatsApp.
-  - O envio para um endpoint foi testado num browser contra um **servidor simulado pelo teste**: carregamento, sucesso, erro 429 e erro 500.
-  - Não existe ainda serviço real (ver `docs/AUDITORIA.md`).
-- **WhatsApp**: a mensagem já é preparada e mostrada; a ligação `wa.me` activa-se com `contactos.whatsapp`.
-- **Contactos oficiais** (telefone, WhatsApp, e-mail): aparecem como "A confirmar".
-- **Localização exacta, mapa e direcções**: aparecem como "A confirmar"; não há pesquisa no Google Maps (podia levar ao sítio errado). Com `mapa.coordenadas` aparecem o mapa e o botão "Obter direcções" (testado com coordenadas de teste).
+- **Envio directo dos pedidos para um serviço** (`pedidos.endpoint`). Foi testado num browser contra um **servidor simulado pelo teste**: carregamento, sucesso, erro 429 e erro 500. Não existe ainda serviço real (ver `docs/AUDITORIA.md`).
+- **E-mail e redes sociais**: o e-mail aparece "A confirmar"; as redes não aparecem.
+- **Morada escrita e mapa incorporado**: `localizacao.morada` e `mapa.coordenadas`.
 - **Fichas dos serviços e tipos de quarto**: estrutura pronta em `detalhes` e `quartos`; tudo "A confirmar".
 - **Domínio definitivo e indexação**: o site está em `noindex` e o `robots.txt` bloqueia tudo.
 - **Logótipo oficial**: a assinatura tipográfica "Mulotane Lodge" é temporária.
@@ -119,7 +126,7 @@ O serviço que recebe deve: validar de novo no servidor com as mesmas regras (`s
 - `public/images/mulotane/conceptual/`: só uma ilustração decorativa de folhagem (não é fotografia nem representa nenhum espaço).
 - `src/data/fotografias.ts`: texto alternativo, legenda, categoria e autoria de cada fotografia publicada.
 
-Só entram no site fotografias com origem e autorização confirmadas. Hoje são as 4 enviadas pelo cliente; a do quarto e as capturas do Google Maps foram retiradas (motivos em [`docs/VALIDACAO.md`](docs/VALIDACAO.md)). Sem fotografia autorizada, um espaço aparece com um painel tipográfico, nunca com uma imagem de outro sítio.
+O site usa as 4 fotografias enviadas pelo cliente e, por decisão do responsável (28/10/2026), as 8 melhores capturas do Google Maps, com o autor e a data no visualizador e nos créditos da galeria. A do quarto continua fora. Motivos e lista completa em [`docs/VALIDACAO.md`](docs/VALIDACAO.md). Sem fotografia, um espaço aparece com um painel tipográfico, nunca com uma imagem de outro sítio.
 
 Para regenerar as versões web (por exemplo, depois de receber fotografias novas do proprietário):
 

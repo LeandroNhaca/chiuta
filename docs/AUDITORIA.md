@@ -13,6 +13,14 @@ Estado de partida: `main` em `a0f5dbb` (PR #2), publicado no VPS da One Prompt S
 - As 10 capturas do Google Maps **continuam fora** (sem autorização dos autores).
 - O site usa apenas as 4 fotografias enviadas pelo cliente.
 
+### Decisões posteriores do responsável (28/10/2026, durante a revisão)
+
+- **Número oficial**: +258 848 885556, o da placa da entrada. Usado para o telefone e o WhatsApp; falta confirmar que este número tem WhatsApp.
+- **Localização**: ficha do Google Maps `https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6`. O texto da morada não pôde ser lido desta sessão: o Google Maps está fora da rede permitida.
+- **Fotografias**: usar as melhores capturas do Google Maps. Entram 8, com crédito; ficam de fora as desactualizadas, por identificar ou com pessoas (ver `docs/VALIDACAO.md`).
+
+Com o número oficial configurado, os pedidos passam a seguir pelo WhatsApp (opção 2 abaixo). O visitante revê a mensagem e envia-a ele próprio no WhatsApp. O site continua sem enviar nem guardar dados.
+
 ## Requisitos face ao que existia
 
 | Requisito | Estado em `a0f5dbb` | Acção nesta revisão |

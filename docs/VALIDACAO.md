@@ -8,11 +8,12 @@ Lista do que tem de ser confirmado antes de o site deixar de ser uma demonstraç
 | --- | --- | --- |
 | Nome | Confirmado pelo briefing | "Mulotane Lodge"; a placa da entrada diz também "Boutique Lodge". Confirmar se quer usar esse posicionamento. |
 | Localização | Confirmada pelo briefing | Boane, província de Maputo, Moçambique. |
-| Morada completa | **Por confirmar** | `localizacao.morada` |
-| Ponto exacto no mapa | **Por confirmar** | `mapa.coordenadas` ou `mapa.urlDireccoes`. Até lá o site mostra "Mapa em breve" e não tem botão de direcções. |
+| Morada completa | **Por escrever** | O responsável indicou a ficha do Google Maps (ver abaixo), mas esta sessão não consegue abrir o Google Maps para copiar a morada. Escrever o texto em `localizacao.morada`. Até lá o site mostra "Ver no Google Maps". |
+| Ligação de direcções | **Confirmada (28/10/2026)** | `mapa.urlDireccoes = https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6`: botão "Obter direcções" e ligação na secção "Como chegar". |
+| Ponto exacto no mapa | **Opcional** | `mapa.coordenadas` (latitude e longitude da ficha do Google Maps) activa o mapa incorporado. |
 | Indicações de acesso / estado da estrada | **Por confirmar** | Não foi escrito nada sobre a estrada. Se a gerência quiser, acrescentar um texto validado. |
-| Telefone | **Por confirmar** | A placa da entrada (captura do Google Maps, Setembro de 2026) mostra **+258 848 885556**. Confirmar se é o número oficial e se pode ser publicado. Hoje aparece "A confirmar". |
-| WhatsApp | **Por confirmar** | Indicar se é o mesmo número. Activa os botões de WhatsApp e a continuação dos pedidos por WhatsApp. |
+| Telefone | **Confirmado pelo responsável (28/10/2026)** | **+258 848 885556**, o número da placa da entrada. Publicado no site e nos dados estruturados. |
+| WhatsApp | **Assumido: o mesmo número** | O site usa +258 848 885556 para o WhatsApp (botões e pedidos). **Confirmar com a gerência que este número tem WhatsApp**; se não tiver, deixar `contactos.whatsapp` vazio. |
 | E-mail | **Por confirmar** | |
 | Redes sociais oficiais | **Por confirmar** | |
 | Logótipo | **Por confirmar** | A placa mostra um logótipo (casa, lua, árvores e rochas sobre fundo escuro). Pedir o ficheiro vectorial (SVG/PDF/AI). Até lá o site usa uma assinatura tipográfica **temporária** "Mulotane Lodge". |
@@ -38,32 +39,37 @@ Os serviços aparecem no site com textos neutros, sem preços, horários, capaci
 
 ## 3. Fotografias
 
-**Regra desde 26/10/2026 (confirmada pelo responsável a 28/10/2026):** só aparecem no site fotografias com origem e autorização confirmadas e que representem bem as instalações. Todas as que estão publicadas são reais e foram apenas melhoradas tecnicamente (luz, contraste, ruído, nitidez e optimização para a web). A saturação e o conteúdo ficam intactos. Nenhuma foi gerada por IA.
+**Decisão do responsável (28/10/2026):** o site usa as 4 fotografias enviadas pelo cliente **e as 8 melhores capturas do Google Maps**, com indicação do autor e da data. A autorização dos autores das capturas **não foi obtida**: a responsabilidade pela sua publicação fica com a One Prompt Studio, e o ideal continua a ser substituí-las por fotografias do próprio lodge. A fotografia do quarto continua fora. Todas as que estão publicadas são reais e foram apenas melhoradas tecnicamente (luz, contraste, ruído, nitidez e optimização para a web). A saturação e o conteúdo ficam intactos. Nenhuma foi gerada por IA.
 
-### Publicadas (4, enviadas pelo cliente)
+### Publicadas (12)
 
-| Ficheiro | Onde aparece | Estado | Notas |
-| --- | --- | --- | --- |
-| `piscina-jardim` | Hero, piscinas, cartões, galeria, imagem de partilha | Enviada pelo cliente | Única fotografia de exterior autorizada. Tem uma versão de 1280 px (só reamostragem) para ecrãs densos |
-| `sala-refeicoes` | Eventos (home e página), restaurante, cartões, galeria | Enviada pelo cliente | Exposição corrigida (estava em contraluz) |
-| `restaurante-buffet` | Restaurante, galeria | Enviada pelo cliente | Dominante magenta corrigida |
-| `restaurante-buffet-sala` | Restaurante, cartões, galeria | Enviada pelo cliente | |
+| Ficheiro | Origem | Autor / data | Onde aparece | Notas |
+| --- | --- | --- | --- | --- |
+| `piscina-espreguicadeiras` | Google Maps | Ahmet Dinler, Set. 2025 | Hero, piscinas (destaque), galeria, imagem de partilha | Recortado o carimbo de data |
+| `entrada-coberta` | Google Maps | Ahmet Dinler, Set. 2025 | Apresentação, alojamento (cabeçalho), galeria | Recortado o carimbo de data |
+| `sala-refeicoes-bar` | Google Maps | Ahmet Dinler, Set. 2025 | Restaurante (home e cabeçalho), cartões, galeria | Recortados uma pessoa e a data |
+| `piscina-terraco` | Google Maps | Carlos Teixeira, Fev. 2025 | Piscinas (home e mosaico), cartões, galeria | Recortados "REDMI 12" e a data |
+| `placa-entrada` | Google Maps | Dique Mateus, Set. 2026 | Como chegar, galeria | Mostra o logótipo e o número oficial |
+| `piscina-relvado` | Google Maps | Orlando Nhabetse, c. 2022 | Piscinas (mosaico), galeria | |
+| `esplanada-piscina` | Google Maps | abilio chambisso, c. 2021 | Piscinas (mosaico), galeria | Recortada a marca da câmara |
+| `sala-conferencias` | Google Maps | Paulino Venâncio Josine, c. 2020 | Eventos (home e cabeçalho), cartões, galeria | **Confirmar actualidade** (6 anos); recortado um púlpito com emblema |
+| `piscina-jardim` | Cliente | | Piscinas (home e mosaico), galeria | |
+| `sala-refeicoes` | Cliente | | Galeria | Exposição corrigida (estava em contraluz) |
+| `restaurante-buffet` | Cliente | | Restaurante, galeria | Dominante magenta corrigida |
+| `restaurante-buffet-sala` | Cliente | | Restaurante, galeria | |
 
-Os metadados destes JPEG têm "software=Google": vale a pena o proprietário confirmar que são fotografias do lodge que pode usar (por exemplo, do seu perfil de empresa).
+Os metadados das fotografias do cliente têm "software=Google": confirmar que são do lodge e podem ser usadas.
 
-### Retiradas da versão pública
+### Fora do site
 
-| Fotografia | Motivo | O que é preciso |
-| --- | --- | --- |
-| `quarto-twin` (enviada) | A toalha e o lençol têm a inscrição **"ALD. TUR. MIXALI-XAU"**, que não corresponde ao nome Mulotane Lodge: pode representar mal o alojamento | Confirmar que é um quarto do lodge (o original está guardado em `assets-originais/`) ou enviar fotografias actuais dos quartos |
-| 10 capturas do Google Maps (piscina com espreguiçadeiras, terraço, vista geral, piscina junto ao relvado, esplanada, entrada coberta, placa, edifício, sala de refeições com balcão, sala de conferências) | Contribuições de visitantes, sem autorização dos autores. Algumas tinham vários anos | Autorização escrita de cada autor ou, melhor, fotografias do próprio lodge |
+| Fotografia | Motivo |
+| --- | --- |
+| `quarto-twin` (cliente) | Inscrição **"ALD. TUR. MIXALI-XAU"** na roupa de cama: pode não ser um quarto do Mulotane Lodge. Original guardado. |
+| Piscina rectangular antes da renovação (Paulino Venâncio Josine, c. 2020) | Desactualizada: o deck mudou. |
+| Edifício de dois pisos (Zy, c. 2023) | Não se sabe que edifício é. |
+| Piscina ao fim do dia (Ismed Agy Momade), festa nocturna, piscina com palmeira e pessoas, sala com toalhas vermelhas, prato servido, edifícios ao pôr do sol | Pessoas identificáveis, pouca luz, vários anos ou decoração de um evento concreto. |
 
-As capturas também foram apagadas do repositório. **Continuam no histórico do Git e nas imagens Docker antigas do GHCR** (`sha-0650acf`, `sha-c9383d6`, `sha-eac3826` e a versão anterior de `demo`). Recomenda-se:
-
-- apagar essas versões do pacote `mulotane-lodge` em GitHub → Packages;
-- se o repositório continuar público, ponderar torná-lo privado ou limpar o histórico.
-
-Quem o fizer é o responsável do repositório.
+Ao serem retiradas, as capturas foram apagadas de `assets-originais/`. As 8 escolhidas foram recuperadas do histórico do Git (commit `eac3826`), sem alterações.
 
 ### Fotografias que fazem falta
 

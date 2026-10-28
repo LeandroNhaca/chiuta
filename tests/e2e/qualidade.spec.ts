@@ -53,8 +53,10 @@ test.describe('imagens, ligações e SEO', () => {
         })),
       );
       for (const { href, alvo, rel } of hrefs) {
-        if (/^https?:/.test(href)) {
-          externas.add(href);
+        if (/^tel:/.test(href)) {
+          expect(href).toBe('tel:+258848885556');
+        } else if (/^https?:/.test(href)) {
+          externas.add(new URL(href).origin);
           expect(alvo, href).toBe('_blank');
           expect(rel, href).toContain('noopener');
         } else {
@@ -62,8 +64,8 @@ test.describe('imagens, ligações e SEO', () => {
         }
       }
     }
-    // Sem localização nem contactos confirmados, não há ligações para fora do site.
-    expect([...externas]).toEqual([]);
+    // Só os destinos confirmados: o WhatsApp oficial e a ficha do lodge no Google Maps.
+    expect([...externas].sort()).toEqual(['https://maps.app.goo.gl', 'https://wa.me']);
     for (const url of internas) {
       const u = new URL(url);
       const resposta = await request.get(u.pathname);
@@ -107,8 +109,10 @@ test.describe('imagens, ligações e SEO', () => {
     const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}');
     expect(ld['@type']).toBe('LodgingBusiness');
     expect(ld.address.addressLocality).toBe('Boane');
+    expect(ld.telephone).toBe('+258 848 885556');
+    expect(ld.hasMap).toBe('https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6');
     // Nada de dados não confirmados.
-    for (const campo of ['telephone', 'aggregateRating', 'review', 'priceRange', 'starRating', 'geo']) {
+    for (const campo of ['aggregateRating', 'review', 'priceRange', 'starRating', 'geo', 'email']) {
       expect(ld, campo).not.toHaveProperty(campo);
     }
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);

@@ -104,11 +104,10 @@ export const lodge: ConfiguracaoLodge = {
     morada: '',
   },
   contactos: {
-    // Candidato a confirmar: a placa da entrada (captura do Google Maps, Setembro de 2026) mostra
-    // "+258 848 885556".
-    // Só deve ser preenchido aqui depois de a gerência o confirmar (e indicar se também é WhatsApp).
-    telefone: '',
-    whatsapp: '',
+    // Número oficial indicado pelo responsável a 28/10/2026 (é o da placa da entrada). Usado também para o
+    // WhatsApp: confirmar com a gerência que este número tem WhatsApp.
+    telefone: '+258 848 885556',
+    whatsapp: '+258 848 885556',
     email: '',
   },
   redesSociais: [],
@@ -118,7 +117,8 @@ export const lodge: ConfiguracaoLodge = {
   },
   mapa: {
     coordenadas: null,
-    urlDireccoes: '',
+    // Ficha do Mulotane Lodge no Google Maps, indicada pelo responsável a 28/10/2026.
+    urlDireccoes: 'https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6',
   },
   pedidos: {
     endpoint: '',

@@ -18,7 +18,9 @@ interface Props {
 const { tipo, prefixo, botao, titulo } = Astro.props;
 // Sem destino configurado (endpoint ou WhatsApp oficial), o formulário só valida: o visitante tem de o
 // saber antes de preencher.
-const demonstrativo = !lodge.pedidos.endpoint && linkWhatsApp(lodge.contactos.whatsapp) === null;
+const porWhatsApp = !lodge.pedidos.endpoint && linkWhatsApp(lodge.contactos.whatsapp) !== null;
+const demonstrativo = !lodge.pedidos.endpoint && !porWhatsApp;
+const temAviso = demonstrativo || porWhatsApp;
 ---
 
 <div class="pedido" data-pedido>
@@ -31,7 +33,7 @@ const demonstrativo = !lodge.pedidos.endpoint && linkWhatsApp(lodge.contactos.wh
     data-whatsapp={normalizarNumero(lodge.contactos.whatsapp)}
     data-lodge={lodge.nome}
     aria-labelledby={`${prefixo}-titulo`}
-    aria-describedby={demonstrativo ? `${prefixo}-demo` : undefined}
+    aria-describedby={temAviso ? `${prefixo}-demo` : undefined}
   >
     <h3 class="pedido__titulo" id={`${prefixo}-titulo`}>
       {titulo}
@@ -42,6 +44,16 @@ const demonstrativo = !lodge.pedidos.endpoint && linkWhatsApp(lodge.contactos.wh
         <span>
           <strong>Formulário de demonstração.</strong> Ainda não envia pedidos: pode preencher e validar os
           dados, mas nada é transmitido nem guardado.
+        </span>
+      </p>
+    )}
+    {porWhatsApp && (
+      <p class="pedido__demo pedido__demo--whatsapp" id={`${prefixo}-demo`}>
+        <Icone nome="whatsapp" tamanho={18} />
+        <span>
+          <strong>Pedido pelo WhatsApp.</strong> No fim, preparamos a mensagem com os seus dados para o
+          WhatsApp do Mulotane Lodge. Nada é enviado nem guardado por este site: o pedido só segue quando o
+          enviar no WhatsApp.
         </span>
       </p>
     )}
@@ -151,6 +163,13 @@ const demonstrativo = !lodge.pedidos.endpoint && linkWhatsApp(lodge.contactos.wh
     color: var(--dourado-texto);
   }
   .pedido__demo strong {
+    color: var(--verde);
+  }
+  .pedido__demo--whatsapp {
+    border-color: rgb(11 48 39 / 0.25);
+    background: rgb(11 48 39 / 0.06);
+  }
+  .pedido__demo--whatsapp :global(svg) {
     color: var(--verde);
   }
   .pedido__campos {

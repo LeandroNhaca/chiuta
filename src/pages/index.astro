@@ -1,6 +1,5 @@
 ---
 import ComoChegar from '../components/ComoChegar.astro';
-import FichaServico from '../components/FichaServico.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
@@ -23,6 +22,7 @@ const dadosEstruturados = {
     addressCountry: lodge.localizacao.codigoPais,
   },
   ...(lodge.contactos.telefone ? { telephone: lodge.contactos.telefone } : {}),
+  ...(lodge.mapa.urlDireccoes ? { hasMap: lodge.mapa.urlDireccoes } : {}),
 };
 
 const atalhos = [
@@ -68,10 +68,15 @@ const atalhos = [
         </div>
       </div>
       <figure class="hero__figura">
-        <Foto id="piscina-jardim" prioridade sizes="(min-width: 1024px) 55vw, 100vw" class="hero__foto" />
+        <Foto
+          id="piscina-espreguicadeiras"
+          prioridade
+          sizes="(min-width: 1024px) 55vw, 100vw"
+          class="hero__foto"
+        />
         <figcaption class="hero__legenda">
           <Icone nome="ondas" tamanho={16} />
-          Piscina e jardim do Mulotane Lodge
+          Piscina do Mulotane Lodge
         </figcaption>
       </figure>
     </div>
@@ -109,6 +114,10 @@ const atalhos = [
           </a>
         </div>
       </div>
+      <figure class="apresentacao__figura moldura revelar">
+        <Foto id="entrada-coberta" sizes="(min-width: 1240px) 1160px, 92vw" class="foto apresentacao__foto" />
+        <figcaption class="legenda">A entrada do Mulotane Lodge.</figcaption>
+      </figure>
       <IndiceServicos />
     </div>
   </section>
@@ -184,7 +193,7 @@ const atalhos = [
       </div>
       <div class="restaurante__fotos revelar">
         <Foto
-          id="restaurante-buffet-sala"
+          id="sala-refeicoes-bar"
           sizes="(min-width: 900px) 660px, 92vw"
           class="foto restaurante__principal"
         />
@@ -199,8 +208,9 @@ const atalhos = [
 
   <section class="secao secao--clara piscinas" aria-labelledby="piscinas-titulo">
     <div class="contentor grelha grelha--metades">
-      <div class="piscinas__ficha revelar">
-        <FichaServico servico="piscinas" titulo="Condições de utilização" />
+      <div class="piscinas__fotos revelar">
+        <Foto id="piscina-terraco" sizes="(min-width: 900px) 600px, 92vw" class="foto piscinas__principal" />
+        <Foto id="piscina-jardim" sizes="(min-width: 900px) 240px, 40vw" class="arco piscinas__detalhe" />
       </div>
       <div class="bloco-titulo revelar">
         <p class="etiqueta">
@@ -210,15 +220,23 @@ const atalhos = [
           Desfrute de momentos de <em>lazer.</em>
         </h2>
         <div class="texto">
+          <p>Um espaço para descontrair ao ar livre, entre as palmeiras, o relvado e o jardim.</p>
           <p>
-            Um espaço para descontrair ao ar livre, entre o relvado e o jardim, e partilhar bons momentos.
+            As fotografias mostram uma piscina rectangular, com espreguiçadeiras e chapéus-de-sol, e outra de
+            forma irregular, no meio do relvado. Os horários e as regras de utilização estão a ser confirmados
+            pelo Mulotane Lodge.
           </p>
-          <p>A piscina, de forma irregular, fica no meio de um relvado, entre sebes e árvores.</p>
         </div>
-        <a class="ligacao-seta" href="/piscinas/">
-          <span>Conhecer as piscinas</span>
-          <Icone nome="seta" />
-        </a>
+        <div class="accoes">
+          <a class="botao botao--verde" href="/piscinas/">
+            Conhecer as piscinas
+            <Icone nome="seta" tamanho={18} />
+          </a>
+          <a class="ligacao-seta" href="/piscinas/#condicoes">
+            <span>Condições de utilização</span>
+            <Icone nome="seta" />
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -226,7 +244,7 @@ const atalhos = [
   <section class="secao secao--cinza eventos" aria-labelledby="eventos-titulo">
     <div class="contentor eventos__grelha">
       <figure class="eventos__figura arco-filete revelar">
-        <Foto id="sala-refeicoes" sizes="(min-width: 900px) 440px, 92vw" class="arco eventos__foto" />
+        <Foto id="sala-conferencias" sizes="(min-width: 900px) 440px, 92vw" class="arco eventos__foto" />
       </figure>
       <div class="bloco-titulo eventos__conteudo revelar">
         <p class="etiqueta">
@@ -354,7 +372,7 @@ const atalhos = [
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 38% 42%;
+    object-position: 40% 50%;
   }
   @keyframes hero-entrada {
     from {
@@ -454,10 +472,8 @@ const atalhos = [
       aspect-ratio: auto;
       border-radius: clamp(180px, 16vw, 280px) 0 0 0;
     }
-    /* Moldura quase quadrada: aproxima ligeiramente a piscina e deixa de fora parte do pavimento. */
     .hero :global(.hero__foto img) {
-      transform: scale(1.12);
-      transform-origin: 34% 30%;
+      object-position: 42% 50%;
     }
     .hero__legenda {
       left: clamp(48px, 6vw, 96px);
@@ -465,10 +481,9 @@ const atalhos = [
     }
   }
   @media (min-width: 1024px) and (max-width: 1279px) {
-    /* Moldura mais estreita: a piscina fica à esquerda da fotografia original. */
+    /* Moldura mais estreita: centra a piscina, que está à esquerda na fotografia original. */
     .hero :global(.hero__foto img) {
-      transform: none;
-      object-position: 26% 50%;
+      object-position: 34% 50%;
     }
   }
 
@@ -476,11 +491,26 @@ const atalhos = [
   .apresentacao__topo {
     display: grid;
     gap: 32px;
-    margin-bottom: clamp(56px, 7vw, 96px);
+    margin-bottom: clamp(40px, 5vw, 64px);
   }
   .apresentacao__titulo {
     max-width: 15ch;
     font-size: clamp(2.3rem, 1.5rem + 3.2vw, 4.4rem);
+  }
+  .apresentacao__figura {
+    margin: 0 0 clamp(64px, 8vw, 112px);
+  }
+  .apresentacao :global(.apresentacao__foto) {
+    display: block;
+    aspect-ratio: 3 / 2;
+  }
+  @media (min-width: 900px) {
+    .apresentacao :global(.apresentacao__foto) {
+      aspect-ratio: 21 / 9;
+    }
+    .apresentacao :global(.apresentacao__foto img) {
+      object-position: 50% 40%;
+    }
   }
   .apresentacao__texto {
     display: grid;
@@ -531,13 +561,28 @@ const atalhos = [
   }
 
   /* ---------- Piscinas ---------- */
-  .piscinas__ficha {
-    max-width: 560px;
+  .piscinas__fotos {
+    position: relative;
+    padding-bottom: 16%;
+  }
+  .piscinas :global(.piscinas__principal) {
+    display: block;
+    aspect-ratio: 3 / 2;
+  }
+  .piscinas :global(.piscinas__detalhe) {
+    position: absolute;
+    right: -4%;
+    bottom: 0;
+    width: 34%;
+    aspect-ratio: 3 / 4;
+    outline: 6px solid var(--branco);
+  }
+  .piscinas :global(.piscinas__detalhe img) {
+    object-position: 30% 50%;
   }
   @media (max-width: 899px) {
-    /* No telemóvel, o texto vem antes da ficha. */
-    .piscinas__ficha {
-      order: 1;
+    .piscinas :global(.piscinas__detalhe) {
+      right: 5%;
     }
   }
 

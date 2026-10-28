@@ -24,9 +24,13 @@ import Base from '../layouts/Base.astro';
   <section class="destaque" aria-label="Fotografia da piscina">
     <div class="contentor">
       <figure class="destaque__figura">
-        <Foto id="piscina-jardim" sizes="(min-width: 1240px) 1160px, 94vw" class="foto destaque__foto" />
+        <Foto
+          id="piscina-espreguicadeiras"
+          sizes="(min-width: 1240px) 1160px, 94vw"
+          class="foto destaque__foto"
+        />
         <figcaption class="legenda destaque__legenda">
-          <span>A piscina, no meio do relvado e do jardim.</span>
+          <span>A piscina rectangular, com espreguiçadeiras e chapéus-de-sol.</span>
           <a class="ligacao-seta" href="/galeria/">
             <span>Ver a galeria</span>
             <Icone nome="seta" tamanho={18} />
@@ -45,7 +49,10 @@ import Base from '../layouts/Base.astro';
         </h2>
         <div class="texto">
           <p>Um espaço para descontrair, aproveitar o ambiente exterior e partilhar bons momentos.</p>
-          <p>A piscina, de forma irregular, fica no meio de um relvado, entre sebes e árvores.</p>
+          <p>
+            As fotografias mostram uma piscina rectangular, com deck, espreguiçadeiras e chapéus-de-sol entre
+            palmeiras, e uma piscina de forma irregular no meio do relvado, com uma esplanada à sombra.
+          </p>
           <p>
             Antes da visita, confirme os horários, as regras de utilização e o acesso de visitantes que não
             estejam alojados.
@@ -64,7 +71,39 @@ import Base from '../layouts/Base.astro';
     </div>
   </section>
 
-  <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
+  <section class="secao secao--cinza" aria-labelledby="fotografias-titulo">
+    <div class="contentor">
+      <div class="mosaico__topo">
+        <h2 id="fotografias-titulo">
+          As piscinas em <em>fotografias.</em>
+        </h2>
+        <a class="ligacao-seta" href="/galeria/">
+          <span>Ver a galeria completa</span>
+          <Icone nome="seta" />
+        </a>
+      </div>
+      <ul class="mosaico">
+        <li class="mosaico__a">
+          <Foto id="piscina-terraco" sizes="(min-width: 900px) 700px, 92vw" class="foto" />
+          <span class="legenda">Vista do terraço sobre a piscina.</span>
+        </li>
+        <li class="mosaico__b">
+          <Foto id="esplanada-piscina" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
+          <span class="legenda">Esplanada à sombra, junto à água.</span>
+        </li>
+        <li class="mosaico__c">
+          <Foto id="piscina-relvado" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
+          <span class="legenda">Piscina junto ao relvado.</span>
+        </li>
+        <li class="mosaico__d">
+          <Foto id="piscina-jardim" sizes="(min-width: 900px) 700px, 92vw" class="foto" />
+          <span class="legenda">Piscina e jardim.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="secao secao--clara" aria-labelledby="explorar-titulo">
     <div class="contentor">
       <p class="etiqueta">Continue a explorar</p>
       <h2 id="explorar-titulo" class="explorar__titulo">
@@ -107,6 +146,52 @@ import Base from '../layouts/Base.astro';
   }
   .lazer {
     align-items: start;
+  }
+  .mosaico__topo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 32px;
+    align-items: end;
+    justify-content: space-between;
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+  .mosaico {
+    display: grid;
+    gap: clamp(20px, 2.4vw, 32px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mosaico li {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+  }
+  .mosaico li .legenda {
+    margin: 0;
+  }
+  .mosaico :global(.foto) {
+    display: block;
+    aspect-ratio: 3 / 2;
+  }
+  @media (min-width: 900px) {
+    .mosaico {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+    .mosaico .mosaico__b :global(.foto),
+    .mosaico .mosaico__c :global(.foto) {
+      aspect-ratio: 4 / 3;
+    }
+    .mosaico__c {
+      grid-column: 1;
+      grid-row: 2;
+      justify-self: end;
+      width: 72%;
+    }
+    .mosaico__d {
+      grid-column: 2;
+      grid-row: 2;
+    }
   }
   .condicoes {
     scroll-margin-top: calc(var(--cabecalho) + 24px);

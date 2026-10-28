@@ -15,9 +15,20 @@ Copiadas sem alterações (SHA-256 idêntico ao recebido). Metadados EXIF com "s
 | `real/restaurante-buffet-sala.jpg` | `feb3a268769be5935545fbfac9f7ce367ffcc797b3a3f2fb729298efba0b1508` |
 | `real/quarto-twin.jpg` | `5ff50c8beacc59ca31da3ca0cbf0365f063f77baf7251ee552aae52e14f57694` |
 
-## Capturas do Google Maps (retiradas)
+## Capturas do Google Maps (8, publicadas com crédito)
 
-As 10 capturas de contribuições de visitantes no Google Maps (`gm-*.png`) foram apagadas desta pasta em 26/10/2026: não há autorização dos autores. A lista, com autores e motivos, está em `docs/VALIDACAO.md`.
+Recebidas como capturas de ecrã de telemóvel (1080×2400). Guardou-se só a área da fotografia, sem reescalar nem comprimir (PNG sem perdas). A barra de estado, os botões e o nome do autor foram cortados. Retiradas a 26/10/2026 e recuperadas do histórico do Git (commit `eac3826`) a 28/10/2026, por decisão do responsável. A autoria está em `src/data/fotografias.ts` e em `docs/VALIDACAO.md`.
+
+| Ficheiro | Autor (Google Maps) |
+| --- | --- |
+| `real/gm-piscina-espreguicadeiras.png` | Ahmet Dinler |
+| `real/gm-entrada-coberta.png` | Ahmet Dinler |
+| `real/gm-sala-refeicoes-bar.png` | Ahmet Dinler |
+| `real/gm-piscina-terraco.png` | Carlos Teixeira |
+| `real/gm-placa-entrada.png` | Dique Mateus |
+| `real/gm-piscina-relvado.png` | Orlando Nhabetse |
+| `real/gm-esplanada-piscina.png` | abilio chambisso |
+| `real/gm-sala-conferencias.png` | Paulino Venâncio Josine |
 
 ## Guardadas mas não publicadas
 

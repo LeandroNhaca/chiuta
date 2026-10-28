@@ -113,14 +113,7 @@ test('a interface pública não mostra notas internas de desenvolvimento', async
   ]) {
     await page.goto(caminho);
     const texto = await page.locator('body').innerText();
-    for (const interno of [
-      'Falta configurar',
-      'MIXALI',
-      'Google Maps',
-      'gerência',
-      'provisória',
-      'Em breve',
-    ]) {
+    for (const interno of ['Falta configurar', 'MIXALI', 'gerência', 'provisória', 'Em breve']) {
       expect(texto, `${caminho}: ${interno}`).not.toContain(interno);
     }
   }

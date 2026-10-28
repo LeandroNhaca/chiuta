@@ -51,7 +51,9 @@ test('disponibilidade: datas mínimas de hoje e saída depois da entrada', async
   );
 });
 
-test('disponibilidade: pedido válido mostra confirmação honesta e não envia nada', async ({ page }) => {
+test('disponibilidade: pedido válido prepara a mensagem para o WhatsApp oficial e não envia nada', async ({
+  page,
+}) => {
   const envios = vigiarEnvios(page);
   await page.goto('/');
   const bloco = page.locator('#disponibilidade [data-pedido]');
@@ -68,18 +70,26 @@ test('disponibilidade: pedido válido mostra confirmação honesta e não envia 
   const resultado = bloco.locator('[data-resultado]');
   await expect(resultado).toBeVisible();
   await expect(resultado).toBeFocused();
-  await expect(resultado.getByRole('heading')).toHaveText('Pedido validado');
-  await expect(resultado).toContainText('nenhum dado foi enviado nem guardado');
+  await expect(resultado.getByRole('heading')).toHaveText('Mensagem pronta para o WhatsApp');
+  // Nunca diz que o pedido foi enviado: só segue quando o visitante o enviar no WhatsApp.
+  await expect(resultado).toContainText('O pedido ainda não foi enviado');
+  await expect(resultado).not.toContainText(/pedido (foi )?enviado\b(?! nem)/i);
   await expect(resultado).not.toContainText(/reserva (está )?confirmada/i);
   const [a, m, d] = daquiA(10).split('-');
   await expect(resultado.locator('dl')).toContainText(`${d}/${m}/${a}`);
   await expect(resultado.locator('dl')).toContainText('Ana Machava');
-  // Sem número de WhatsApp configurado, não há ligação de WhatsApp.
-  await expect(resultado.locator('[data-resultado-whatsapp]')).toBeHidden();
+  // Ligação wa.me para o número oficial, com a mensagem pré-preenchida.
+  const wa = resultado.getByRole('link', { name: 'Continuar no WhatsApp' });
+  await expect(wa).toBeVisible();
+  await expect(wa).toHaveAttribute('href', /^https:\/\/wa\.me\/258848885556\?text=/);
+  await expect(wa).toHaveAttribute('target', '_blank');
+  await expect(wa).toHaveAttribute('rel', /noopener/);
+  const texto = decodeURIComponent((await wa.getAttribute('href'))!.split('?text=')[1]);
+  expect(texto).toContain('Nome: Ana Machava');
+  expect(texto).toContain(`Entrada: ${d}/${m}/${a}`);
   expect(envios).toEqual([]);
 
-  // A mensagem que seguirá pelo WhatsApp fica à vista, com o aviso de que aguarda o número oficial.
-  await expect(resultado).toContainText('aguarda a configuração do número oficial');
+  // A mesma mensagem fica à vista, para o visitante a rever.
   const mensagem = resultado.locator('[data-mensagem-texto]');
   await expect(mensagem).toContainText('Gostaria de consultar a disponibilidade de alojamento');
   await expect(mensagem).toContainText('Nome: Ana Machava');
@@ -108,21 +118,24 @@ test('evento: pedido de orçamento completo', async ({ page }) => {
   await form.getByRole('button', { name: 'Pedir orçamento' }).click();
 
   const resultado = bloco.locator('[data-resultado]');
-  await expect(resultado.getByRole('heading')).toHaveText('Pedido validado');
+  await expect(resultado.getByRole('heading')).toHaveText('Mensagem pronta para o WhatsApp');
   await expect(resultado.locator('dl')).toContainText('Reunião ou conferência');
   await expect(resultado.locator('dl')).toContainText('Associação Exemplo');
   expect(envios).toEqual([]);
 });
 
-test('formulários avisam que são de demonstração antes de serem preenchidos', async ({ page }) => {
+test('formulários explicam, antes de serem preenchidos, que o pedido segue pelo WhatsApp', async ({
+  page,
+}) => {
   for (const [caminho, seletor] of [
     ['/', '#disponibilidade form'],
     ['/eventos/', '#pedido form'],
   ] as const) {
     await page.goto(caminho);
     const form = page.locator(seletor);
-    await expect(form.getByText('Formulário de demonstração.')).toBeVisible();
-    await expect(form).toHaveAccessibleDescription(/nada é transmitido nem guardado/);
+    await expect(form.getByText('Pedido pelo WhatsApp.')).toBeVisible();
+    await expect(form).toHaveAccessibleDescription(/Nada é enviado nem guardado por este site/);
+    await expect(form.getByText('Formulário de demonstração.')).toHaveCount(0);
   }
 });
 
@@ -139,27 +152,44 @@ test('evento a partir da página inicial: separador próprio e confirmação hon
   await form.getByLabel('Número estimado de participantes').fill('25');
   await form.getByRole('button', { name: 'Pedir orçamento' }).click();
   const resultado = bloco.locator('[data-resultado]');
-  await expect(resultado.getByRole('heading')).toHaveText('Pedido validado');
-  await expect(resultado).toContainText('nenhum dado foi enviado nem guardado');
+  await expect(resultado.getByRole('heading')).toHaveText('Mensagem pronta para o WhatsApp');
+  await expect(resultado).toContainText('O pedido ainda não foi enviado');
+  await expect(resultado.getByRole('link', { name: 'Continuar no WhatsApp' })).toHaveAttribute(
+    'href',
+    /^https:\/\/wa\.me\/258848885556\?text=.*or%C3%A7amento/,
+  );
   expect(envios).toEqual([]);
 });
 
-test('contactos por confirmar aparecem como "A confirmar", sem ligações inventadas', async ({ page }) => {
+test('contactos: número oficial com ligações reais, e-mail "A confirmar" e direcções pelo Google Maps', async ({
+  page,
+}) => {
   await page.goto('/contactos/');
   const lista = page.locator('.contactos__lista');
-  for (const canal of ['Telefone', 'WhatsApp', 'E-mail']) {
-    await expect(lista.getByRole('listitem').filter({ hasText: canal })).toContainText('A confirmar');
-  }
-  await expect(page.getByText('estão a ser confirmados pelo Mulotane Lodge')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Obter direcções' })).toHaveCount(0);
-  await expect(page.locator('.como-chegar')).toContainText('Localização exacta a confirmar');
-  await expect(page.locator('.como-chegar')).toContainText('assim que o ponto exacto for confirmado');
-  await expect(page.locator('footer')).toContainText('A confirmar');
-  for (const caminho of ['/', '/contactos/', '/eventos/']) {
-    await page.goto(caminho);
-    await expect(page.locator('a[href*="wa.me"], a[href^="tel:"], a[href^="mailto:"]')).toHaveCount(0);
-    await expect(page.locator('a[href*="google."]')).toHaveCount(0);
-  }
+  await expect(lista.getByRole('link', { name: '+258 848 885556' }).first()).toHaveAttribute(
+    'href',
+    'tel:+258848885556',
+  );
+  const whatsapp = lista.getByRole('listitem').filter({ hasText: 'WhatsApp' }).getByRole('link');
+  await expect(whatsapp).toHaveAttribute('href', 'https://wa.me/258848885556');
+  await expect(whatsapp).toHaveAttribute('rel', /noopener/);
+  await expect(lista.getByRole('listitem').filter({ hasText: 'E-mail' })).toContainText('A confirmar');
+  await expect(page.getByRole('link', { name: /Falar pelo WhatsApp/ })).toHaveAttribute(
+    'href',
+    /^https:\/\/wa\.me\/258848885556\?text=/,
+  );
+
+  const direccoes = page.getByRole('link', { name: /Obter direcções/ });
+  await expect(direccoes).toHaveAttribute('href', 'https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6');
+  await expect(direccoes).toHaveAttribute('target', '_blank');
+  await expect(page.locator('.como-chegar img[src*="placa-entrada"]')).toHaveCount(1);
+  await expect(page.locator('.como-chegar')).not.toContainText('Localização exacta a confirmar');
+
+  const rodape = page.locator('footer');
+  await expect(rodape.getByRole('link', { name: /\+258 848 885556/ }).first()).toBeVisible();
+  await expect(rodape).toContainText('A confirmar');
+  // Nada inventado: nenhum e-mail nem redes sociais.
+  await expect(page.locator('a[href^="mailto:"]')).toHaveCount(0);
 });
 
 test('a mensagem preparada pode ser copiada', async ({ page, context, browserName }) => {

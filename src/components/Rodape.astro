@@ -1,11 +1,13 @@
 ---
 import { lodge } from '../config/lodge';
+import { fotografias } from '../data/fotografias';
 import { canaisContacto, navegacao } from '../lib/site';
 
 import Assinatura from './Assinatura.astro';
 import Icone from './Icone.astro';
 
 const ano = new Date().getFullYear();
+const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
 ---
 
 <footer class="rodape">
@@ -95,6 +97,11 @@ const ano = new Date().getFullYear();
       <li>
         <a href="/privacidade/">Política de privacidade</a>
       </li>
+      {comCapturas && (
+        <li>
+          <a href="/galeria/#creditos-titulo">Créditos fotográficos</a>
+        </li>
+      )}
       <li>Website por {lodge.demonstracao.autor}</li>
     </ul>
   </div>
