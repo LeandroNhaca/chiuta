@@ -92,7 +92,7 @@ test('barra de pedidos do telemóvel: aparece depois do hero e nunca tapa um for
   const barra = page.getByRole('navigation', { name: 'Pedidos' });
   await expect(barra).not.toHaveClass(/rapidas--visivel/);
 
-  await page.locator('#restaurante-titulo').scrollIntoViewIfNeeded();
+  await page.locator('#alojamento-titulo').scrollIntoViewIfNeeded();
   await expect(barra).toHaveClass(/rapidas--visivel/);
   await expect(barra.getByRole('link', { name: 'Orçamento' })).toBeInViewport();
 

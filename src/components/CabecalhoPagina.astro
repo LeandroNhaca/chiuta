@@ -1,7 +1,8 @@
 ---
 /**
- * Abertura das páginas interiores: caminho, título, introdução e acções sobre fundo claro e, quando há
- * fotografia real, a fotografia ao lado, num tamanho que respeita a resolução dos originais.
+ * Abertura das páginas interiores. Com fotografia: a fotografia real ocupa a largura do ecrã, com o título
+ * por cima (chega por tempo, sai ao descer, como na página inicial, mas mais curta). Sem fotografia (galeria,
+ * contactos, privacidade): uma faixa clara e rápida, sem animação de chegada.
  */
 import type { IdFotografia } from '../data/fotografias';
 
@@ -11,42 +12,33 @@ interface Props {
   titulo: string;
   intro: string;
   foto?: IdFotografia;
-  /** Quadrada para fotografias verticais ou quadradas; paisagem para as horizontais. */
-  formato?: 'arco' | 'paisagem';
-  /** Classe de enquadramento da fotografia (ver os estilos abaixo). */
+  /** Enquadramento da fotografia (ver os estilos abaixo). */
   enquadramento?: 'centro' | 'baixo' | 'cima' | 'esquerda';
 }
 
-const { titulo, intro, foto, formato = 'arco', enquadramento = 'centro' } = Astro.props;
+const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
 const temAccoes = Astro.slots.has('accoes');
 ---
 
-<section class:list={['topo', { 'topo--com-foto': foto }]} aria-labelledby="topo-titulo">
-  <div class="contentor topo__grelha">
-    <div class="topo__texto">
-      <nav class="topo__caminho" aria-label="Caminho">
-        <a href="/">Início</a>
-        <span aria-hidden="true">/</span>
-        <span aria-current="page">{titulo}</span>
-      </nav>
-      <h1 id="topo-titulo">
-        <slot name="titulo">{titulo}</slot>
-      </h1>
-      <p class="lead">{intro}</p>
-      {temAccoes && (
-        <div class="accoes topo__accoes">
-          <slot name="accoes" />
-        </div>
-      )}
+<section class:list={['topo', { 'topo--foto': foto }]} aria-labelledby="topo-titulo">
+  {foto && (
+    <div class="topo__fundo">
+      <Foto id={foto} prioridade sizes="100vw" class:list={['topo__foto', `topo__foto--${enquadramento}`]} />
     </div>
-    {foto && (
-      <div class:list={['topo__figura', `topo__figura--${formato}`]}>
-        <Foto
-          id={foto}
-          prioridade
-          sizes="(min-width: 900px) 560px, 92vw"
-          class:list={['foto', 'topo__foto', `topo__foto--${enquadramento}`]}
-        />
+  )}
+  <div class="contentor topo__texto">
+    <nav class="topo__caminho topo__entrar" aria-label="Caminho">
+      <a href="/">Início</a>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{titulo}</span>
+    </nav>
+    <h1 id="topo-titulo" class="topo__entrar">
+      <slot name="titulo">{titulo}</slot>
+    </h1>
+    <p class="lead topo__entrar">{intro}</p>
+    {temAccoes && (
+      <div class="accoes topo__accoes topo__entrar">
+        <slot name="accoes" />
       </div>
     )}
   </div>
@@ -55,22 +47,12 @@ const temAccoes = Astro.slots.has('accoes');
 <style>
   .topo {
     position: relative;
-    padding-block: clamp(28px, 5vw, 72px) clamp(48px, 7vw, 96px);
+    padding-block: clamp(28px, 5vw, 64px) clamp(40px, 6vw, 72px);
     background: var(--cinzento);
-  }
-  .topo__grelha {
-    display: grid;
-    gap: clamp(28px, 5vw, 64px);
-    align-items: center;
-  }
-  @media (min-width: 900px) {
-    .topo--com-foto .topo__grelha {
-      grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-    }
   }
   .topo__texto {
     display: grid;
-    gap: 20px;
+    gap: 18px;
     justify-items: start;
   }
   .topo__caminho {
@@ -99,14 +81,41 @@ const temAccoes = Astro.slots.has('accoes');
   .topo__accoes {
     margin-top: 6px;
   }
+
+  /* ---------- Com fotografia: grande formato, texto por cima ---------- */
+  .topo--foto {
+    --foco: var(--dourado);
+    display: grid;
+    align-items: end;
+    min-height: clamp(460px, 74svh, 760px);
+    padding-block: clamp(96px, 14vh, 160px) clamp(40px, 7vh, 72px);
+    overflow: hidden;
+    background: var(--verde-profundo);
+    color: var(--branco);
+    isolation: isolate;
+  }
+  .topo__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .topo__fundo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(5 22 18 / 0.88) 0%, rgb(5 22 18 / 0.45) 50%, rgb(5 22 18 / 0.15) 85%),
+      linear-gradient(to right, rgb(5 22 18 / 0.5), rgb(5 22 18 / 0) 60%);
+  }
   .topo :global(.topo__foto) {
     display: block;
-    aspect-ratio: 4 / 3;
-    box-shadow: var(--sombra);
+    width: 100%;
+    height: 100%;
   }
-  .topo__figura--arco :global(.topo__foto) {
-    aspect-ratio: 1 / 1;
-    max-height: 560px;
+  .topo :global(.topo__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
   .topo :global(.topo__foto--baixo img) {
     object-position: 50% 75%;
@@ -116,5 +125,76 @@ const temAccoes = Astro.slots.has('accoes');
   }
   .topo :global(.topo__foto--esquerda img) {
     object-position: 25% 50%;
+  }
+  .topo--foto .topo__caminho,
+  .topo--foto .topo__caminho [aria-current='page'],
+  .topo--foto .lead {
+    color: rgb(250 248 243 / 0.9);
+  }
+  .topo--foto h1 {
+    max-width: 14ch;
+  }
+  .topo--foto :global(.ligacao-seta) {
+    color: var(--dourado-claro);
+  }
+
+  /* Chegada e saída, só nas aberturas com fotografia. */
+  @media (prefers-reduced-motion: no-preference) {
+    .topo--foto :global(.topo__foto) {
+      animation: topo-afastar 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .topo--foto .topo__entrar {
+      animation: topo-chegar 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .topo--foto .topo__entrar:nth-child(2) {
+      animation-delay: 0.08s;
+    }
+    .topo--foto .topo__entrar:nth-child(3) {
+      animation-delay: 0.18s;
+    }
+    .topo--foto .topo__entrar:nth-child(4) {
+      animation-delay: 0.28s;
+    }
+    @supports (animation-timeline: view()) {
+      .topo--foto :global(.topo__foto img) {
+        animation: topo-paralaxe linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+      }
+      .topo--foto .topo__texto {
+        animation: topo-sair linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 80%;
+      }
+    }
+  }
+  @keyframes topo-afastar {
+    from {
+      transform: scale(1.06);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes topo-chegar {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes topo-paralaxe {
+    to {
+      transform: translateY(14%);
+    }
+  }
+  @keyframes topo-sair {
+    to {
+      opacity: 0;
+      transform: translateY(-60px);
+    }
   }
 </style>

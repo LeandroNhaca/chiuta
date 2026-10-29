@@ -6,6 +6,7 @@ Website de demonstração comercial para o **Mulotana Lodge** (Bairro de Mulotan
 - Repositório: `LeandroNhaca/chiuta`
 - O que falta confirmar com o proprietário: [`docs/VALIDACAO.md`](docs/VALIDACAO.md)
 - Auditoria de 29/10/2026: [`docs/AUDITORIA.md`](docs/AUDITORIA.md)
+- Experiência cinematográfica (relatório por página): [`docs/MOVIMENTO.md`](docs/MOVIMENTO.md)
 - Envio dos pedidos (o que existe e o que falta): [`docs/ENVIO-PEDIDOS.md`](docs/ENVIO-PEDIDOS.md)
 - Publicação no VPS: [`docs/PUBLICACAO.md`](docs/PUBLICACAO.md)
 - Testes executados: [`docs/RELATORIO-TESTES.md`](docs/RELATORIO-TESTES.md)
@@ -54,7 +55,8 @@ A confirmar com o proprietário: a marca (Mulotana ou Mulotane), os preços, as 
 
 - [Astro 6](https://astro.build) em modo estático, TypeScript estrito, sem framework de UI nem dependências em runtime.
 - CSS próprio com tokens: verde-floresta `#0B3027` (identidade), dourado `#C7A15A` (acções principais e acentos), branco quente `#FAF8F3`. Cores mantidas a pedido do responsável (29/10/2026); o logótipo oficial, colorido, aparece sobre o cabeçalho claro.
-- Tipografia Manrope (ficheiro latino servido pelo próprio site, licença OFL em `public/fonts/`).
+- Títulos em Cormorant Garamond e texto em Manrope, servidos pelo próprio site (licenças OFL em `public/fonts/`).
+- Movimento só com CSS (`src/styles/cinema.css` e `src/components/Cenas.astro`): scroll-driven animations, palco de cenas preso ao ecrã e View Transitions entre páginas. Sem bibliotecas, com movimento reduzido respeitado e conteúdo visível sem JavaScript (ver `docs/MOVIMENTO.md`).
 - JavaScript mínimo e só onde é preciso (cabeçalho, formulários, separadores de pedidos, barra móvel, galeria, mapa a pedido).
 - Imagens AVIF + WebP em várias larguras, com `width`/`height` explícitos e `loading="lazy"` fora do primeiro ecrã.
 - Content-Security-Policy estrita (sem `unsafe-inline`), sem cookies, sem estatísticas, sem pedidos a terceiros ao carregar (o mapa só carrega a pedido).
@@ -130,7 +132,9 @@ python3 -m venv .venv-imagens
 .venv-imagens/bin/python scripts/imagens/tratar_fotografias.py
 ```
 
-O script só corrige a técnica (luz, contraste, ruído, nitidez e optimização para a web), sem mexer na saturação nem no conteúdo. Para acrescentar uma fotografia: colocar o original em `assets-originais/mulotane/real/`, acrescentar uma entrada em `FOTOGRAFIAS` no script e em `metadados` em `src/data/fotografias.ts`.
+O script faz o acabamento técnico (níveis, luz, contraste global e local, vibração moderada, ruído, nitidez e optimização para a web), sem alterar o conteúdo e sem IA generativa. As fotografias de grande formato têm uma versão de 1600 px.
+
+Vídeos: quando houver ficheiros originais do lodge, `scripts/videos/tratar_video.sh <original> <nome> [início] [duração]` estabiliza, limpa, corrige a cor e exporta MP4 + WebM + capa para `public/videos/mulotane/`. Para acrescentar uma fotografia: colocar o original em `assets-originais/mulotane/real/`, acrescentar uma entrada em `FOTOGRAFIAS` no script e em `metadados` em `src/data/fotografias.ts`.
 
 Logótipo transparente e ícones (favicon.ico 16/32/48, favicon.png, apple-touch-icon e ícones do manifesto), a partir do logótipo do perfil do Instagram (`assets-originais/mulotane/marca/`):
 

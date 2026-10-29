@@ -11,13 +11,13 @@ import Base from '../layouts/Base.astro';
 
 <Base
   titulo="Restaurante"
+  movimento="moderado"
   descricao="O restaurante do Mulotana Lodge, em Boane: sala de refeições ampla e buffets para grupos e eventos. Fale com a equipa para conhecer o menu e os horários."
 >
   <CabecalhoPagina
     titulo="Restaurante"
     intro="Uma sala de refeições ampla, com janelas largas sobre o jardim."
-    foto="sala-refeicoes-bar"
-    formato="paisagem"
+    foto="restaurante-janelas"
   >
     <BotaoWhatsApp
       slot="accoes"
@@ -30,11 +30,11 @@ import Base from '../layouts/Base.astro';
   <section class="secao secao--clara" aria-labelledby="mesa-titulo">
     <div class="contentor grelha grelha--texto-foto">
       <div class="bloco-titulo">
-        <p class="etiqueta">À mesa</p>
-        <h2 id="mesa-titulo">
+        <p class="etiqueta c-revelar">À mesa</p>
+        <h2 id="mesa-titulo" class="c-titulo">
           Refeições para hóspedes, <em>grupos e eventos.</em>
         </h2>
-        <div class="texto">
+        <div class="texto c-revelar">
           <p>
             As fotografias mostram a sala de refeições, com janelas a toda a volta, e os buffets montados para
             grupos e eventos.
@@ -56,13 +56,13 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
       <ul class="mosaico">
-        <li class="mosaico__a">
-          <Foto id="restaurante-janelas" sizes="(min-width: 900px) 640px, 92vw" class="foto" />
+        <li class="mosaico__a c-cortina">
+          <Foto id="sala-refeicoes-bar" sizes="(min-width: 900px) 640px, 92vw" class="foto" />
         </li>
-        <li>
+        <li class="c-cortina">
           <Foto id="restaurante-buffet-sala" sizes="(min-width: 900px) 310px, 46vw" class="foto" />
         </li>
-        <li>
+        <li class="c-cortina">
           <Foto id="restaurante-buffet" sizes="(min-width: 900px) 310px, 46vw" class="foto" />
         </li>
       </ul>
@@ -72,8 +72,8 @@ import Base from '../layouts/Base.astro';
   <section class="secao secao--cinza" aria-labelledby="oferta-titulo">
     <div class="contentor grelha grelha--metades oferta">
       <div class="bloco-titulo">
-        <p class="etiqueta">A oferta</p>
-        <h2 id="oferta-titulo">
+        <p class="etiqueta c-revelar">A oferta</p>
+        <h2 id="oferta-titulo" class="c-titulo">
           Horários, menu e <em>preços.</em>
         </h2>
         <div class="texto">
@@ -82,7 +82,7 @@ import Base from '../layouts/Base.astro';
             pelo telefone de reservas.
           </p>
         </div>
-        <figure class="sala">
+        <figure class="sala c-paralaxe">
           <Foto id="sala-refeicoes" sizes="(min-width: 900px) 560px, 92vw" class="foto sala__foto" />
           <figcaption class="legenda">Sala com janelas amplas sobre a vegetação.</figcaption>
         </figure>
@@ -93,8 +93,8 @@ import Base from '../layouts/Base.astro';
 
   <section class="secao secao--clara" aria-labelledby="explorar-titulo">
     <div class="contentor">
-      <p class="etiqueta">Continue a explorar</p>
-      <h2 id="explorar-titulo" class="explorar__titulo">
+      <p class="etiqueta c-revelar">Continue a explorar</p>
+      <h2 id="explorar-titulo" class="explorar__titulo c-titulo">
         Mais para descobrir no lodge.
       </h2>
       <IndiceServicos variante="cartoes" excluir="restaurante" />
@@ -111,6 +111,9 @@ import Base from '../layouts/Base.astro';
     padding: 0;
     list-style: none;
   }
+  .mosaico li {
+    border-radius: var(--raio-l);
+  }
   .mosaico__a {
     grid-column: 1 / -1;
   }
@@ -126,6 +129,7 @@ import Base from '../layouts/Base.astro';
   }
   .sala {
     margin: 8px 0 0;
+    border-radius: var(--raio-l);
   }
   .sala :global(.sala__foto) {
     display: block;

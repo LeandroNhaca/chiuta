@@ -14,10 +14,10 @@ Só estão aqui verificações que foram de facto executadas.
 | Tipos | `npm run check` (astro check, TypeScript 6 estrito) | 0 erros, 0 avisos |
 | Unitários | `npm test` (Vitest, com a API de contentor do Astro) | 46/46 |
 | Build de produção | `npm run build` | 9 páginas + robots.txt + sitemap.xml |
-| End-to-end | `npm run test:e2e` (Playwright, 5 tamanhos de ecrã) | 127 passaram, 98 ignorados de propósito, 0 falhas |
+| End-to-end | `npm run test:e2e` (Playwright, 5 tamanhos de ecrã) | 140 passaram, 125 ignorados de propósito, 0 falhas |
 | Servidor web | contentor `nginx-unprivileged` só de leitura com o `dist/` e a configuração de `deploy/nginx/` | ✓ (ver abaixo) |
 
-Os 98 testes "ignorados" são intencionais. Os pesados (formulários, galeria, axe, imagens e ligações) e os específicos do telemóvel ou do computador só correm nos tamanhos de ecrã relevantes.
+Os 125 testes "ignorados" são intencionais. Os pesados (formulários, galeria, axe, imagens e ligações) e os específicos do telemóvel ou do computador só correm nos tamanhos de ecrã relevantes.
 
 O `docker build` completo não correu nesta sessão: o `npm ci` dentro do Docker não chega ao registo npm através do proxy da sessão. A imagem completa é construída e testada no GitHub Actions.
 
@@ -110,18 +110,20 @@ Tamanhos: telemóvel pequeno (360×740), telemóvel (Pixel 7), tablet (820×1180
   - dados estruturados com a morada, as coordenadas, o telefone, o e-mail, o logótipo e as redes.
 - **Acessibilidade**: axe-core WCAG 2.0/2.1 A e AA + boas práticas, em todas as páginas, no telemóvel e no portátil: **0 violações**.
 
-## Desempenho (medido localmente, sem limitação de rede)
+## Desempenho (medido localmente, sem limitação de rede, depois da experiência cinematográfica)
 
 | Página | Ecrã | Transferido no carregamento | LCP (local) | CLS |
 | --- | --- | --- | --- | --- |
-| `/` | 390×844 @3x | 215 KB | 88 ms | 0,000 |
-| `/` | 1440×900 | 203 KB | 108 ms | 0,000 |
-| `/eventos/` | 390×844 @3x | 180 KB | 100 ms | 0,000 |
-| `/eventos/` | 1440×900 | 111 KB | 80 ms | 0,000 |
-| `/galeria/` | 390×844 @3x | 275 KB | 84 ms | 0,000 |
-| `/galeria/` | 1440×900 | 335 KB | 96 ms | 0,000 |
+| `/` | 390×844 @3x | 339 KB | 196 ms | 0,000 |
+| `/` | 1440×900 | 588 KB | 216 ms | 0,000 |
+| `/eventos/` | 390×844 @3x | 248 KB | 152 ms | 0,000 |
+| `/eventos/` | 1440×900 | 280 KB | 160 ms | 0,000 |
+| `/galeria/` | 390×844 @3x | 322 KB | 96 ms | 0,000 |
+| `/galeria/` | 1440×900 | 386 KB | 128 ms | 0,000 |
 
-A página inicial pesa menos do que na revisão anterior (318 KB no telemóvel), porque a fonte serifada saiu e as fotografias não passam de 1080 px. O LCP local não inclui a latência da rede móvel.
+A página inicial pesa mais no computador. A abertura em ecrã inteiro usa a versão de 1600 px da fotografia (104 KB em AVIF), e as fotografias do palco carregam quando o palco se aproxima. As fontes serifadas dos títulos voltaram.
+
+O LCP local não inclui a latência da rede móvel.
 
 ## Servidor web (contentor nginx com o site construído)
 
@@ -156,3 +158,23 @@ Nenhum erro nos registos do nginx. A CSP gerada permite iframes só do OpenStree
 - **Envio para um backend real**: não há destino aprovado (ver `docs/ENVIO-PEDIDOS.md`); só contra um servidor simulado.
 - **Mapa e Google Maps reais**: esta sessão não consegue abrir o OpenStreetMap nem o Google Maps. O teste verifica o endereço do iframe, mas o conteúdo foi simulado.
 - **Coordenadas**: não foram comparadas com a ficha do lodge num mapa.
+
+## Experiência cinematográfica (testes novos, `tests/e2e/movimento.spec.ts`)
+
+- **Computador**:
+  - o palco da página inicial fica preso ao ecrã (`position: sticky`);
+  - o índice leva a cada cena: na cena 3, o texto da cena 3 está visível e o da cena 1 não;
+  - a última cena não sai, e a página continua depois do palco.
+- **Teclado**: uma ligação de cena com foco fica sempre visível.
+- **Telemóvel**: o palco é uma lista normal e os quatro textos estão visíveis.
+- **Movimento reduzido**:
+  - em cinco páginas, todo o conteúdo animável está visível (opacidade 1) sem descer;
+  - o palco não fica preso ao ecrã;
+  - não há barra de progresso;
+  - o título está visível de imediato.
+- **Sem JavaScript**: na página inicial, no alojamento e nos eventos, cada bloco animado fica visível ao chegar a ele.
+- **Contactos e privacidade**: movimento mínimo, sem barra de progresso e sem animações de entrada.
+- **Barra de progresso**: acompanha a leitura (de 0 a 1).
+- **Acessibilidade (axe)**:
+  - avaliada no estado final do conteúdo (movimento reduzido), em todas as páginas;
+  - o palco animado é avaliado à parte, a meio de uma cena.

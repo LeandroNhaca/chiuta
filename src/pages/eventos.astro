@@ -1,7 +1,7 @@
 ---
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Cenas, { type Cena } from '../components/Cenas.astro';
 import FichaServico from '../components/FichaServico.astro';
-import Foto from '../components/Foto.astro';
 import FormularioEvento from '../components/FormularioEvento.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
@@ -13,6 +13,42 @@ const exterior = lodge.detalhes.eventos.find((d) => d.rotulo === 'Eventos ao ar 
 // Capacidades tal como o lodge as publicou (src/config/lodge.ts → detalhes.eventos).
 const capacidades = salas?.valor.match(/\d+/g) ?? [];
 const capacidadeExterior = exterior?.valor.match(/\d+/)?.[0];
+// As montagens das salas, tal como aparecem nas fotografias do lodge; cada cena leva ao pedido de orçamento.
+const orcamento = { href: '#pedido', texto: 'Pedir orçamento' };
+const montagens: Cena[] = [
+  {
+    id: 'plateia',
+    etiqueta: 'Montagem',
+    titulo: 'Em plateia',
+    texto: 'Filas de mesas viradas para a mesa de honra, para conferências e formações.',
+    foto: 'sala-conferencias-plateia',
+    ligacao: orcamento,
+  },
+  {
+    id: 'u',
+    etiqueta: 'Montagem',
+    titulo: 'Em U, com ecrã',
+    texto: 'Mesas em U à volta da mesa de honra e do ecrã de projecção, para reuniões e workshops.',
+    foto: 'sala-conferencias-u',
+    ligacao: orcamento,
+  },
+  {
+    id: 'mesa-de-honra',
+    etiqueta: 'Montagem',
+    titulo: 'Estrado e mesa de honra',
+    texto: 'Estrado, mesa de honra e púlpito, para sessões formais e cerimónias.',
+    foto: 'sala-conferencias-palco',
+    ligacao: orcamento,
+  },
+  {
+    id: 'buffet',
+    etiqueta: 'Refeições',
+    titulo: 'Buffet para os participantes',
+    texto: 'Um balcão de buffet montado para um evento. Indique no pedido as refeições que pretende.',
+    foto: 'buffet-evento',
+    ligacao: orcamento,
+  },
+];
 const tipos = [
   'Reuniões empresariais',
   'Formações e workshops',
@@ -40,11 +76,11 @@ const tipos = [
   <section class="secao secao--clara" aria-labelledby="salas-titulo">
     <div class="contentor">
       <div class="bloco-titulo salas__topo">
-        <p class="etiqueta">As salas</p>
-        <h2 id="salas-titulo">
+        <p class="etiqueta c-revelar">As salas</p>
+        <h2 id="salas-titulo" class="c-titulo">
           Um espaço à medida do <em>seu evento.</em>
         </h2>
-        <div class="texto">
+        <div class="texto c-revelar">
           <p>
             Da reunião de equipa à conferência com centenas de participantes. Diga-nos quantas pessoas espera
             e como quer a sala montada: plateia, em U ou com mesa de honra.
@@ -52,7 +88,7 @@ const tipos = [
         </div>
       </div>
       {capacidades.length > 0 && (
-        <ul class="salas" aria-label="Capacidade dos espaços">
+        <ul class="salas c-cartoes" aria-label="Capacidade dos espaços">
           {capacidades.map((n) => (
             <li class="sala">
               <span class="sala__numero">{n}</span>
@@ -78,28 +114,30 @@ const tipos = [
           </span>
         </p>
       )}
-      <ul class="fotos" aria-label="Fotografias das salas">
-        <li class="fotos__a">
-          <Foto id="sala-conferencias-plateia" sizes="(min-width: 1240px) 1160px, 92vw" class="foto" />
-          <span class="legenda">Sala montada em plateia.</span>
-        </li>
-        <li>
-          <Foto id="sala-conferencias-u" sizes="(min-width: 900px) 600px, 46vw" class="foto" />
-          <span class="legenda">Montagem em U, com ecrã.</span>
-        </li>
-        <li>
-          <Foto id="buffet-evento" sizes="(min-width: 900px) 600px, 46vw" class="foto" />
-          <span class="legenda">Buffet montado para um evento.</span>
-        </li>
-      </ul>
+    </div>
+  </section>
+
+  <section class="secao secao--escura montagens" aria-labelledby="montagens-titulo">
+    <div class="contentor montagens__intro">
+      <p class="etiqueta c-revelar">As montagens</p>
+      <h2 id="montagens-titulo" class="c-titulo">
+        A sala como o seu evento <em>precisa.</em>
+      </h2>
+    </div>
+    <Cenas id="montagem" cenas={montagens} variante="compacta" rotulo="Montagens das salas" />
+    <div class="contentor montagens__fecho">
+      <a class="botao botao--principal" href="#pedido">
+        Pedir orçamento para um evento
+        <Icone nome="seta" tamanho={18} />
+      </a>
     </div>
   </section>
 
   <section id="pedido" class="secao secao--cinza pedido-evento" aria-labelledby="pedido-titulo">
     <div class="contentor grelha pedido-evento__grelha">
       <div class="bloco-titulo pedido-evento__intro">
-        <p class="etiqueta">Orçamento</p>
-        <h2 id="pedido-titulo">
+        <p class="etiqueta c-revelar">Orçamento</p>
+        <h2 id="pedido-titulo" class="c-titulo">
           Pedir orçamento para um <em>evento.</em>
         </h2>
         <div class="texto">
@@ -127,8 +165,8 @@ const tipos = [
   <section class="secao secao--clara" aria-labelledby="reunir-titulo">
     <div class="contentor grelha grelha--metades reunir">
       <div class="bloco-titulo">
-        <p class="etiqueta">Reunir e celebrar</p>
-        <h2 id="reunir-titulo">
+        <p class="etiqueta c-revelar">Reunir e celebrar</p>
+        <h2 id="reunir-titulo" class="c-titulo">
           Eventos que pode <em>organizar.</em>
         </h2>
         <ul class="lista-traco reunir__tipos">
@@ -149,8 +187,8 @@ const tipos = [
 
   <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
     <div class="contentor">
-      <p class="etiqueta">Continue a explorar</p>
-      <h2 id="explorar-titulo" class="explorar__titulo">
+      <p class="etiqueta c-revelar">Continue a explorar</p>
+      <h2 id="explorar-titulo" class="explorar__titulo c-titulo">
         Mais para descobrir no lodge.
       </h2>
       <IndiceServicos variante="cartoes" excluir="eventos" />
@@ -185,10 +223,11 @@ const tipos = [
     background: #fff;
   }
   .sala__numero {
+    font-family: var(--serif);
     font-size: clamp(2.2rem, 1.7rem + 2vw, 3.2rem);
-    font-weight: 800;
+    font-weight: 600;
     line-height: 1;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
     color: var(--dourado-texto);
   }
   .sala--exterior .sala__numero {
@@ -214,28 +253,14 @@ const tipos = [
     margin-top: 3px;
     color: var(--dourado-texto);
   }
-  .fotos {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-    margin: clamp(32px, 4vw, 48px) 0 0;
-    padding: 0;
-    list-style: none;
+  .montagens {
+    padding-bottom: clamp(48px, 6vw, 80px);
   }
-  .fotos li {
-    display: grid;
-    gap: 2px;
-    align-content: start;
+  .montagens__intro {
+    margin-bottom: clamp(28px, 4vw, 48px);
   }
-  .fotos__a {
-    grid-column: 1 / -1;
-  }
-  .fotos :global(.foto) {
-    display: block;
-    aspect-ratio: 4 / 3;
-  }
-  .fotos__a :global(.foto) {
-    aspect-ratio: 16 / 9;
+  .montagens__fecho {
+    margin-top: clamp(32px, 4vw, 48px);
   }
 
   /* Telemóvel: título, formulário e só depois a lista de apoio. Computador: duas colunas. */

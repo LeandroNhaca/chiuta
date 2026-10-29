@@ -35,7 +35,7 @@ const usadas = (Object.keys(categorias) as Categoria[])
   <p class="visualmente-oculto" role="status" data-filtro-estado></p>
   <ul class="galeria__grelha">
     {fotografias.map((f) => (
-      <li data-categoria={f.categoria}>
+      <li class="c-revelar" data-categoria={f.categoria}>
         <a
           class="galeria__item"
           href={urlFotografia(f)}

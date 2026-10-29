@@ -1,5 +1,6 @@
 ---
 import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+import Cenas, { type Cena } from '../components/Cenas.astro';
 import ComoChegar from '../components/ComoChegar.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
@@ -15,6 +16,48 @@ const salas = lodge.detalhes.eventos.find((d) => d.rotulo === 'Salas de conferê
 const exterior = lodge.detalhes.eventos.find((d) => d.rotulo === 'Eventos ao ar livre');
 // Capacidades das salas tal como o lodge as publicou (src/config/lodge.ts → detalhes.eventos).
 const capacidades = salas?.valor.match(/\d+/g) ?? [];
+
+const cenas: Cena[] = [
+  {
+    id: 'alojamento',
+    etiqueta: 'Alojamento',
+    titulo: 'Quartos para descansar',
+    texto:
+      'Para uma noite, um fim de semana ou um grupo inteiro, depois de um dia de lazer, de trabalho ou de celebração.',
+    foto: 'quarto-cadeirao',
+    detalhe: 'quarto-cama-redonda',
+    ligacao: { href: '/alojamento/', texto: 'Ver o alojamento' },
+  },
+  {
+    id: 'conferencias',
+    etiqueta: 'Conferências',
+    titulo: 'Salas para reunir',
+    texto: salas?.valor
+      ? `${salas.valor}, segundo o lodge: reuniões, formações, conferências e encontros de grupo.`
+      : 'Reuniões, formações, conferências e encontros de grupo.',
+    foto: 'sala-conferencias-plateia',
+    detalhe: 'sala-conferencias-u',
+    ligacao: { href: '/eventos/', texto: 'Conhecer as salas' },
+  },
+  {
+    id: 'piscinas',
+    etiqueta: 'Piscinas e jardins',
+    titulo: 'Lazer ao ar livre',
+    texto: 'Piscinas entre palmeiras e jardins cuidados, com esplanadas à sombra das árvores.',
+    foto: 'piscina-topiaria',
+    detalhe: 'piscina-cascata',
+    ligacao: { href: '/piscinas/', texto: 'Piscinas e jardins' },
+  },
+  {
+    id: 'restaurante',
+    etiqueta: 'Restaurante',
+    titulo: 'À mesa',
+    texto: 'Uma sala ampla, com janelas a toda a volta, e buffets para grupos e eventos.',
+    foto: 'restaurante-janelas',
+    detalhe: 'restaurante-buffet',
+    ligacao: { href: '/restaurante/', texto: 'Conhecer o restaurante' },
+  },
+];
 ---
 
 <Base
@@ -23,56 +66,52 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
   descricao="Alojamento, salas de conferências, restaurante e piscina em Boane, província de Maputo. Consulte a disponibilidade ou peça um orçamento para o seu evento."
   dadosEstruturados={dadosLodge(site)}
 >
+  <!-- Abertura: a fotografia ocupa o ecrã; ao descer, o texto sai mais depressa do que a imagem. -->
   <section class="hero" aria-labelledby="hero-titulo">
-    <div class="contentor hero__grelha">
-      <div class="hero__texto">
-        <p class="etiqueta">Boane · Província de Maputo</p>
-        <h1 id="hero-titulo">{lodge.nome}</h1>
-        <p class="hero__subtitulo">
-          O seu espaço para descansar, <em>celebrar e reunir.</em>
-        </p>
-        <p class="hero__apoio">
-          Descubra um espaço em Boane dedicado ao alojamento, ao lazer e à realização de eventos. Consulte a
-          disponibilidade e fale directamente com a nossa equipa.
-        </p>
-        <div class="accoes hero__accoes">
-          <a class="botao botao--principal" href="#disponibilidade">
-            Consultar disponibilidade
-            <Icone nome="seta" tamanho={18} />
-          </a>
-          <a class="botao botao--verde" href="#orcamento">
-            Pedir orçamento para um evento
-          </a>
-          <a class="ligacao-seta" href="#o-lodge">
-            <span>Explorar o lodge</span>
-            <Icone nome="seta" tamanho={18} />
-          </a>
-        </div>
-      </div>
-      <figure class="hero__figura">
-        <Foto
-          id="piscina-palmeiras"
-          prioridade
-          sizes="(min-width: 1240px) 600px, (min-width: 900px) 48vw, 100vw"
-          class="foto hero__foto"
-        />
-        <figcaption class="hero__legenda">
-          <Icone nome="ondas" tamanho={16} />A piscina e o edifício de colmo
-        </figcaption>
-      </figure>
+    <div class="hero__fundo">
+      <Foto id="piscina-palmeiras" prioridade sizes="100vw" class="hero__foto" />
     </div>
+    <div class="contentor hero__texto">
+      <p class="etiqueta etiqueta--clara hero__entrar">Boane · Província de Maputo</p>
+      <h1 id="hero-titulo" class="hero__entrar">
+        {lodge.nome}
+      </h1>
+      <p class="hero__subtitulo hero__entrar">
+        O seu espaço para descansar, <em>celebrar e reunir.</em>
+      </p>
+      <p class="hero__apoio hero__entrar">
+        Descubra um espaço em Boane dedicado ao alojamento, ao lazer e à realização de eventos. Consulte a
+        disponibilidade e fale directamente com a nossa equipa.
+      </p>
+      <div class="accoes hero__accoes hero__entrar">
+        <a class="botao botao--principal" href="#disponibilidade">
+          Consultar disponibilidade
+          <Icone nome="seta" tamanho={18} />
+        </a>
+        <a class="botao botao--contorno-claro" href="#orcamento">
+          Pedir orçamento para um evento
+        </a>
+        <a class="ligacao-seta hero__explorar" href="#o-lodge">
+          <span>Explorar o lodge</span>
+          <Icone nome="seta" tamanho={18} />
+        </a>
+      </div>
+    </div>
+    <p class="hero__legenda">
+      <Icone nome="ondas" tamanho={16} />A piscina e o edifício de colmo
+    </p>
   </section>
 
   <section id="o-lodge" class="secao secao--cinza apresentacao" aria-labelledby="apresentacao-titulo">
     <div class="contentor">
       <div class="apresentacao__topo">
         <div class="bloco-titulo">
-          <p class="etiqueta">O lodge</p>
-          <h2 id="apresentacao-titulo">
+          <p class="etiqueta c-revelar">O lodge</p>
+          <h2 id="apresentacao-titulo" class="c-titulo">
             Alojamento, conferências e lazer <em>em Boane.</em>
           </h2>
         </div>
-        <div class="texto apresentacao__texto">
+        <div class="texto apresentacao__texto c-revelar">
           <p>
             Entre a localidade de Mulotana e as margens do rio Matola, o {lodge.nome} reúne quartos para
             descansar, salas de conferências, um restaurante e uma área de lazer com piscina e jardins.
@@ -87,14 +126,25 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
     </div>
   </section>
 
-  <section class="secao secao--escura eventos" aria-labelledby="eventos-titulo">
+  <!-- O palco de cenas: preso ao ecrã no computador; lista de cenas no telemóvel. -->
+  <section class="secao secao--escura experiencia" aria-labelledby="experiencia-titulo">
+    <div class="contentor experiencia__intro">
+      <p class="etiqueta c-revelar">Conhecer o lodge</p>
+      <h2 id="experiencia-titulo" class="c-titulo">
+        Quatro espaços, <em>um só lugar.</em>
+      </h2>
+    </div>
+    <Cenas id="cena" cenas={cenas} rotulo="Espaços do lodge" />
+  </section>
+
+  <section class="secao secao--clara eventos" aria-labelledby="eventos-titulo">
     <div class="contentor grelha grelha--texto-foto eventos__grelha">
       <div class="bloco-titulo">
-        <p class="etiqueta">Conferências e eventos</p>
-        <h2 id="eventos-titulo">
+        <p class="etiqueta c-revelar">Conferências e eventos</p>
+        <h2 id="eventos-titulo" class="c-titulo">
           Salas para reunir, espaço para <em>celebrar.</em>
         </h2>
-        <div class="texto">
+        <div class="texto c-revelar">
           <p>
             Reuniões de empresa, formações, conferências, encontros de grupo e celebrações. Indique a data, o
             número de participantes e o que precisa: a equipa prepara o orçamento e confirma a sala.
@@ -102,7 +152,7 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
         </div>
         {capacidades.length > 0 && (
           <div class="capacidades">
-            <ul class="capacidades__lista" aria-label="Capacidade das salas de conferências">
+            <ul class="capacidades__lista c-cartoes" aria-label="Capacidade das salas de conferências">
               {capacidades.map((n) => (
                 <li>
                   <span class="capacidades__numero">{n}</span>
@@ -117,7 +167,7 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
             </p>
           </div>
         )}
-        <div class="accoes">
+        <div class="accoes c-revelar">
           <a class="botao botao--principal" href="#orcamento">
             Pedir orçamento para um evento
             <Icone nome="seta" tamanho={18} />
@@ -130,32 +180,28 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
       </div>
       <div class="eventos__fotos">
         <Foto
-          id="sala-conferencias-plateia"
-          sizes="(min-width: 900px) 560px, 92vw"
-          class="foto eventos__principal"
-        />
-        <Foto
           id="sala-conferencias-palco"
-          sizes="(min-width: 900px) 260px, 45vw"
-          class="foto eventos__detalhe"
+          sizes="(min-width: 900px) 600px, 92vw"
+          class="foto eventos__principal c-paralaxe"
         />
+        <Foto id="buffet-evento" sizes="(min-width: 900px) 280px, 45vw" class="foto eventos__detalhe" />
       </div>
     </div>
   </section>
 
-  <section class="secao secao--clara alojamento" aria-labelledby="alojamento-titulo">
+  <section class="secao secao--cinza alojamento" aria-labelledby="alojamento-titulo">
     <div class="contentor">
       <div class="alojamento__topo">
         <div class="bloco-titulo">
-          <p class="etiqueta">Alojamento</p>
-          <h2 id="alojamento-titulo">
+          <p class="etiqueta c-revelar">Alojamento</p>
+          <h2 id="alojamento-titulo" class="c-titulo">
             Quartos para <em>descansar.</em>
           </h2>
         </div>
-        <div class="texto">
+        <div class="texto c-revelar">
           <p>
-            Para uma noite, um fim de semana ou um grupo inteiro. Escolha o tipo de quarto e consulte a
-            disponibilidade: a equipa confirma o preço actual e as condições da estadia.
+            Escolha o tipo de quarto e consulte a disponibilidade: a equipa confirma o preço actual e as
+            condições da estadia.
           </p>
           <a class="ligacao-seta" href="/alojamento/">
             <span>Ver o alojamento</span>
@@ -164,41 +210,35 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
         </div>
       </div>
       <ul class="alojamento__fotos" aria-label="Fotografias de quartos" tabindex="0">
-        <li>
-          <Foto id="quarto-cadeirao" sizes="(min-width: 760px) 400px, 80vw" class="foto" />
-        </li>
-        <li>
+        <li class="c-cortina">
           <Foto id="quarto-duas-camas" sizes="(min-width: 760px) 400px, 80vw" class="foto" />
         </li>
-        <li>
-          <Foto id="quarto-cama-redonda" sizes="(min-width: 760px) 400px, 80vw" class="foto" />
+        <li class="c-cortina">
+          <Foto id="quarto-poltronas" sizes="(min-width: 760px) 400px, 80vw" class="foto" />
+        </li>
+        <li class="c-cortina">
+          <Foto id="quarto-casal" sizes="(min-width: 760px) 400px, 80vw" class="foto" />
         </li>
       </ul>
       <QuartosLista />
     </div>
   </section>
 
-  <section class="secao secao--cinza piscinas" aria-labelledby="piscinas-titulo">
-    <div class="contentor grelha grelha--foto-texto">
-      <div class="piscinas__fotos">
-        <Foto id="piscina-topiaria" sizes="(min-width: 900px) 600px, 92vw" class="foto piscinas__principal" />
-        <Foto id="piscina-cascata" sizes="(min-width: 900px) 300px, 45vw" class="foto piscinas__a" />
-        <Foto id="mesas-sombra" sizes="(min-width: 900px) 300px, 45vw" class="foto piscinas__b" />
-      </div>
-      <div class="bloco-titulo">
+  <!-- Faixa da piscina em grande formato, com parallax suave. -->
+  <section class="faixa" aria-labelledby="piscinas-titulo">
+    <div class="faixa__fundo c-paralaxe">
+      <Foto id="vista-piscina-esplanada" sizes="100vw" class="faixa__foto" />
+    </div>
+    <div class="contentor faixa__conteudo">
+      <div class="faixa__cartao c-revelar">
         <p class="etiqueta">Piscinas e jardins</p>
         <h2 id="piscinas-titulo">
-          Lazer ao ar livre, <em>à sombra das árvores.</em>
+          Um dia à beira da <em>piscina.</em>
         </h2>
-        <div class="texto">
-          <p>
-            Piscinas rodeadas de palmeiras e jardins cuidados, esplanadas à sombra e espaço para passar o dia.
-          </p>
-          <p>
-            Quer saber as condições de acesso, os horários ou se a piscina está aberta a visitantes não
-            alojados? Pergunte directamente à equipa.
-          </p>
-        </div>
+        <p>
+          Quer saber as condições de acesso, os horários ou se a piscina está aberta a visitantes não
+          alojados? Pergunte directamente à equipa.
+        </p>
         <div class="accoes">
           <BotaoWhatsApp
             texto="Perguntar sobre a piscina"
@@ -214,127 +254,171 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
     </div>
   </section>
 
-  <section class="secao secao--clara restaurante" aria-labelledby="restaurante-titulo">
-    <div class="contentor grelha grelha--texto-foto">
-      <div class="bloco-titulo">
-        <p class="etiqueta">Restaurante</p>
-        <h2 id="restaurante-titulo">
-          Refeições com vista <em>para o jardim.</em>
-        </h2>
-        <div class="texto">
-          <p>
-            Uma sala de refeições ampla, com janelas largas e espaço para os buffets de grupos e eventos. O
-            menu, os horários e as refeições para grupos são indicados pela equipa do lodge.
-          </p>
-        </div>
-        <div class="accoes">
-          <a class="botao botao--contorno" href="/restaurante/">
-            Conhecer o restaurante
-            <Icone nome="seta" tamanho={18} />
-          </a>
-        </div>
-      </div>
-      <div class="restaurante__fotos">
-        <Foto
-          id="sala-refeicoes-bar"
-          sizes="(min-width: 900px) 600px, 92vw"
-          class="foto restaurante__principal"
-        />
-        <Foto
-          id="restaurante-buffet"
-          sizes="(min-width: 900px) 240px, 40vw"
-          class="foto restaurante__detalhe"
-        />
-      </div>
-    </div>
-  </section>
-
   <SecaoPedidos />
 
   <ComoChegar />
 </Base>
 
 <style>
-  /* ---------- Hero ----------
-     Telemóvel: texto e, por baixo, a fotografia. Computador: texto à esquerda e a fotografia à direita. */
+  /* ---------- Abertura ---------- */
   .hero {
-    padding-block: clamp(24px, 4vw, 56px) clamp(48px, 6vw, 88px);
-    background: var(--branco);
-  }
-  .hero__grelha {
+    --foco: var(--dourado);
+    position: relative;
     display: grid;
-    gap: clamp(28px, 4vw, 56px);
-    align-items: center;
+    align-items: end;
+    min-height: calc(100svh - var(--cabecalho));
+    overflow: hidden;
+    background: var(--verde-profundo);
+    color: var(--branco);
+    isolation: isolate;
   }
-  @media (min-width: 900px) {
-    .hero__grelha {
-      grid-template-columns: minmax(0, 11fr) minmax(0, 10fr);
-    }
+  .hero__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .hero :global(.hero__foto) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .hero :global(.hero__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 62%;
+  }
+  /* Véu: escurece a base e a esquerda, onde está o texto. */
+  .hero__fundo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(5 22 18 / 0.88) 0%, rgb(5 22 18 / 0.5) 45%, rgb(5 22 18 / 0.1) 80%),
+      linear-gradient(to right, rgb(5 22 18 / 0.55), rgb(5 22 18 / 0) 65%);
   }
   .hero__texto {
     display: grid;
-    gap: 18px;
+    gap: 16px;
     justify-items: start;
+    padding-block: clamp(96px, 16vh, 180px) clamp(56px, 9vh, 96px);
   }
   .hero__texto .etiqueta {
     margin-bottom: 0;
   }
   .hero h1 {
     font-size: var(--t-hero);
-    line-height: 1.02;
-    letter-spacing: -0.03em;
+    line-height: 0.95;
+    letter-spacing: -0.015em;
   }
   .hero__subtitulo {
     max-width: 18em;
-    font-size: clamp(1.4rem, 1.15rem + 1.1vw, 2.1rem);
-    font-weight: 750;
-    line-height: 1.2;
-    letter-spacing: -0.015em;
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.6rem);
+    font-weight: 500;
+    line-height: 1.12;
     text-wrap: balance;
   }
   .hero__subtitulo em {
-    font-style: normal;
-    color: var(--dourado-texto);
+    color: var(--dourado-claro);
   }
   .hero__apoio {
-    max-width: 34em;
+    max-width: 36em;
     font-size: var(--t-lead);
     line-height: 1.6;
-    color: var(--texto-suave);
+    color: rgb(250 248 243 / 0.88);
   }
   .hero__accoes {
-    margin-top: 8px;
+    margin-top: 10px;
+  }
+  .hero__explorar {
+    color: var(--branco);
   }
   @media (max-width: 559px) {
     .hero__accoes .botao {
       width: 100%;
     }
   }
-  .hero__figura {
-    position: relative;
-    margin: 0;
-  }
-  .hero :global(.hero__foto) {
-    display: block;
-    aspect-ratio: 9 / 8;
-    box-shadow: var(--sombra);
-  }
   .hero__legenda {
     position: absolute;
-    left: 14px;
-    bottom: 14px;
-    display: inline-flex;
+    right: var(--margem);
+    bottom: 20px;
+    display: none;
     gap: 8px;
     align-items: center;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: rgb(250 248 243 / 0.94);
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--texto);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgb(250 248 243 / 0.8);
   }
-  .hero__legenda :global(svg) {
-    color: var(--dourado-texto);
+  @media (min-width: 900px) {
+    .hero__legenda {
+      display: inline-flex;
+    }
+  }
+
+  /* Chegada (uma só vez, por tempo): a fotografia afasta-se devagar e o texto sobe em sequência. Só a
+     imagem muda de escala, nunca de opacidade, para não atrasar a pintura principal (LCP). */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero :global(.hero__foto) {
+      animation: hero-afastar 2.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .hero__entrar {
+      animation: hero-chegar 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .hero__entrar:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+    .hero__entrar:nth-child(3) {
+      animation-delay: 0.22s;
+    }
+    .hero__entrar:nth-child(4) {
+      animation-delay: 0.34s;
+    }
+    .hero__entrar:nth-child(5) {
+      animation-delay: 0.46s;
+    }
+    /* Ao descer: a fotografia desce devagar e o texto sobe e desvanece mais depressa (camadas). */
+    @supports (animation-timeline: view()) {
+      .hero :global(.hero__foto img) {
+        animation: hero-paralaxe linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+      }
+      .hero__texto {
+        animation: hero-sair linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 70%;
+      }
+    }
+  }
+  @keyframes hero-afastar {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes hero-chegar {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes hero-paralaxe {
+    to {
+      transform: translateY(18%);
+    }
+  }
+  @keyframes hero-sair {
+    to {
+      opacity: 0;
+      transform: translateY(-80px);
+    }
   }
 
   /* ---------- Apresentação e alojamento ---------- */
@@ -354,6 +438,19 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
   .apresentacao__texto,
   .alojamento__topo .texto {
     justify-items: start;
+  }
+
+  /* ---------- Palco de cenas ---------- */
+  .experiencia {
+    padding-bottom: 0;
+  }
+  .experiencia__intro {
+    margin-bottom: clamp(32px, 4vw, 56px);
+  }
+  @media (max-width: 899px) {
+    .experiencia {
+      padding-bottom: var(--espaco-secao);
+    }
   }
 
   /* ---------- Eventos ---------- */
@@ -377,21 +474,21 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
     gap: 4px;
     align-content: start;
     padding: 16px 14px;
-    border: 1px solid var(--linha-clara);
+    border: 1px solid var(--linha);
     border-radius: var(--raio-m);
-    background: rgb(250 248 243 / 0.05);
+    background: #fff;
   }
   .capacidades__numero {
-    font-size: clamp(1.9rem, 1.5rem + 1.6vw, 2.8rem);
-    font-weight: 800;
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 1.7rem + 1.8vw, 3.2rem);
+    font-weight: 600;
     line-height: 1;
-    letter-spacing: -0.03em;
-    color: var(--dourado);
+    color: var(--verde);
   }
   .capacidades__texto {
     font-size: 0.85rem;
     line-height: 1.35;
-    color: rgb(250 248 243 / 0.86);
+    color: var(--texto-suave);
   }
   .capacidades__exterior {
     font-weight: 700;
@@ -399,7 +496,7 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
   .capacidades__nota {
     font-size: 0.8125rem;
     line-height: 1.5;
-    color: rgb(250 248 243 / 0.72);
+    color: var(--texto-suave);
   }
   .eventos__fotos {
     position: relative;
@@ -423,11 +520,14 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
       left: -32px;
       bottom: 0;
       width: 46%;
-      border: 6px solid var(--verde);
+      border: 6px solid var(--branco);
     }
   }
 
   /* ---------- Alojamento ---------- */
+  .alojamento {
+    --c-cortina: var(--cinzento);
+  }
   .alojamento__fotos {
     display: grid;
     grid-auto-flow: column;
@@ -440,6 +540,8 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
     list-style: none;
   }
   .alojamento__fotos li {
+    overflow: hidden;
+    border-radius: var(--raio-l);
     scroll-snap-align: start;
   }
   .alojamento__fotos :global(.foto) {
@@ -454,46 +556,45 @@ const capacidades = salas?.valor.match(/\d+/g) ?? [];
     }
   }
 
-  /* ---------- Piscinas ---------- */
-  .piscinas__fotos {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-  .piscinas :global(.piscinas__principal) {
-    display: block;
-    grid-column: 1 / -1;
-    aspect-ratio: 4 / 3;
-  }
-  .piscinas :global(.piscinas__a),
-  .piscinas :global(.piscinas__b) {
-    display: block;
-    aspect-ratio: 1 / 1;
-  }
-
-  /* ---------- Restaurante ---------- */
-  .restaurante__fotos {
+  /* ---------- Faixa da piscina ---------- */
+  .faixa {
     position: relative;
+    display: grid;
+    align-items: center;
+    min-height: min(88svh, 760px);
+    overflow: hidden;
+    isolation: isolate;
   }
-  .restaurante :global(.restaurante__principal) {
+  .faixa__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .faixa :global(.faixa__foto) {
     display: block;
-    aspect-ratio: 4 / 3;
+    height: 100%;
   }
-  .restaurante :global(.restaurante__detalhe) {
-    display: none;
+  .faixa :global(.faixa__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
-  @media (min-width: 900px) {
-    .restaurante__fotos {
-      padding: 0 0 56px 56px;
-    }
-    .restaurante :global(.restaurante__detalhe) {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      display: block;
-      width: 34%;
-      aspect-ratio: 3 / 4;
-      border: 6px solid var(--branco);
-    }
+  .faixa__conteudo {
+    padding-block: clamp(64px, 10vw, 120px);
+  }
+  .faixa__cartao {
+    display: grid;
+    gap: 18px;
+    max-width: 34rem;
+    padding: clamp(24px, 4vw, 44px);
+    border-radius: var(--raio-l);
+    background: rgb(250 248 243 / 0.96);
+    box-shadow: 0 30px 60px rgb(5 22 18 / 0.25);
+  }
+  .faixa__cartao .etiqueta {
+    margin-bottom: 0;
+  }
+  .faixa__cartao p:not(.etiqueta) {
+    color: var(--texto-suave);
   }
 </style>

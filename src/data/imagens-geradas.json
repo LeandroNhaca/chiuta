@@ -14,26 +14,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 204.7,
-      "depois": 204.8
+      "depois": 199.8
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "quarto-cadeirao-640.avif",
       "quarto-cadeirao-640.webp",
       "quarto-cadeirao-1080.avif",
-      "quarto-cadeirao-1080.webp"
+      "quarto-cadeirao-1080.webp",
+      "quarto-cadeirao-1600.avif",
+      "quarto-cadeirao-1600.webp"
     ]
   },
   "quarto-duas-camas": {
@@ -51,6 +58,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
@@ -60,7 +70,7 @@
     },
     "luminancia_mediana": {
       "antes": 205.4,
-      "depois": 205.4
+      "depois": 202.6
     },
     "larguras": [
       640,
@@ -88,26 +98,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 131.8,
-      "depois": 131.7
+      "depois": 131.0
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "quarto-cama-redonda-640.avif",
       "quarto-cama-redonda-640.webp",
       "quarto-cama-redonda-1080.avif",
-      "quarto-cama-redonda-1080.webp"
+      "quarto-cama-redonda-1080.webp",
+      "quarto-cama-redonda-1600.avif",
+      "quarto-cama-redonda-1600.webp"
     ]
   },
   "quarto-casal": {
@@ -125,6 +142,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
@@ -134,7 +154,7 @@
     },
     "luminancia_mediana": {
       "antes": 143.7,
-      "depois": 143.7
+      "depois": 139.5
     },
     "larguras": [
       640,
@@ -162,6 +182,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
@@ -171,7 +194,7 @@
     },
     "luminancia_mediana": {
       "antes": 206.0,
-      "depois": 205.8
+      "depois": 194.8
     },
     "larguras": [
       640,
@@ -199,6 +222,9 @@
       "gama": 1.0,
       "contraste": 0.05,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -208,7 +234,7 @@
     },
     "luminancia_mediana": {
       "antes": 110.2,
-      "depois": 109.8
+      "depois": 110.4
     },
     "larguras": [
       640,
@@ -236,26 +262,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 127.5,
-      "depois": 127.5
+      "depois": 134.9
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "piscina-palmeiras-640.avif",
       "piscina-palmeiras-640.webp",
       "piscina-palmeiras-1080.avif",
-      "piscina-palmeiras-1080.webp"
+      "piscina-palmeiras-1080.webp",
+      "piscina-palmeiras-1600.avif",
+      "piscina-palmeiras-1600.webp"
     ]
   },
   "piscina-topiaria": {
@@ -273,26 +306,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 113.5,
-      "depois": 113.3
+      "depois": 120.7
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "piscina-topiaria-640.avif",
       "piscina-topiaria-640.webp",
       "piscina-topiaria-1080.avif",
-      "piscina-topiaria-1080.webp"
+      "piscina-topiaria-1080.webp",
+      "piscina-topiaria-1600.avif",
+      "piscina-topiaria-1600.webp"
     ]
   },
   "piscina-deck": {
@@ -310,6 +350,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
@@ -319,7 +362,7 @@
     },
     "luminancia_mediana": {
       "antes": 78.1,
-      "depois": 77.7
+      "depois": 84.2
     },
     "larguras": [
       640,
@@ -347,6 +390,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
@@ -356,7 +402,7 @@
     },
     "luminancia_mediana": {
       "antes": 138.1,
-      "depois": 137.3
+      "depois": 134.7
     },
     "larguras": [
       640,
@@ -384,6 +430,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
@@ -393,7 +442,7 @@
     },
     "luminancia_mediana": {
       "antes": 104.3,
-      "depois": 104.1
+      "depois": 110.6
     },
     "larguras": [
       640,
@@ -421,26 +470,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 128.1,
-      "depois": 128.1
+      "depois": 137.1
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "vista-piscina-esplanada-640.avif",
       "vista-piscina-esplanada-640.webp",
       "vista-piscina-esplanada-1080.avif",
-      "vista-piscina-esplanada-1080.webp"
+      "vista-piscina-esplanada-1080.webp",
+      "vista-piscina-esplanada-1600.avif",
+      "vista-piscina-esplanada-1600.webp"
     ]
   },
   "esplanada-arvore": {
@@ -458,26 +514,33 @@
       "gama": 1.0,
       "contraste": 0.05,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 87.2,
-      "depois": 86.0
+      "depois": 90.6
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "esplanada-arvore-640.avif",
       "esplanada-arvore-640.webp",
       "esplanada-arvore-1080.avif",
-      "esplanada-arvore-1080.webp"
+      "esplanada-arvore-1080.webp",
+      "esplanada-arvore-1600.avif",
+      "esplanada-arvore-1600.webp"
     ]
   },
   "mesas-sombra": {
@@ -495,6 +558,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
@@ -504,7 +570,7 @@
     },
     "luminancia_mediana": {
       "antes": 102.1,
-      "depois": 102.0
+      "depois": 106.6
     },
     "larguras": [
       640,
@@ -532,6 +598,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -541,7 +610,7 @@
     },
     "luminancia_mediana": {
       "antes": 60.3,
-      "depois": 59.9
+      "depois": 70.4
     },
     "larguras": [
       640,
@@ -569,26 +638,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 160.6,
-      "depois": 160.4
+      "depois": 161.7
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "sala-conferencias-palco-640.avif",
       "sala-conferencias-palco-640.webp",
       "sala-conferencias-palco-1080.avif",
-      "sala-conferencias-palco-1080.webp"
+      "sala-conferencias-palco-1080.webp",
+      "sala-conferencias-palco-1600.avif",
+      "sala-conferencias-palco-1600.webp"
     ]
   },
   "sala-conferencias-plateia": {
@@ -606,26 +682,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 162.7,
-      "depois": 162.7
+      "depois": 163.0
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "sala-conferencias-plateia-640.avif",
       "sala-conferencias-plateia-640.webp",
       "sala-conferencias-plateia-1080.avif",
-      "sala-conferencias-plateia-1080.webp"
+      "sala-conferencias-plateia-1080.webp",
+      "sala-conferencias-plateia-1600.avif",
+      "sala-conferencias-plateia-1600.webp"
     ]
   },
   "sala-conferencias-u": {
@@ -643,26 +726,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 148.5,
-      "depois": 148.3
+      "depois": 155.4
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "sala-conferencias-u-640.avif",
       "sala-conferencias-u-640.webp",
       "sala-conferencias-u-1080.avif",
-      "sala-conferencias-u-1080.webp"
+      "sala-conferencias-u-1080.webp",
+      "sala-conferencias-u-1600.avif",
+      "sala-conferencias-u-1600.webp"
     ]
   },
   "buffet-evento": {
@@ -680,6 +770,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -694,7 +787,7 @@
     },
     "luminancia_mediana": {
       "antes": 124.2,
-      "depois": 124.0
+      "depois": 116.8
     },
     "larguras": [
       640,
@@ -722,6 +815,9 @@
       "gama": 0.95,
       "contraste": 0.05,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -731,7 +827,7 @@
     },
     "luminancia_mediana": {
       "antes": 112.8,
-      "depois": 116.7
+      "depois": 117.5
     },
     "larguras": [
       640,
@@ -759,26 +855,33 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
-        "max"
+        "max",
+        1600
       ],
       "recorte": null
     },
     "luminancia_mediana": {
       "antes": 158.0,
-      "depois": 158.0
+      "depois": 161.6
     },
     "larguras": [
       640,
-      1080
+      1080,
+      1600
     ],
     "ficheiros": [
       "edificio-colmo-640.avif",
       "edificio-colmo-640.webp",
       "edificio-colmo-1080.avif",
-      "edificio-colmo-1080.webp"
+      "edificio-colmo-1080.webp",
+      "edificio-colmo-1600.avif",
+      "edificio-colmo-1600.webp"
     ]
   },
   "passadico-colmo": {
@@ -796,6 +899,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 2.0,
       "larguras": [
         640,
@@ -805,7 +911,7 @@
     },
     "luminancia_mediana": {
       "antes": 95.7,
-      "depois": 95.6
+      "depois": 101.4
     },
     "larguras": [
       640,
@@ -833,6 +939,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -842,7 +951,7 @@
     },
     "luminancia_mediana": {
       "antes": 79.5,
-      "depois": 79.0
+      "depois": 82.8
     },
     "larguras": [
       640,
@@ -870,6 +979,9 @@
       "gama": 1.0,
       "contraste": 0.05,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -879,7 +991,7 @@
     },
     "luminancia_mediana": {
       "antes": 122.3,
-      "depois": 121.9
+      "depois": 123.5
     },
     "larguras": [
       640,
@@ -907,6 +1019,9 @@
       "gama": 1.0,
       "contraste": 0.0,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -916,7 +1031,7 @@
     },
     "luminancia_mediana": {
       "antes": 81.3,
-      "depois": 81.1
+      "depois": 84.9
     },
     "larguras": [
       640,
@@ -944,6 +1059,9 @@
       "gama": 0.97,
       "contraste": 0.1,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -953,7 +1071,7 @@
     },
     "luminancia_mediana": {
       "antes": 128.6,
-      "depois": 132.3
+      "depois": 130.1
     },
     "larguras": [
       640,
@@ -981,6 +1099,9 @@
       "gama": 0.78,
       "contraste": 0.06,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 5.0,
       "larguras": [
         640,
@@ -990,7 +1111,7 @@
     },
     "luminancia_mediana": {
       "antes": 67.9,
-      "depois": 89.4
+      "depois": 92.6
     },
     "larguras": [
       640,
@@ -1018,6 +1139,9 @@
       "gama": 0.95,
       "contraste": 0.06,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 4.0,
       "larguras": [
         640,
@@ -1027,7 +1151,7 @@
     },
     "luminancia_mediana": {
       "antes": 112.0,
-      "depois": 118.3
+      "depois": 118.8
     },
     "larguras": [
       640,
@@ -1055,6 +1179,9 @@
       "gama": 0.88,
       "contraste": 0.06,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 4.0,
       "larguras": [
         640,
@@ -1064,7 +1191,7 @@
     },
     "luminancia_mediana": {
       "antes": 104.5,
-      "depois": 116.9
+      "depois": 117.9
     },
     "larguras": [
       640,
@@ -1092,6 +1219,9 @@
       "gama": 0.95,
       "contraste": 0.05,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 4.0,
       "larguras": [
         640,
@@ -1101,7 +1231,7 @@
     },
     "luminancia_mediana": {
       "antes": 106.6,
-      "depois": 110.8
+      "depois": 113.5
     },
     "larguras": [
       640,
@@ -1129,6 +1259,9 @@
       "gama": 1.0,
       "contraste": 0.08,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -1143,7 +1276,7 @@
     },
     "luminancia_mediana": {
       "antes": 135.6,
-      "depois": 135.6
+      "depois": 138.8
     },
     "larguras": [
       640,
@@ -1163,7 +1296,7 @@
       809
     ],
     "dimensoes_tratadas": [
-      950,
+      800,
       740
     ],
     "ajustes": {
@@ -1171,6 +1304,9 @@
       "gama": 1.0,
       "contraste": 0.05,
       "saturacao": 1.0,
+      "niveis": 0.6,
+      "clareza": 0.3,
+      "vibracao": 0.12,
       "ruido": 3.0,
       "larguras": [
         640,
@@ -1179,23 +1315,23 @@
       "recorte": [
         0,
         0,
-        950,
+        800,
         740
       ]
     },
     "luminancia_mediana": {
-      "antes": 117.0,
-      "depois": 116.6
+      "antes": 115.8,
+      "depois": 119.1
     },
     "larguras": [
       640,
-      950
+      800
     ],
     "ficheiros": [
       "sala-refeicoes-bar-640.avif",
       "sala-refeicoes-bar-640.webp",
-      "sala-refeicoes-bar-950.avif",
-      "sala-refeicoes-bar-950.webp"
+      "sala-refeicoes-bar-800.avif",
+      "sala-refeicoes-bar-800.webp"
     ]
   }
 }

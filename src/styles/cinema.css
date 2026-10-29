@@ -1,0 +1,227 @@
+/* Mulotana Lodge · movimento
+   Sistema único de animação do site, só com CSS (scroll-driven animations e View Transitions): não há
+   JavaScript a correr durante o scroll, nem ciclos de animação activos fora do ecrã, e nada bloqueia ou
+   força o scroll. Só se animam `transform` e `opacity`.
+
+   Regras de segurança:
+   - Todo o movimento está dentro de `prefers-reduced-motion: no-preference` e de
+     `@supports (animation-timeline: view())`. Sem suporte ou com movimento reduzido, o conteúdo aparece
+     no estado final, sem nada escondido (o estado inicial invisível só existe dentro da animação).
+   - Nada depende de JavaScript: um erro de script nunca deixa texto invisível.
+   - No telemóvel as distâncias são menores e o parallax desliga-se.
+
+   Utilitários (classes):
+   - .c-revelar        entrada suave (opacidade + subida curta)
+   - .c-titulo         entrada dos títulos (subida mais longa, sem desfocar)
+   - .c-cartoes        os filhos entram em sequência (até 8)
+   - .c-paralaxe       a imagem dentro do elemento desloca-se devagar enquanto atravessa o ecrã
+   - .c-cortina        a fotografia é revelada por uma cortina da cor da secção
+   - .c-aproximar      a fotografia afasta-se ligeiramente ao entrar (escala 1,08 → 1)
+   - .c-flutuar        o próprio elemento sobe a outra velocidade (camadas sobrepostas); --c-flutuar ajusta
+   - .c-progresso      barra de progresso de leitura no topo da página
+
+   Intensidade por página: <body data-movimento="completo | moderado | minimo"> (prop `movimento` do
+   layout Base). "minimo" desliga as entradas e o parallax, mantendo só a transição entre páginas. */
+
+:root {
+  --c-distancia: 28px;
+  --c-distancia-titulo: 0.35em;
+  --c-paralaxe: 7%;
+  --c-flutuar: 56px;
+  --c-curva: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-movimento='moderado'] {
+  --c-distancia: 18px;
+  --c-paralaxe: 4%;
+  --c-flutuar: 28px;
+}
+@media (max-width: 759px) {
+  :root {
+    --c-distancia: 14px;
+    --c-distancia-titulo: 0.2em;
+    --c-paralaxe: 0%;
+    --c-flutuar: 0px;
+  }
+}
+
+/* ---------- Transição entre páginas (View Transitions entre documentos) ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 260ms;
+    animation-timing-function: var(--c-curva);
+  }
+  /* O cabeçalho fica parado entre páginas: só o conteúdo muda. */
+  .cabecalho {
+    view-transition-name: cabecalho;
+  }
+}
+
+/* ---------- Animações ligadas ao scroll ---------- */
+
+.c-progresso {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-revelar {
+      animation: c-subir linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-titulo {
+      animation: c-titulo linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 70%;
+    }
+
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-cartoes > * {
+      animation: c-subir linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+    /* Entrada em sequência: cada cartão começa um pouco depois do anterior. */
+    .c-cartoes > :nth-child(2) {
+      animation-range: entry 8% entry 68%;
+    }
+    .c-cartoes > :nth-child(3) {
+      animation-range: entry 16% entry 76%;
+    }
+    .c-cartoes > :nth-child(4) {
+      animation-range: entry 24% entry 84%;
+    }
+    .c-cartoes > :nth-child(n + 5) {
+      animation-range: entry 30% entry 90%;
+    }
+
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-paralaxe {
+      overflow: hidden;
+    }
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-paralaxe img {
+      animation: c-paralaxe linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-flutuar {
+      animation: c-flutuar linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-aproximar img {
+      animation: c-aproximar linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+
+    /* Cortina: um painel da cor do fundo cobre a fotografia e encolhe para cima (só transform). */
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-cortina {
+      position: relative;
+      overflow: hidden;
+    }
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-cortina::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: var(--c-cortina, var(--branco));
+      transform-origin: 50% 0;
+      pointer-events: none;
+      animation: c-cortina linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 40%;
+    }
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-cortina img {
+      animation: c-aproximar linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 50%;
+    }
+
+    :where([data-movimento='completo'], [data-movimento='moderado']) .c-progresso {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 60;
+      display: block;
+      height: 3px;
+      background: var(--dourado);
+      transform-origin: 0 50%;
+      pointer-events: none;
+      animation: c-progresso linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+
+@keyframes c-subir {
+  from {
+    opacity: 0;
+    transform: translateY(var(--c-distancia));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes c-titulo {
+  from {
+    opacity: 0;
+    transform: translateY(var(--c-distancia-titulo));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes c-paralaxe {
+  from {
+    transform: translateY(calc(var(--c-paralaxe) * -1)) scale(1.14);
+  }
+  to {
+    transform: translateY(var(--c-paralaxe)) scale(1.14);
+  }
+}
+
+@keyframes c-flutuar {
+  from {
+    transform: translateY(var(--c-flutuar));
+  }
+  to {
+    transform: translateY(calc(var(--c-flutuar) * -1));
+  }
+}
+
+@keyframes c-aproximar {
+  from {
+    transform: scale(1.08);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes c-cortina {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes c-progresso {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

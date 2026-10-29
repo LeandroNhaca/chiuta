@@ -4,9 +4,12 @@
 Lê os originais em assets-originais/mulotane/real/ (nunca os altera) e escreve as versões para a web em
 public/images/mulotane/real/ (AVIF + WebP, em várias larguras) e a imagem de partilha em public/og/.
 
-Só corrige a técnica: ruído e artefactos de compressão, balanço de brancos parcial, exposição, contraste
-ligeiro e nitidez. Não acrescenta, remove nem move nada do que foi fotografado. Os enquadramentos
-diferentes de cada secção são feitos no CSS (object-fit/object-position), não em ficheiros novos.
+Acabamento técnico, como numa edição fotográfica profissional: ruído e artefactos de compressão, balanço de
+brancos parcial, níveis, exposição, contraste global e local, vibração moderada e nitidez. Não acrescenta,
+remove nem move nada do que foi fotografado e não usa IA generativa. Os enquadramentos diferentes de cada
+secção são feitos no CSS (object-fit/object-position), não em ficheiros novos. As fotografias usadas em
+grande formato (palco da página inicial, faixas e cabeçalhos) ganham uma versão de 1600 px, ampliada com
+Lanczos e nitidez (resolução aparente para ecrãs grandes; não acrescenta conteúdo).
 
 Uso:
     python3 -m venv .venv-imagens && .venv-imagens/bin/pip install -r scripts/imagens/requirements.txt
@@ -45,6 +48,13 @@ class Ajustes:
     contraste: float = 0.0
     # Saturação (1 = sem alteração).
     saturacao: float = 1.0
+    # --- Acabamento profissional (aplicado a todas, com valores moderados por omissão) ---
+    # Níveis automáticos: aproxima o preto e o branco da imagem do preto e do branco reais (0 = nenhum).
+    niveis: float = 0.6
+    # Contraste local (CLAHE na luminosidade, misturado com o original): dá definição sem halos.
+    clareza: float = 0.3
+    # Vibração: aviva as cores pouco saturadas e quase não mexe nas já saturadas (0 = nenhuma).
+    vibracao: float = 0.12
     # Força da redução de ruído (parâmetro h do NL-means da OpenCV).
     ruido: float = 3.0
     # Larguras a gerar ("max" = largura do original depois do recorte, limitada a LADO_MAXIMO).
@@ -56,38 +66,51 @@ class Ajustes:
     recorte: tuple[int, int, int, int] | None = None
 
 
+# Fotografias em grande formato (palco da página inicial, faixas e cabeçalhos): versão extra de 1600 px.
+LARGO: list[int | str] = [640, "max", 1600]
+
 FOTOGRAFIAS: dict[str, Ajustes] = {
     # --- Contas oficiais do lodge (Instagram @mulotana_lodge e página de Facebook), recortadas das
     #     capturas de ecrã enviadas pelo responsável a 29/10/2026 (ver assets-originais/mulotane/LEIA-ME.md). São fotografias
     #     já editadas pelo lodge: só ruído de compressão e, nas de 2016, um balanço de brancos ligeiro.
     # Quartos
-    "quarto-cadeirao": Ajustes(origem="ig-quarto-cadeirao.png", ruido=2.0),
+    "quarto-cadeirao": Ajustes(origem="ig-quarto-cadeirao.png", ruido=2.0,
+                               larguras=LARGO),
     "quarto-duas-camas": Ajustes(origem="ig-quarto-duas-camas.png", ruido=2.0),
-    "quarto-cama-redonda": Ajustes(origem="ig-quarto-cama-redonda.png", ruido=2.0),
+    "quarto-cama-redonda": Ajustes(origem="ig-quarto-cama-redonda.png", ruido=2.0,
+                                   larguras=LARGO),
     "quarto-casal": Ajustes(origem="ig-quarto-casal.png", ruido=2.0),
     "quarto-poltronas": Ajustes(origem="ig-quarto-poltronas.png", ruido=2.0),
     "quarto-mosquiteiro": Ajustes(origem="fb-quarto-mosquiteiro.png", balanco=0.15, contraste=0.05, ruido=3.0),
     # Piscinas, jardins e lazer. A da piscina com palmeiras é o hero e a imagem de partilha.
-    "piscina-palmeiras": Ajustes(origem="ig-piscina-palmeiras.png", ruido=2.0),
-    "piscina-topiaria": Ajustes(origem="ig-piscina-topiaria.png", ruido=2.0),
+    "piscina-palmeiras": Ajustes(origem="ig-piscina-palmeiras.png", ruido=2.0,
+                                 larguras=LARGO),
+    "piscina-topiaria": Ajustes(origem="ig-piscina-topiaria.png", ruido=2.0,
+                                larguras=LARGO),
     "piscina-deck": Ajustes(origem="ig-piscina-deck.png", ruido=2.0),
     "piscina-cascata": Ajustes(origem="ig-piscina-cascata.png", ruido=2.0),
     "piscina-sombra": Ajustes(origem="ig-piscina-sombra.png", ruido=2.0),
-    "vista-piscina-esplanada": Ajustes(origem="fb-vista-piscina-esplanada.png", ruido=3.0),
-    "esplanada-arvore": Ajustes(origem="fb-esplanada-arvore.png", balanco=0.10, contraste=0.05, ruido=3.0),
+    "vista-piscina-esplanada": Ajustes(origem="fb-vista-piscina-esplanada.png", ruido=3.0,
+                                       larguras=LARGO),
+    "esplanada-arvore": Ajustes(origem="fb-esplanada-arvore.png", balanco=0.10, contraste=0.05, ruido=3.0,
+                                larguras=LARGO),
     "mesas-sombra": Ajustes(origem="ig-mesas-sombra.png", ruido=2.0),
     "decoracao-quarto": Ajustes(origem="ig-decoracao-quarto.png", ruido=3.0),
     # Conferências e eventos. Recorte do buffet: tira o painel decorativo da festa no limite esquerdo.
-    "sala-conferencias-palco": Ajustes(origem="ig-sala-conferencias-palco.png", ruido=2.0),
-    "sala-conferencias-plateia": Ajustes(origem="ig-sala-conferencias-plateia.png", ruido=2.0),
-    "sala-conferencias-u": Ajustes(origem="ig-sala-conferencias-u.png", ruido=2.0),
+    "sala-conferencias-palco": Ajustes(origem="ig-sala-conferencias-palco.png", ruido=2.0,
+                                       larguras=LARGO),
+    "sala-conferencias-plateia": Ajustes(origem="ig-sala-conferencias-plateia.png", ruido=2.0,
+                                         larguras=LARGO),
+    "sala-conferencias-u": Ajustes(origem="ig-sala-conferencias-u.png", ruido=2.0,
+                                   larguras=LARGO),
     "buffet-evento": Ajustes(origem="fb-buffet-evento.png", recorte=(300, 0, 1080, 810),
                              balanco=0.15, ruido=3.0),
     # Restaurante
     "restaurante-janelas": Ajustes(origem="fb-restaurante-janelas.png", balanco=0.15, gama=0.95,
                                    contraste=0.05, ruido=3.0),
     # Espaços do lodge
-    "edificio-colmo": Ajustes(origem="ig-edificio-colmo.png", ruido=2.0),
+    "edificio-colmo": Ajustes(origem="ig-edificio-colmo.png", ruido=2.0,
+                              larguras=LARGO),
     "passadico-colmo": Ajustes(origem="ig-passadico-colmo.png", ruido=2.0),
     "edificio-envidracado": Ajustes(origem="fb-edificio-envidracado.png", ruido=3.0),
     "edificio-varandas": Ajustes(origem="fb-edificio-varandas.png", balanco=0.10, contraste=0.05, ruido=3.0),
@@ -109,8 +132,8 @@ FOTOGRAFIAS: dict[str, Ajustes] = {
     # Recorte: tira o carimbo "09/23/2025 14:46" no canto inferior.
     "piscina-espreguicadeiras": Ajustes(origem="gm-piscina-espreguicadeiras.png", recorte=(0, 0, 1080, 740),
                                         balanco=0.10, contraste=0.08, ruido=3.0),
-    # Recorte: tira uma pessoa em pé no limite direito e o carimbo "09/23/2025 14:41".
-    "sala-refeicoes-bar": Ajustes(origem="gm-sala-refeicoes-bar.png", recorte=(0, 0, 950, 740),
+    # Recorte: tira as pessoas junto ao balcão (limite direito) e o carimbo "09/23/2025 14:41".
+    "sala-refeicoes-bar": Ajustes(origem="gm-sala-refeicoes-bar.png", recorte=(0, 0, 800, 740),
                                   balanco=0.15, contraste=0.05, ruido=3.0),
 }
 
@@ -163,6 +186,44 @@ def saturacao(rgb: np.ndarray, fator: float) -> np.ndarray:
     return np.clip(lum + (rgb - lum) * fator, 0, 1)
 
 
+def niveis(rgb: np.ndarray, forca: float) -> np.ndarray:
+    """Estica a luminância entre os percentis 0,4 e 99,6 (sem cortar), como razão para preservar a cor."""
+    if forca <= 0:
+        return rgb
+    lum = luminancia(rgb)
+    baixo, alto = np.percentile(lum, [0.4, 99.6])
+    if alto - baixo < 0.2:
+        return rgb
+    nova = np.clip((lum - baixo) / (alto - baixo) * 0.97 + 0.015, 0, 1)
+    nova = (1 - forca) * lum + forca * nova
+    razao = np.where(lum > 1e-4, nova / np.maximum(lum, 1e-4), 1.0)
+    saida = rgb * razao[..., None]
+    return saida / np.maximum(saida.max(-1, keepdims=True), 1.0)
+
+
+def clareza(rgb: np.ndarray, forca: float) -> np.ndarray:
+    """Contraste local: CLAHE no canal L (Lab), misturado com o original para não criar halos."""
+    if forca <= 0:
+        return rgb
+    img8 = (np.clip(rgb, 0, 1) * 255 + 0.5).astype(np.uint8)
+    lab = cv2.cvtColor(img8, cv2.COLOR_RGB2LAB)
+    l_canal = lab[..., 0]
+    clahe = cv2.createCLAHE(clipLimit=1.8, tileGridSize=(8, 8))
+    lab[..., 0] = cv2.addWeighted(clahe.apply(l_canal), forca, l_canal, 1 - forca, 0)
+    return cv2.cvtColor(lab, cv2.COLOR_LAB2RGB).astype(np.float32) / 255.0
+
+
+def vibracao(rgb: np.ndarray, forca: float) -> np.ndarray:
+    """Aumenta a saturação na proporção inversa da saturação actual (protege as cores já fortes)."""
+    if forca <= 0:
+        return rgb
+    mx, mn = rgb.max(-1, keepdims=True), rgb.min(-1, keepdims=True)
+    sat = (mx - mn) / (mx + 1e-6)
+    fator = 1 + forca * (1 - sat)
+    lum = luminancia(rgb)[..., None]
+    return np.clip(lum + (rgb - lum) * fator, 0, 1)
+
+
 def nitidez(img8: np.ndarray, quantidade: float, raio: float) -> np.ndarray:
     desfocada = cv2.GaussianBlur(img8, (0, 0), raio)
     return cv2.addWeighted(img8, 1 + quantidade, desfocada, -quantidade, 0)
@@ -180,8 +241,11 @@ def tratar(nome: str, aj: Ajustes) -> tuple[np.ndarray, dict]:
     limpa = cv2.addWeighted(limpa, 0.75, original, 0.25, 0)
     rgb = limpa.astype(np.float32) / 255.0
     rgb = balanco_brancos(rgb, aj.balanco)
+    rgb = niveis(rgb, aj.niveis)
     rgb = tom(rgb, aj.gama, aj.contraste)
+    rgb = clareza(rgb, aj.clareza)
     rgb = saturacao(rgb, aj.saturacao)
+    rgb = vibracao(rgb, aj.vibracao)
     tratada = (np.clip(rgb, 0, 1) * 255 + 0.5).astype(np.uint8)
     antes = luminancia(original.astype(np.float32) / 255.0)
     depois = luminancia(tratada.astype(np.float32) / 255.0)

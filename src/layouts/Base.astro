@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/cinema.css';
 
 import Cabecalho from '../components/Cabecalho.astro';
 import AccoesRapidas from '../components/AccoesRapidas.astro';
@@ -14,9 +15,14 @@ interface Props {
   inicio?: boolean;
   /** Dados estruturados (só com informação confirmada). */
   dadosEstruturados?: Record<string, unknown>;
+  /**
+   * Intensidade do movimento (src/styles/cinema.css): "completo" nas páginas de apresentação, "moderado"
+   * na galeria e nas páginas de apoio, "minimo" nas páginas que têm de ser rápidas (contactos, privacidade).
+   */
+  movimento?: 'completo' | 'moderado' | 'minimo';
 }
 
-const { titulo, descricao, inicio = false, dadosEstruturados } = Astro.props;
+const { titulo, descricao, inicio = false, dadosEstruturados, movimento = 'completo' } = Astro.props;
 const tituloCompleto = inicio ? titulo : `${titulo} | ${lodge.nome}`;
 const indexavel = !lodge.demonstracao.activa && Boolean(lodge.site.dominioFinal);
 const canonical = lodge.site.dominioFinal ? new URL(Astro.url.pathname, lodge.site.dominioFinal).href : null;
@@ -40,6 +46,13 @@ const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
     <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+    <link
+      rel="preload"
+      href="/fonts/cormorant-garamond-latin-600-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link
       rel="preload"
       href="/fonts/manrope-latin-wght-normal.woff2"
@@ -67,7 +80,8 @@ const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
       <script is:inline type="application/ld+json" set:html={JSON.stringify(dadosEstruturados)} />
     )}
   </head>
-  <body>
+  <body data-movimento={movimento}>
+    {movimento !== 'minimo' && <div class="c-progresso" aria-hidden="true" />}
     <a class="saltar" href="#conteudo">
       Saltar para o conteúdo
     </a>

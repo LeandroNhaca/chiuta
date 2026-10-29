@@ -1,5 +1,6 @@
 ---
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Cenas, { type Cena } from '../components/Cenas.astro';
 import FichaServico from '../components/FichaServico.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
@@ -10,7 +11,33 @@ import { lodge } from '../config/lodge';
 import { fotografias } from '../data/fotografias';
 import Base from '../layouts/Base.astro';
 
-const quartos = fotografias.filter((f) => f.categoria === 'quartos');
+// Transição entre quartos (palco compacto): só a descrição do que se vê em cada fotografia, sem atribuir
+// tipos de quarto (as fotografias das redes não dizem a que tipo pertencem).
+const cenas: Cena[] = [
+  {
+    id: 'cama-redonda',
+    etiqueta: 'Quarto',
+    titulo: 'Cabeceira alta e base redonda',
+    texto: 'Cama de casal sobre uma base redonda de madeira escura, com dois candeeiros de cabeceira.',
+    foto: 'quarto-cama-redonda',
+  },
+  {
+    id: 'duas-camas',
+    etiqueta: 'Quarto',
+    titulo: 'Duas camas',
+    texto: 'Duas camas individuais de cabeceira estofada e chão de mármore claro.',
+    foto: 'quarto-duas-camas',
+  },
+  {
+    id: 'zona-de-estar',
+    etiqueta: 'Quarto',
+    titulo: 'Zona de estar',
+    texto: 'Duas poltronas e uma mesa redonda, televisor e secretária com chaleira.',
+    foto: 'quarto-poltronas',
+  },
+];
+const naCena = new Set(['quarto-cadeirao', ...cenas.map((c) => c.foto)]);
+const quartos = fotografias.filter((f) => f.categoria === 'quartos' && !naCena.has(f.id));
 ---
 
 <Base
@@ -32,8 +59,8 @@ const quartos = fotografias.filter((f) => f.categoria === 'quartos');
     <section class="secao secao--clara" aria-labelledby="tipos-titulo">
       <div class="contentor">
         <div class="bloco-titulo tipos__topo">
-          <p class="etiqueta">Tipos de quarto</p>
-          <h2 id="tipos-titulo">
+          <p class="etiqueta c-revelar">Tipos de quarto</p>
+          <h2 id="tipos-titulo" class="c-titulo">
             Escolha o seu <em>quarto.</em>
           </h2>
           <div class="texto">
@@ -49,23 +76,32 @@ const quartos = fotografias.filter((f) => f.categoria === 'quartos');
     </section>
   )}
 
-  <section class="secao secao--cinza" aria-labelledby="fotos-titulo">
+  <section class="secao secao--escura quartos-cenas" aria-labelledby="fotos-titulo">
     <div class="contentor">
       <div class="bloco-titulo fotos__topo">
-        <p class="etiqueta">Os quartos em fotografias</p>
-        <h2 id="fotos-titulo">
+        <p class="etiqueta c-revelar">Os quartos em fotografias</p>
+        <h2 id="fotos-titulo" class="c-titulo">
           Conforto nos <em>detalhes.</em>
         </h2>
-        <div class="texto">
+        <div class="texto c-revelar">
           <p>
             Fotografias de vários quartos do lodge, publicadas nas suas redes. O tipo de quarto de cada uma é
             indicado pela equipa, a pedido.
           </p>
         </div>
       </div>
+    </div>
+    <Cenas id="quarto" cenas={cenas} variante="compacta" rotulo="Fotografias de quartos" />
+  </section>
+
+  <section class="secao secao--cinza" aria-labelledby="mais-titulo">
+    <div class="contentor">
+      <h2 id="mais-titulo" class="visualmente-oculto">
+        Mais fotografias de quartos
+      </h2>
       <ul class="fotos">
         {quartos.map((f) => (
-          <li>
+          <li class="c-cortina">
             <Foto id={f.id} sizes="(min-width: 1100px) 380px, (min-width: 640px) 46vw, 92vw" class="foto" />
             <span class="legenda">{f.legenda}</span>
           </li>
@@ -81,8 +117,8 @@ const quartos = fotografias.filter((f) => f.categoria === 'quartos');
   <section class="secao secao--clara" aria-labelledby="saber-titulo">
     <div class="contentor grelha grelha--metades detalhe">
       <div class="bloco-titulo">
-        <p class="etiqueta">Antes de reservar</p>
-        <h2 id="saber-titulo">
+        <p class="etiqueta c-revelar">Antes de reservar</p>
+        <h2 id="saber-titulo" class="c-titulo">
           O que pode <em>saber.</em>
         </h2>
         <div class="texto">
@@ -92,7 +128,7 @@ const quartos = fotografias.filter((f) => f.categoria === 'quartos');
             indicado pela equipa no seu pedido.
           </p>
         </div>
-        <figure class="decoracao">
+        <figure class="decoracao c-cortina">
           <Foto id="decoracao-quarto" sizes="(min-width: 900px) 520px, 92vw" class="foto decoracao__foto" />
           <figcaption class="legenda">Um quarto decorado para uma ocasião especial.</figcaption>
         </figure>
@@ -105,8 +141,8 @@ const quartos = fotografias.filter((f) => f.categoria === 'quartos');
 
   <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
     <div class="contentor">
-      <p class="etiqueta">Continue a explorar</p>
-      <h2 id="explorar-titulo" class="explorar__titulo">
+      <p class="etiqueta c-revelar">Continue a explorar</p>
+      <h2 id="explorar-titulo" class="explorar__titulo c-titulo">
         Mais para descobrir no lodge.
       </h2>
       <IndiceServicos variante="cartoes" excluir="alojamento" />
@@ -138,9 +174,19 @@ const quartos = fotografias.filter((f) => f.categoria === 'quartos');
     }
   }
   .fotos li {
+    --c-cortina: var(--cinzento);
     display: grid;
     gap: 2px;
     align-content: start;
+    border-radius: var(--raio-l);
+  }
+  .quartos-cenas {
+    padding-bottom: 0;
+  }
+  @media (max-width: 899px) {
+    .quartos-cenas {
+      padding-bottom: var(--espaco-secao);
+    }
   }
   .fotos :global(.foto) {
     display: block;
@@ -154,6 +200,7 @@ const quartos = fotografias.filter((f) => f.categoria === 'quartos');
   }
   .decoracao {
     margin: 8px 0 0;
+    border-radius: var(--raio-l);
   }
   .decoracao :global(.decoracao__foto) {
     display: block;

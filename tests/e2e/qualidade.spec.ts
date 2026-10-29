@@ -166,8 +166,11 @@ test.describe('acessibilidade (axe, WCAG 2.1 AA)', () => {
     test.skip(!['telemovel', 'portatil'].includes(info.project.name), 'axe: telemóvel e portátil'),
   );
 
+  // O contraste avalia-se no estado final do conteúdo: com movimento reduzido não há elementos a meio de
+  // uma entrada (semitransparentes no limite do ecrã). O palco animado tem o seu próprio teste abaixo.
   for (const caminho of PAGINAS) {
     test(`${caminho} sem violações`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto(caminho);
       await percorrer(page);
       const { violations } = await new AxeBuilder({ page })
@@ -177,4 +180,22 @@ test.describe('acessibilidade (axe, WCAG 2.1 AA)', () => {
       expect(resumo).toEqual([]);
     });
   }
+
+  test('palco de cenas animado (computador) sem violações', async ({ page }, info) => {
+    test.skip(info.project.name !== 'portatil');
+    await page.goto('/');
+    await page
+      .getByRole('navigation', { name: 'Espaços do lodge' })
+      .getByRole('link', { name: /Conferências/ })
+      .click();
+    await expect(page.locator('#cena .cenas__palco')).toBeInViewport({ ratio: 0.9 });
+    await page.waitForLoadState('networkidle');
+    const { violations } = await new AxeBuilder({ page })
+      .include('#cena')
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'])
+      .analyze();
+    expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual(
+      [],
+    );
+  });
 });

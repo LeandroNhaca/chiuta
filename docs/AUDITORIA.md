@@ -72,3 +72,18 @@ O envio para um endpoint continua implementado e testado contra um servidor simu
   - descarregar as fotografias originais em alta resolução. As fotografias são recortes das capturas, com 1080 px no lado maior.
 - **Vídeos**: as capturas de vídeos do Instagram são imagens paradas. Sem os ficheiros de vídeo originais, o site não tem vídeos; nenhum URL foi inventado.
 - **Logótipo**: há apenas a fotografia de perfil (cerca de 580 px). Falta o ficheiro vectorial.
+
+## Adenda (29/10/2026, mais tarde): experiência cinematográfica
+
+A pedido do responsável, o site passou a ter uma experiência visual cinematográfica em todas as páginas:
+
+- palco de cenas preso ao ecrã;
+- camadas fotográficas e parallax suave;
+- transições entre páginas.
+
+Mantêm-se as cores e as páginas existentes. Os títulos voltaram à serifada do site publicado.
+
+O acabamento das fotografias foi melhorado e ficou preparado o tratamento de vídeos, mas não foram recebidos vídeos.
+
+Relatório por página, ficheiros, testes e problemas: `docs/MOVIMENTO.md`.
+
