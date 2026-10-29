@@ -179,8 +179,8 @@ import Icone from './Icone.astro';
     /* Janela: começa com 40 % × 42 % do palco e abre até ao ecrã inteiro. */
     --w-ex: calc(0.4 + 0.6 * var(--w));
     --w-ey: calc(0.42 + 0.58 * var(--w));
-    /* A fotografia afasta-se um pouco enquanto a janela abre (1,14 → 1). */
-    --w-k: calc(1.14 - 0.14 * var(--w));
+    /* A fotografia afasta-se um pouco enquanto a janela abre (1,06 → 1). */
+    --w-k: calc(1.06 - 0.06 * var(--w));
   }
   .lazer[data-cinema='activo'] .cinema__palco {
     display: block;
@@ -230,7 +230,7 @@ import Icone from './Icone.astro';
     transform: translateY(calc((1 - var(--c)) * 101%));
   }
   .lazer[data-cinema='activo'] .lazer__cortina-imagem {
-    transform: translateY(calc((1 - var(--c)) * -101%)) scale(calc(1.1 - 0.1 * var(--c)));
+    transform: translateY(calc((1 - var(--c)) * -101%)) scale(calc(1.04 - 0.04 * var(--c)));
   }
 
   .lazer[data-cinema='activo'] .lazer__painel {

@@ -207,7 +207,7 @@ A experiência mais completa:
 
 - Abertura com a sala de estrado e mesa de honra.
 - Capacidades publicadas em cartões sequenciais.
-- **Palco compacto das montagens** (plateia, U com ecrã, estrado e mesa de honra, buffet), com "Pedir orçamento" em cada cena e depois do palco.
+- **Palco compacto das montagens** (plateia, U com ecrã, estrado e mesa de honra), com "Pedir orçamento" em cada cena e depois do palco. A fotografia do buffet (780 px de origem) saiu do palco a 29/10/2026, porque ficava desfocada em ecrã inteiro. Está junto ao pedido de orçamento, em tamanho menor.
 - Formulário de orçamento sem animação.
 
 ### Restaurante (`/restaurante/`), movimento moderado
@@ -242,6 +242,46 @@ As de grande formato ganharam versões de 1600 px.
 Não houve IA generativa nem alterações de conteúdo.
 
 A fotografia `sala-refeicoes-bar` foi recortada mais um pouco, para tirar as pessoas junto ao balcão.
+
+### Nitidez (revisão de 29/10/2026)
+
+Algumas fotografias apareciam desfocadas. Cada uma foi medida antes de mudar alguma coisa (scripts de medição na sessão; resultados em `docs/RELATORIO-TESTES.md`).
+
+**Causas encontradas**
+
+1. **Origem.** As fotografias das redes sociais têm no máximo 1080 px. As dos quartos, das salas de conferências e as duas da piscina usadas nos palcos têm ainda menos pormenor fino: já vieram comprimidas e alisadas pelo Instagram. Em ecrã inteiro (1920 px), ou num ecrã de alta densidade, ficavam ampliadas cerca de 2 vezes.
+2. **Tratamento.**
+   - **Ruído**: a redução de ruído usava um valor fixo (h de 2 a 5). Quase todas as fotografias têm ruído muito baixo nas zonas lisas (σ < 1), por isso estava sobretudo a apagar textura (folhas, tecidos, madeira). Nas fotografias do cliente perdia-se cerca de 30% do pormenor fino.
+   - **Compressão**: o AVIF com qualidade 50 alisava ainda mais.
+3. **Apresentação.**
+   - Três fotografias de 780 a 1080 px apareciam em ecrã inteiro sem versão maior: o buffet, a sala de janelas do restaurante e os quartos do palco do alojamento.
+   - Vários `sizes` pediam ao browser uma versão mais pequena do que o lugar real.
+   - As animações acrescentavam até 14% de ampliação (parallax e aproximação).
+
+**Correcções (sem alterar o conteúdo das fotografias)**
+
+- **Tratamento** (`scripts/imagens/tratar_fotografias.py`):
+  - o ruído é medido nas zonas lisas de cada fotografia, depois dos ajustes de luz, e a redução só se aplica onde há ruído;
+  - nitidez só na luminosidade, com limiar, para não realçar ruído nem blocos de compressão;
+  - um pouco mais de nitidez nas fotografias suaves;
+  - AVIF com qualidade 52 (62 nas fotografias suaves) e WebP com 78 (82 nas suaves).
+- **Versões grandes**: até 1600 px (no máximo 1,6 vezes o original), ampliadas com Lanczos, para as fotografias usadas em grande formato. São elas os quartos do palco do alojamento, a sala de janelas, a cascata, a decoração do quarto, a sala de refeições e o bar.
+- **`sizes`**: corrigidos no mosaico (um por fotografia), nas piscinas, no restaurante, no alojamento, nos eventos e na localização.
+- **Animações**:
+  - parallax de 7% para 4%, com escala 1,08 em vez de 1,14 (no telemóvel, sem escala);
+  - aproximação das cenas de 1,12 para 1,05;
+  - janela das piscinas de 1,14 para 1,06;
+  - cortina de 1,1 para 1,04;
+  - portas de 1,06 para 1,03.
+- **Buffet**: saiu do ecrã inteiro (eventos) e, no tablet, fica com 400 px no máximo.
+
+**Resultado**
+
+- A maior ampliação num ecrã normal (1366 ou 1920 px) desceu de 2,7× para 1,3×.
+- O pormenor fino ficou acima do original em todas as fotografias.
+- A página inicial pesa mais cerca de 25% no carregamento.
+
+Os originais continuam intactos em `assets-originais/` e não se usou IA.
 
 ### Vídeos
 

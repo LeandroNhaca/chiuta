@@ -27,13 +27,16 @@
 :root {
   --c-distancia: 28px;
   --c-distancia-titulo: 0.35em;
-  --c-paralaxe: 7%;
+  --c-paralaxe: 4%;
+  /* Escala mínima para o deslocamento do parallax não mostrar as margens (1 + 2 × deslocamento). */
+  --c-paralaxe-escala: 1.08;
   --c-flutuar: 56px;
   --c-curva: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 [data-movimento='moderado'] {
   --c-distancia: 18px;
-  --c-paralaxe: 4%;
+  --c-paralaxe: 3%;
+  --c-paralaxe-escala: 1.06;
   --c-flutuar: 28px;
 }
 @media (max-width: 759px) {
@@ -41,6 +44,7 @@
     --c-distancia: 14px;
     --c-distancia-titulo: 0.2em;
     --c-paralaxe: 0%;
+    --c-paralaxe-escala: 1;
     --c-flutuar: 0px;
   }
 }
@@ -214,10 +218,10 @@
 
 @keyframes c-paralaxe {
   from {
-    transform: translateY(calc(var(--c-paralaxe) * -1)) scale(1.14);
+    transform: translateY(calc(var(--c-paralaxe) * -1)) scale(var(--c-paralaxe-escala));
   }
   to {
-    transform: translateY(var(--c-paralaxe)) scale(1.14);
+    transform: translateY(var(--c-paralaxe)) scale(var(--c-paralaxe-escala));
   }
 }
 
