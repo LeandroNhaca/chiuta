@@ -15,7 +15,8 @@ for (const caminho of PAGINAS) {
     await expect(page.locator('h1')).toHaveCount(1);
     await expect(page).toHaveTitle(/Mulotana Lodge/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.{60,}/);
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+    // Indexável: sem meta robots a bloquear.
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       'content',
       /\/og\/mulotana-lodge\.jpg$/,

@@ -1,12 +1,11 @@
-# Mulotane Lodge (projecto Docker "mulotane", repositório LeandroNhaca/chiuta). Demonstração comercial:
-# fora dos motores de busca. O Caddy chega ao contentor pela rede "edge" (alias mulotane-web). O contentor
+# Mulotana Lodge (projecto Docker "mulotane", repositório LeandroNhaca/chiuta). Indexável desde 29/10/2026
+# (sem X-Robots-Tag), a pedido do responsável. O Caddy chega ao contentor pela rede "edge" (alias mulotane-web). O contentor
 # define os seus próprios cabeçalhos de segurança; aqui só HSTS, compressão e limite ao tamanho dos pedidos
 # (o site é estático e só aceita GET/HEAD).
 mulotane.onepromptstudio.com {
 	encode zstd gzip
 	header {
 		Strict-Transport-Security "max-age={$HSTS_MAX_AGE:300}"
-		X-Robots-Tag "noindex, nofollow"
 		-Server
 	}
 	request_body {

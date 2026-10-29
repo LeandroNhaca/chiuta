@@ -110,5 +110,5 @@ As fotografias de 2016 e 2020 podem não mostrar o estado actual. Confirmar sobr
 2. Validar os preços, as capacidades e o número de quartos (secção 2) e as coordenadas.
 3. Enviar os originais das fotografias e, se possível, fotografias identificadas de cada tipo de quarto.
 4. Decidir se os pedidos devem chegar também por um servidor (`docs/ENVIO-PEDIDOS.md`).
-5. Definir o domínio, preencher `site.dominioFinal` e pôr `demonstracao.activa: false`.
+5. Definir o domínio e preencher `site.dominioFinal` (a indexação já está ligada desde 29/10/2026, no endereço actual).
 6. Correr `npm run verificar` e publicar.

@@ -1,0 +1,49 @@
+# Projecto Docker "onepromptstudio" no VPS 2042157. Gerado por scripts/gerar-compose.mjs (não editar à mão).
+# Serve /srv/prod (main) e /srv/preview (branch de pré-visualização) do volume ops_site.
+# Mantém os volumes caddy_data/caddy_config, por isso os certificados actuais são reaproveitados.
+# É o único contentor com portas públicas. Os outros serviços (n8n, Uptime Kuma) ligam-se à rede "edge"
+# e o Caddy chega-lhes por dentro. Corre como root dentro do contentor só com NET_BIND_SERVICE
+# (portas 80 e 443), disco só de leitura e limites de memória e CPU.
+# caddy.env (só no servidor, 600 root): KUMA_USER e KUMA_HASH da password à frente do Uptime Kuma.
+services:
+  web:
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM caddy:2.11.7-builder-alpine AS build
+        RUN xcaddy build v2.11.7 --with github.com/mholt/caddy-ratelimit@v0.1.1-0.20260612195517-5625512f24f6
+        FROM caddy:2.11.7-alpine
+        COPY --from=build /usr/bin/caddy /usr/bin/caddy
+    image: onepromptstudio/caddy:2.11.7-ratelimit
+    pull_policy: never
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    env_file: /root/.config/onepromptstudio/caddy.env
+    environment:
+      ACME_EMAIL: contacto@onepromptstudio.com
+      HSTS_MAX_AGE: "31536000"
+      N8N_ORIGIN: https://n8n.onepromptstudio.com
+      ANALYTICS_ORIGIN: ""
+      CADDYFILE: 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
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["echo $$CADDYFILE | base64 -d | gunzip > /tmp/Caddyfile && exec caddy run --config /tmp/Caddyfile --adapter caddyfile"]
+    read_only: true
+    tmpfs: [/tmp]
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 256m
+    cpus: 1.0
+    pids_limit: 256
+    networks: [default, edge]
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ops_site:/srv:ro
+networks:
+  edge: { name: edge }
+volumes:
+  caddy_data:
+  caddy_config:
+  ops_site:
+    external: true

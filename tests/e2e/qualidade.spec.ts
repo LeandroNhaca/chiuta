@@ -89,7 +89,9 @@ test.describe('imagens, ligações e SEO', () => {
   });
 
   test('robots.txt, sitemap, imagem de partilha e dados estruturados', async ({ page, request }) => {
-    expect(await (await request.get('/robots.txt')).text()).toBe('User-agent: *\nDisallow: /\n');
+    expect(await (await request.get('/robots.txt')).text()).toBe(
+      'User-agent: *\nAllow: /\n\nSitemap: https://mulotane.onepromptstudio.com/sitemap.xml\n',
+    );
     const sitemap = await (await request.get('/sitemap.xml')).text();
     expect(sitemap.match(/<loc>/g)).toHaveLength(8);
     expect(sitemap).toContain('https://mulotane.onepromptstudio.com/eventos/');
@@ -133,12 +135,12 @@ test.describe('imagens, ligações e SEO', () => {
     for (const campo of ['aggregateRating', 'review', 'priceRange', 'starRating', 'award']) {
       expect(ld, campo).not.toHaveProperty(campo);
     }
-    // Canonical no endereço publicado (até haver domínio definitivo), com a página sem índice.
+    // Canonical no endereço publicado (até haver domínio definitivo) e página indexável.
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
       'https://mulotane.onepromptstudio.com/',
     );
-    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(0);
   });
 });
 

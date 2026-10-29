@@ -25,10 +25,13 @@ export async function percorrer(page: Page): Promise<void> {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
-/** Data local AAAA-MM-DD daqui a n dias (no fuso do browser de teste). */
+/**
+ * Data AAAA-MM-DD daqui a n dias no fuso do browser de teste (Africa/Maputo, em playwright.config.ts), e não
+ * no fuso da máquina que corre os testes: entre as 22h e as 24h UTC já é o dia seguinte em Maputo.
+ */
 export function daquiA(dias: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + dias);
-  const p = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+  // Moçambique não tem hora de Verão: somar dias em milissegundos é exacto. "en-CA" formata AAAA-MM-DD.
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Africa/Maputo' }).format(
+    new Date(Date.now() + dias * 86_400_000),
+  );
 }

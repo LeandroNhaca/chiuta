@@ -24,7 +24,7 @@ interface Props {
 
 const { titulo, descricao, inicio = false, dadosEstruturados, movimento = 'completo' } = Astro.props;
 const tituloCompleto = inicio ? titulo : `${titulo} | ${lodge.nome}`;
-const indexavel = !lodge.demonstracao.activa && Boolean(lodge.site.dominioFinal);
+const indexavel = !lodge.demonstracao.activa;
 // Canonical: o domínio definitivo, quando existir; até lá, o endereço publicado (sem índice, ver `indexavel`).
 const canonical = new URL(Astro.url.pathname, lodge.site.dominioFinal || Astro.site).href;
 const urlPagina = new URL(Astro.url.pathname, Astro.site).href;

@@ -94,7 +94,7 @@ Percursos dos palcos, proporcionais ao ecrã (não fixos em píxeis):
   - A ficha `maps.app.goo.gl` indicada a 28/10 abre com o nome "Mulotane".
 - **Morada**: continua "Casa n.º 172, Quarteirão 12". O pedido escreve "Q.12", que é a mesma morada.
 - **Canonical**: em todas as páginas, com o endereço publicado.
-  - As páginas continuam sem índice (`noindex`) enquanto for demonstração.
+  - Desde 29/10/2026 as páginas são indexáveis no endereço actual (ver `docs/PUBLICACAO.md`).
   - Com o domínio definitivo em `src/config/lodge.ts`, o canonical e o índice passam para ele.
 
 ---
