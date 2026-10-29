@@ -236,7 +236,7 @@ test('contactos: telefone, WhatsApp e e-mail oficiais, morada, mapa a pedido e r
   await expect(local).not.toContainText('a confirmar');
   await expect(page.getByRole('link', { name: /Abrir no Google Maps/ })).toHaveAttribute(
     'href',
-    'https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6',
+    'https://www.google.com/maps?q=-25.87061,32.41132',
   );
   const direccoes = page.getByRole('link', { name: /Obter direcções/ });
   await expect(direccoes).toHaveAttribute(

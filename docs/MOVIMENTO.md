@@ -1,5 +1,106 @@
 # Experiência cinematográfica · relatório por página (29/10/2026)
 
+## Segunda fase: reconstrução cinematográfica da página inicial
+
+Pedido: "Mulotana Lodge — reconstrução cinematográfica e redesign completo do website", com a técnica do projecto de referência "Mostar city". O pedido traz a especificação técnica da referência:
+
+- palco preso ao ecrã numa secção alta;
+- camadas de imagem conduzidas por variáveis CSS;
+- progresso do scroll suavizado num ciclo `requestAnimationFrame`;
+- segmentos de entrada e saída;
+- título em grande que muda de escala;
+- molduras que se separam;
+- painéis de texto por segmentos;
+- carrossel de cartões.
+
+### O que se aproveitou da referência e o que não
+
+- **Aproveitado**: só a técnica, reescrita de raiz.
+- **Não usado**:
+  - as fotografias, as fontes, as cores e os ícones da referência (alojados no figma.site e no cloudfront);
+  - o texto e o código da referência.
+- **Porquê**:
+  - o pedido proíbe copiar a referência;
+  - a Content-Security-Policy do site bloqueia recursos de terceiros.
+- **No lugar disso**: fotografias reais do lodge, as cores do site (verde-floresta, dourado e branco quente) e as fontes do site (Cormorant Garamond e Manrope).
+
+O endereço público da referência não foi aberto nesta sessão: não se afirma que tenha sido analisado para além da especificação recebida.
+
+### Motor (`src/scripts/cinema.ts`, cerca de 200 linhas, sem bibliotecas)
+
+**Como lê o scroll**
+- Cada `[data-cinema]` recebe uma variável `--p` (0 → 1) com o progresso dentro do palco.
+- A suavização depende do tempo (cerca de 110 ms), não do número de frames.
+- Também escreve `--mx` e `--my`, a posição do rato, para um parallax de poucos píxeis (só com rato).
+
+**Quando corre**
+- O palco só é activado com espaço (≥ 760 × 600 px) e sem movimento reduzido.
+- Corre só com o palco à vista (IntersectionObserver).
+- Há um ouvinte de scroll passivo, que só pede um frame; o ciclo pára quando o valor estabiliza.
+
+**Navegação e foco**
+- Âncoras, entrada directa com `#` e regresso pelo histórico (bfcache) levam ao ponto do percurso de cada cena (`data-cinema-em`).
+- O foco do teclado num elemento de uma cena invisível traz essa cena para o ecrã.
+- Só a cena à vista recebe cliques.
+
+**Imagens e coreografia**
+- As fotografias das camadas que entram mais tarde são carregadas quando o palco se aproxima, para nunca aparecerem vazias.
+- A coreografia está toda em CSS, em cada componente. Só usa `transform` e `opacity`, e um raio de canto durante o enquadramento.
+
+**Sem JavaScript, no telemóvel ou com movimento reduzido**: os palcos são blocos normais (fotografia + texto), com tudo visível.
+
+### Página inicial: sete cenas
+
+1. **Entrada** (`PalcoAbertura`):
+   - a piscina em ecrã inteiro e "Mulotana Lodge" em grande, ao centro;
+   - os botões "Consultar disponibilidade", "Pedir orçamento" e "Explorar o lodge" estão visíveis e utilizáveis desde o primeiro instante;
+   - ao descer, o texto sai e o título sobe e encolhe à frente da fotografia, o que dá profundidade.
+2. **Descoberta**:
+   - a fotografia recolhe para uma moldura à direita: muda o enquadramento, nunca deforma;
+   - o edifício de colmo e o passadiço sobem à frente, a velocidades diferentes (camadas);
+   - entra o texto do lodge com os números publicados pelo lodge (100 quartos, 3 salas, 300 pessoas na sala maior) e as ligações para os espaços.
+3. **Alojamento**:
+   - as duas metades da fotografia do quarto da cama redonda fecham-se como portas;
+   - entra o cartão com os tipos de quarto e "Consultar disponibilidade";
+   - a seguir, o **carrossel** com 7 fotografias reais de quartos e os cartões dos tipos de quarto com o preço publicado.
+4. **Piscinas e lazer** (`PalcoPiscinas`):
+   - "Piscinas e jardins." em grande; por baixo, uma janela abre-se até ao ecrã inteiro (a máscara cresce, a fotografia fica quase parada);
+   - entra o primeiro texto; a seguir, a vista do terraço sobe como uma cortina, com "Perguntar sobre a piscina" (WhatsApp).
+5. **Conferências e eventos**: capacidades publicadas, fotografias com parallax e "Pedir orçamento para um evento".
+6. **Galeria**: mosaico de 6 fotografias em proporções diferentes, com entrada e parallax, e "Ver as 32 fotografias".
+7. **Conversão**: pedidos (estadia / evento), contactos, mapa a pedido e rodapé.
+
+Percursos dos palcos, proporcionais ao ecrã (não fixos em píxeis):
+
+| Palco | Percurso | Altura total num portátil de 1366 × 768 |
+| --- | --- | --- |
+| Abertura | 300 % da altura do ecrã | cerca de 3000 px (a referência usa 3700 px) |
+| Piscinas | 220 % da altura do ecrã | cerca de 2400 px |
+
+### Carrossel (`src/components/Carrossel.astro`, reutilizável)
+
+- **Capacidade**: até 15 cartões, só com fotografias do catálogo e as legendas de lá.
+- **Deslocação nativa**: scroll horizontal com paragem em cada cartão. Funciona com o dedo, o trackpad e a roda, e com as setas do teclado quando tem o foco. Não precisa de JavaScript.
+- **Botões**: "anterior" e "seguinte", que ficam inactivos nas pontas sem perder o foco. Início e Fim levam ao primeiro e ao último cartão.
+- **Progresso**: barra de progresso decorativa, onde o browser a suporta.
+- **Escolhas de propósito**:
+  - sem passagem automática, porque o pedido a admite só se puder ser parada e aqui não acrescentava nada;
+  - sem ciclo infinito;
+  - sem cartões duplicados.
+
+### Dados de contacto
+
+- **"Abrir no Google Maps"** e os dados estruturados passam a usar `https://www.google.com/maps?q=-25.87061,32.41132`, a ligação indicada no pedido.
+  - A ficha `maps.app.goo.gl` indicada a 28/10 abre com o nome "Mulotane".
+- **Morada**: continua "Casa n.º 172, Quarteirão 12". O pedido escreve "Q.12", que é a mesma morada.
+- **Canonical**: em todas as páginas, com o endereço publicado.
+  - As páginas continuam sem índice (`noindex`) enquanto for demonstração.
+  - Com o domínio definitivo em `src/config/lodge.ts`, o canonical e o índice passam para ele.
+
+---
+
+## Primeira fase
+
 Pedido: transformar todo o site numa experiência visual cinematográfica e consistente, inspirada na técnica de scroll do projecto "Mostar city", sem mudar as cores, as páginas nem as funcionalidades.
 
 O projecto de referência não foi encontrado: a pesquisa não devolveu nenhum site "Mostar city", e o domínio publicado não abre nesta sessão. Foi aplicada a técnica descrita no pedido:

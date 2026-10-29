@@ -110,18 +110,22 @@ Tamanhos: telemóvel pequeno (360×740), telemóvel (Pixel 7), tablet (820×1180
   - dados estruturados com a morada, as coordenadas, o telefone, o e-mail, o logótipo e as redes.
 - **Acessibilidade**: axe-core WCAG 2.0/2.1 A e AA + boas práticas, em todas as páginas, no telemóvel e no portátil: **0 violações**.
 
-## Desempenho (medido localmente, sem limitação de rede, depois da experiência cinematográfica)
+## Desempenho (medido localmente, sem limitação de rede, depois da reconstrução cinematográfica)
 
 | Página | Ecrã | Transferido no carregamento | LCP (local) | CLS |
 | --- | --- | --- | --- | --- |
-| `/` | 390×844 @3x | 339 KB | 196 ms | 0,000 |
-| `/` | 1440×900 | 588 KB | 216 ms | 0,000 |
-| `/eventos/` | 390×844 @3x | 248 KB | 152 ms | 0,000 |
-| `/eventos/` | 1440×900 | 280 KB | 160 ms | 0,000 |
-| `/galeria/` | 390×844 @3x | 322 KB | 96 ms | 0,000 |
-| `/galeria/` | 1440×900 | 386 KB | 128 ms | 0,000 |
+| `/` | 390×844 @3x | 452 KB | 316 ms | 0,000 |
+| `/` | 1440×900 | 419 KB | 324 ms | 0,000 |
+| `/eventos/` | 390×844 @3x | 249 KB | 192 ms | 0,000 |
+| `/eventos/` | 1440×900 | 280 KB | 216 ms | 0,000 |
+| `/galeria/` | 390×844 @3x | 322 KB | 180 ms | 0,000 |
+| `/galeria/` | 1440×900 | 386 KB | 176 ms | 0,000 |
 
-A página inicial pesa mais no computador. A abertura em ecrã inteiro usa a versão de 1600 px da fotografia (104 KB em AVIF), e as fotografias do palco carregam quando o palco se aproxima. As fontes serifadas dos títulos voltaram.
+Na página inicial:
+
+- **Primeiro ecrã**: a fotografia da piscina (prioridade alta).
+- **Fotografias dos palcos** (molduras, camadas e portas): no computador, carregam quando o palco se aproxima, com prioridade normal. No telemóvel, onde os palcos são blocos normais, carregam ao descer (`loading="lazy"`).
+- **JavaScript**: o motor dos palcos (3,5 KB) e o carrossel (1 KB) acrescentam cerca de 4,5 KB sem compressão.
 
 O LCP local não inclui a latência da rede móvel.
 

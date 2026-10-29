@@ -49,7 +49,7 @@ test('menu do telemóvel abre, fecha com Esc e devolve o foco', async ({ page },
 
 test('botão principal do hero leva ao formulário de disponibilidade', async ({ page }) => {
   await page.goto('/');
-  await page.locator('.hero').getByRole('link', { name: 'Consultar disponibilidade' }).click();
+  await page.locator('.abertura__entrada').getByRole('link', { name: 'Consultar disponibilidade' }).click();
   await expect(page).toHaveURL(/#disponibilidade$/);
   await expect(page.locator('#disponibilidade form')).toBeInViewport({ ratio: 0.1 });
 });

@@ -1,0 +1,254 @@
+---
+/**
+ * Piscinas e lazer na página inicial: segundo palco cinematográfico (src/scripts/cinema.ts).
+ *
+ * Com o palco activo: o título fica em grande sobre o fundo claro e uma janela no centro abre-se até ao ecrã
+ * inteiro (a fotografia fica parada; só a máscara cresce). Entra o primeiro texto; depois a segunda
+ * fotografia sobe por baixo, como uma cortina, e entra o convite para perguntar as condições à equipa.
+ *
+ * Sem palco, são três blocos: título, fotografia + texto, fotografia + convite.
+ * Não se publicam horários, preços nem regras da piscina: só o convite para perguntar.
+ */
+import { lodge } from '../config/lodge';
+
+import BotaoWhatsApp from './BotaoWhatsApp.astro';
+import Foto from './Foto.astro';
+import Icone from './Icone.astro';
+---
+
+<section class="lazer cinema" data-cinema aria-labelledby="piscinas-titulo">
+  <div class="cinema__palco" data-cinema-palco>
+    <div class="lazer__cabeca">
+      <p class="etiqueta c-revelar">Piscinas e lazer</p>
+      <h2 id="piscinas-titulo" class="lazer__titulo c-titulo">
+        Piscinas <em>e jardins.</em>
+      </h2>
+    </div>
+
+    <div class="lazer__janela">
+      <div class="lazer__imagem">
+        <Foto id="piscina-topiaria" sizes="100vw" class="lazer__foto" />
+      </div>
+    </div>
+    <div class="lazer__painel lazer__painel--1" id="piscinas" data-cinema-em="0.36" tabindex="-1">
+      <h3>Lazer ao ar livre</h3>
+      <p>
+        Piscinas entre palmeiras e jardins cuidados, com esplanadas à sombra das árvores: para um dia de
+        descanso, um encontro de família ou a pausa de um evento.
+      </p>
+      <a class="ligacao-seta" href="/piscinas/">
+        <span>Piscinas e jardins</span>
+        <Icone nome="seta" tamanho={18} />
+      </a>
+    </div>
+
+    <div class="lazer__cortina">
+      <div class="lazer__cortina-imagem">
+        <Foto id="vista-piscina-esplanada" sizes="100vw" class="lazer__foto" />
+      </div>
+    </div>
+    <div class="lazer__painel lazer__painel--2" data-cinema-em="0.94" tabindex="-1">
+      <h3>Um dia à beira da piscina</h3>
+      <p>
+        Quer saber as condições de acesso, os horários ou se a piscina está aberta a visitantes não alojados?
+        Pergunte directamente à equipa.
+      </p>
+      <div class="accoes">
+        <BotaoWhatsApp
+          texto="Perguntar sobre a piscina"
+          variante="principal"
+          mensagem={`Olá, ${lodge.nome}! Gostaria de saber as condições de acesso à piscina (horários, regras e preço).`}
+        />
+        <a class="ligacao-seta" href="/contactos/">
+          <span>Outros contactos</span>
+          <Icone nome="seta" tamanho={18} />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/cinema';
+</script>
+
+<style>
+  /* ================= Sem palco ================= */
+  .lazer {
+    --borda: max(var(--margem), calc((100vw - var(--contentor)) / 2));
+    background: var(--branco);
+  }
+  .cinema__palco {
+    position: relative;
+    display: grid;
+    grid-template-areas:
+      'cabeca'
+      'um'
+      'dois';
+    overflow: clip;
+  }
+  .lazer__cabeca {
+    grid-area: cabeca;
+    display: grid;
+    gap: 18px;
+    justify-items: start;
+    padding: var(--espaco-secao) var(--borda) clamp(32px, 4vw, 48px);
+  }
+  .lazer__cabeca .etiqueta {
+    margin-bottom: 0;
+  }
+  .lazer__titulo {
+    font-size: clamp(2.8rem, 1rem + 6vw, 7.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    color: var(--verde);
+  }
+  .lazer__titulo em {
+    color: var(--dourado-texto);
+  }
+
+  .lazer__janela,
+  .lazer__cortina {
+    position: relative;
+    overflow: hidden;
+    min-height: min(80svh, 720px);
+    background: var(--cinzento-2);
+  }
+  .lazer__janela {
+    grid-area: um;
+  }
+  .lazer__cortina {
+    grid-area: dois;
+  }
+  .lazer__imagem,
+  .lazer__cortina-imagem,
+  .lazer :global(.lazer__foto) {
+    position: absolute;
+    inset: 0;
+  }
+  .lazer :global(.lazer__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .lazer__janela :global(.lazer__foto img) {
+    object-position: 50% 60%;
+  }
+
+  .lazer__painel {
+    position: relative;
+    z-index: 2;
+    align-self: end;
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+    max-width: 32rem;
+    margin: var(--margem) var(--borda);
+    padding: clamp(22px, 3.4vw, 40px);
+    border-radius: var(--raio-l);
+    background: rgb(250 248 243 / 0.97);
+    box-shadow: 0 30px 60px rgb(5 22 18 / 0.25);
+  }
+  .lazer__painel--1 {
+    grid-area: um;
+  }
+  .lazer__painel--2 {
+    grid-area: dois;
+  }
+  .lazer__painel h3 {
+    font-family: var(--serif);
+    font-size: clamp(1.7rem, 1.3rem + 1.2vw, 2.4rem);
+    font-weight: 600;
+    line-height: 1.05;
+    color: var(--verde);
+  }
+  .lazer__painel p {
+    color: var(--texto-suave);
+  }
+
+  /* ================= Palco activo ================= */
+  .lazer[data-cinema='activo'] {
+    --percurso: 220svh;
+    --w0: clamp(0, var(--p) / 0.32, 1);
+    --w: calc(var(--w0) * var(--w0) * (3 - 2 * var(--w0)));
+    --um-entra: clamp(0, (var(--p) - 0.24) / 0.12, 1);
+    --um-sai: clamp(0, (var(--p) - 0.56) / 0.1, 1);
+    --c0: clamp(0, (var(--p) - 0.56) / 0.26, 1);
+    --c: calc(var(--c0) * var(--c0) * (3 - 2 * var(--c0)));
+    --dois: clamp(0, (var(--p) - 0.8) / 0.12, 1);
+    /* Janela: começa com 40 % × 42 % do palco e abre até ao ecrã inteiro. */
+    --w-ex: calc(0.4 + 0.6 * var(--w));
+    --w-ey: calc(0.42 + 0.58 * var(--w));
+    /* A fotografia afasta-se um pouco enquanto a janela abre (1,14 → 1). */
+    --w-k: calc(1.14 - 0.14 * var(--w));
+  }
+  .lazer[data-cinema='activo'] .cinema__palco {
+    display: block;
+    background: var(--branco);
+  }
+  .lazer[data-cinema='activo'] :is(.c-revelar, .c-titulo) {
+    animation: none;
+  }
+
+  .lazer[data-cinema='activo'] .lazer__cabeca {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    align-content: start;
+    justify-items: center;
+    padding: clamp(36px, 8vh, 96px) var(--borda) 0;
+    text-align: center;
+    transform: translateY(calc(var(--w) * -6vh)) scale(calc(1 + 0.06 * var(--w)));
+  }
+  .lazer[data-cinema='activo'] .lazer__titulo {
+    font-size: clamp(3.2rem, 1rem + 6vw, 8.5rem);
+  }
+
+  .lazer[data-cinema='activo'] .lazer__janela {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    min-height: 0;
+    /* Começa mais abaixo, sob o título, e sobe até ao centro enquanto abre (o título fica por trás). */
+    transform: translate(
+        calc(var(--mx) * -8px * (1 - var(--w))),
+        calc((1 - var(--w)) * 10vh + var(--my) * -8px * (1 - var(--w)))
+      )
+      scale(var(--w-ex), var(--w-ey));
+    border-radius: calc((1 - var(--w)) * 22px / var(--w-ex)) / calc((1 - var(--w)) * 22px / var(--w-ey));
+  }
+  /* A imagem compensa a escala da janela: a máscara cresce, a fotografia quase não se mexe. */
+  .lazer[data-cinema='activo'] .lazer__imagem {
+    transform: scale(calc(var(--w-k) / var(--w-ex)), calc(var(--w-k) / var(--w-ey)));
+  }
+
+  .lazer[data-cinema='activo'] .lazer__cortina {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    min-height: 0;
+    transform: translateY(calc((1 - var(--c)) * 101%));
+  }
+  .lazer[data-cinema='activo'] .lazer__cortina-imagem {
+    transform: translateY(calc((1 - var(--c)) * -101%)) scale(calc(1.1 - 0.1 * var(--c)));
+  }
+
+  .lazer[data-cinema='activo'] .lazer__painel {
+    position: absolute;
+    bottom: clamp(24px, 7vh, 72px);
+    width: min(32rem, calc(100% - 2 * var(--margem)));
+    margin: 0;
+  }
+  .lazer[data-cinema='activo'] .lazer__painel--1 {
+    right: var(--borda);
+    z-index: 2;
+    opacity: calc(var(--um-entra) * (1 - var(--um-sai)));
+    transform: translateY(calc((1 - var(--um-entra)) * 40px - var(--um-sai) * 40px));
+  }
+  .lazer[data-cinema='activo'] .lazer__painel--2 {
+    left: var(--borda);
+    z-index: 4;
+    opacity: var(--dois);
+    transform: translateY(calc((1 - var(--dois)) * 40px));
+  }
+</style>

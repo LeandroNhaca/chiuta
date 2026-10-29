@@ -66,9 +66,8 @@ test.describe('imagens, ligações e SEO', () => {
         }
       }
     }
-    // Só destinos oficiais: WhatsApp, ficha e direcções do Google Maps, mapa do OpenStreetMap e redes do lodge.
+    // Só destinos oficiais: WhatsApp, Google Maps (ponto e direcções), mapa do OpenStreetMap e redes do lodge.
     expect([...externas].sort()).toEqual([
-      'https://maps.app.goo.gl',
       'https://wa.me',
       'https://www.facebook.com',
       'https://www.google.com',
@@ -121,7 +120,7 @@ test.describe('imagens, ligações e SEO', () => {
     expect(ld.telephone).toBe('+258 84 888 5556');
     expect(ld.email).toBe('mulotanalodge@gmail.com');
     expect(ld.geo).toMatchObject({ latitude: -25.87061, longitude: 32.41132 });
-    expect(ld.hasMap).toBe('https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6');
+    expect(ld.hasMap).toBe('https://www.google.com/maps?q=-25.87061,32.41132');
     expect(ld.sameAs).toEqual([
       'https://www.instagram.com/mulotana_lodge/',
       'https://www.facebook.com/share/1JupC5A591/',
@@ -131,7 +130,12 @@ test.describe('imagens, ligações e SEO', () => {
     for (const campo of ['aggregateRating', 'review', 'priceRange', 'starRating', 'award']) {
       expect(ld, campo).not.toHaveProperty(campo);
     }
-    await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
+    // Canonical no endereço publicado (até haver domínio definitivo), com a página sem índice.
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      'https://mulotane.onepromptstudio.com/',
+    );
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
   });
 });
 
@@ -181,21 +185,28 @@ test.describe('acessibilidade (axe, WCAG 2.1 AA)', () => {
     });
   }
 
-  test('palco de cenas animado (computador) sem violações', async ({ page }, info) => {
+  test('palcos animados (computador) sem violações, com cada cena no ecrã', async ({ page }, info) => {
     test.skip(info.project.name !== 'portatil');
-    await page.goto('/');
-    await page
-      .getByRole('navigation', { name: 'Espaços do lodge' })
-      .getByRole('link', { name: /Conferências/ })
-      .click();
-    await expect(page.locator('#cena .cenas__palco')).toBeInViewport({ ratio: 0.9 });
-    await page.waitForLoadState('networkidle');
-    const { violations } = await new AxeBuilder({ page })
-      .include('#cena')
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'])
-      .analyze();
-    expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual(
-      [],
-    );
+    for (const [caminho, cena, palco] of [
+      ['/#o-lodge', '.abertura__descoberta', '.abertura'],
+      ['/#quartos-intro', '.abertura__quartos', '.abertura'],
+      ['/#piscinas', '.lazer__painel--1', '.lazer'],
+    ]) {
+      await page.goto(caminho);
+      await expect
+        .poll(() => page.locator(cena).evaluate((e) => Number(getComputedStyle(e).opacity)), {
+          message: cena,
+        })
+        .toBe(1);
+      await page.waitForLoadState('networkidle');
+      const { violations } = await new AxeBuilder({ page })
+        .include(palco)
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'])
+        .analyze();
+      expect(
+        violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`),
+        caminho,
+      ).toEqual([]);
+    }
   });
 });

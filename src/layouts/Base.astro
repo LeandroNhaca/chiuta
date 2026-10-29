@@ -25,7 +25,8 @@ interface Props {
 const { titulo, descricao, inicio = false, dadosEstruturados, movimento = 'completo' } = Astro.props;
 const tituloCompleto = inicio ? titulo : `${titulo} | ${lodge.nome}`;
 const indexavel = !lodge.demonstracao.activa && Boolean(lodge.site.dominioFinal);
-const canonical = lodge.site.dominioFinal ? new URL(Astro.url.pathname, lodge.site.dominioFinal).href : null;
+// Canonical: o domínio definitivo, quando existir; até lá, o endereço publicado (sem índice, ver `indexavel`).
+const canonical = new URL(Astro.url.pathname, lodge.site.dominioFinal || Astro.site).href;
 const urlPagina = new URL(Astro.url.pathname, Astro.site).href;
 const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
 ---
@@ -38,7 +39,7 @@ const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
     <meta http-equiv="Content-Security-Policy" content={politicaSeguranca()} />
     <title>{tituloCompleto}</title>
     <meta name="description" content={descricao} />
-    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="canonical" href={canonical} />
     {!indexavel && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#faf8f3" />
     <meta name="format-detection" content="telephone=no" />

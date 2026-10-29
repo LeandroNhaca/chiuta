@@ -2,55 +2,156 @@ import { expect, test, type Page } from '@playwright/test';
 
 import { ehComputador, ehTelemovel } from './ajuda';
 
-// Movimento (src/styles/cinema.css e src/components/Cenas.astro): nunca pode esconder conteúdo de forma
-// permanente, tem de respeitar o movimento reduzido e não pode depender de JavaScript.
+// Movimento (src/styles/cinema.css, src/scripts/cinema.ts e os palcos da página inicial): nunca pode esconder
+// conteúdo de forma permanente, tem de respeitar o movimento reduzido e não pode depender de JavaScript.
 
-const ANIMADOS = '.c-revelar, .c-titulo, .c-cartoes > *, .cena__texto';
+const ANIMADOS =
+  '.c-revelar, .c-titulo, .c-cartoes > *, .cena__texto, .abertura__descoberta, .abertura__quartos, .lazer__painel';
 
 const opacidade = (page: Page, seletor: string) =>
   page.locator(seletor).evaluateAll((els) => els.map((e) => Number(getComputedStyle(e).opacity)));
+const opacidadeDe = async (page: Page, seletor: string) => (await opacidade(page, seletor))[0];
 
-test.describe('palco de cenas da página inicial', () => {
-  test('no computador fica preso ao ecrã e troca de cena ao descer', async ({ page }, info) => {
-    test.skip(!ehComputador(info));
+/** Leva o scroll a uma fracção do percurso de um palco activo (0 = início, 1 = fim). */
+const irPara = (page: Page, seletor: string, fraccao: number) =>
+  page.evaluate(
+    ([s, f]) => {
+      const secao = document.querySelector<HTMLElement>(s as string)!;
+      const palco = secao.querySelector<HTMLElement>('.cinema__palco')!;
+      const topo = parseFloat(getComputedStyle(palco).top);
+      const y =
+        secao.getBoundingClientRect().top +
+        window.scrollY -
+        topo +
+        (f as number) * (secao.offsetHeight - palco.offsetHeight);
+      window.scrollTo({ top: y, behavior: 'instant' });
+    },
+    [seletor, fraccao],
+  );
+
+test.describe('palcos cinematográficos da página inicial', () => {
+  test('no computador o palco fica preso ao ecrã e as cenas trocam ao descer', async ({ page }, info) => {
+    test.skip(!['portatil', 'monitor', 'tablet'].includes(info.project.name));
     await page.goto('/');
-    const palco = page.locator('#cena .cenas__palco');
-    await expect(palco).toHaveCSS('position', 'sticky');
-    const textos = page.locator('#cena .cena__texto');
-    await expect(textos).toHaveCount(4);
+    const abertura = page.locator('.abertura');
+    await expect(abertura).toHaveAttribute('data-cinema', 'activo');
+    await expect(abertura.locator('.cinema__palco')).toHaveCSS('position', 'sticky');
 
-    // O índice leva a cada cena; a cena escolhida fica visível e a primeira sai.
-    const indice = page.getByRole('navigation', { name: 'Espaços do lodge' });
-    await expect(indice.getByRole('link')).toHaveCount(4);
-    await indice.getByRole('link', { name: /Piscinas e jardins/ }).click();
-    await expect(page).toHaveURL(/#cena-piscinas$/);
-    await expect.poll(async () => (await opacidade(page, '#cena .cena__texto'))[2]).toBeGreaterThan(0.95);
-    await expect.poll(async () => (await opacidade(page, '#cena .cena__texto'))[0]).toBeLessThan(0.05);
-    await expect(palco).toBeInViewport({ ratio: 0.9 });
+    // Entrada: o nome e os botões estão visíveis e utilizáveis desde o primeiro instante.
+    await expect(page.locator('h1')).toBeInViewport();
+    expect(await opacidadeDe(page, '.abertura__corpo')).toBeGreaterThan(0.95);
+    expect(await opacidadeDe(page, '.abertura__descoberta')).toBeLessThan(0.05);
 
-    // A última cena não sai, e depois do palco a página continua normalmente.
-    await indice.getByRole('link', { name: /Restaurante/ }).click();
-    await expect.poll(async () => (await opacidade(page, '#cena .cena__texto'))[3]).toBeGreaterThan(0.95);
-    await page.locator('#eventos-titulo').scrollIntoViewIfNeeded();
-    await expect(page.locator('#eventos-titulo')).toBeInViewport();
+    // Descoberta: o texto do lodge entra e a entrada sai.
+    await irPara(page, '.abertura', 0.47);
+    await expect.poll(() => opacidadeDe(page, '.abertura__descoberta')).toBeGreaterThan(0.95);
+    await expect.poll(() => opacidadeDe(page, '.abertura__corpo')).toBeLessThan(0.05);
+    await expect(page.locator('.abertura .cinema__palco')).toBeInViewport({ ratio: 0.9 });
+
+    // Alojamento: as portas fecham-se e entra o cartão com o pedido.
+    await irPara(page, '.abertura', 0.97);
+    await expect.poll(() => opacidadeDe(page, '.abertura__quartos')).toBeGreaterThan(0.95);
+    await expect.poll(() => opacidadeDe(page, '.abertura__descoberta')).toBeLessThan(0.05);
+
+    // Depois do palco, a página continua normalmente até ao rodapé.
+    await page.locator('#alojamento-titulo').scrollIntoViewIfNeeded();
+    await expect(page.locator('#alojamento-titulo')).toBeInViewport();
+    await page.locator('footer').scrollIntoViewIfNeeded();
+    await expect(page.locator('footer')).toBeInViewport();
   });
 
-  test('uma ligação de cena com o foco do teclado fica sempre visível', async ({ page }, info) => {
-    test.skip(!ehComputador(info));
+  test('o palco das piscinas abre a janela e mostra os dois textos', async ({ page }, info) => {
+    test.skip(info.project.name !== 'portatil');
     await page.goto('/');
-    const ligacao = page.locator('#cena .cena__ligacao').nth(2);
+    await expect(page.locator('.lazer')).toHaveAttribute('data-cinema', 'activo');
+    await irPara(page, '.lazer', 0.4);
+    await expect.poll(() => opacidadeDe(page, '.lazer__painel--1')).toBeGreaterThan(0.95);
+    await irPara(page, '.lazer', 1);
+    await expect.poll(() => opacidadeDe(page, '.lazer__painel--2')).toBeGreaterThan(0.95);
+    await expect(
+      page.locator('.lazer__painel--2').getByRole('link', { name: /Perguntar sobre a piscina/ }),
+    ).toBeVisible();
+  });
+
+  test('âncoras, entrada directa e regresso pelo histórico levam à cena certa', async ({ page }, info) => {
+    test.skip(info.project.name !== 'portatil');
+    await page.goto('/');
+    await page.getByRole('link', { name: 'Explorar o lodge' }).click();
+    await expect(page).toHaveURL(/#o-lodge$/);
+    await expect.poll(() => opacidadeDe(page, '.abertura__descoberta')).toBeGreaterThan(0.95);
+
+    // Ir a outra página a partir da cena e voltar: a cena continua no ecrã.
+    await page
+      .locator('.abertura__descoberta')
+      .getByRole('link', { name: /^Restaurante/ })
+      .click();
+    await expect(page).toHaveURL(/\/restaurante\/$/);
+    await page.goBack();
+    await expect.poll(() => opacidadeDe(page, '.abertura__descoberta')).toBeGreaterThan(0.95);
+
+    // Endereço com # de uma cena.
+    await page.goto('/alojamento/');
+    await page.goto('/#o-lodge');
+    await expect.poll(() => opacidadeDe(page, '.abertura__descoberta')).toBeGreaterThan(0.95);
+    await expect(page.locator('#o-lodge-titulo')).toBeInViewport();
+  });
+
+  test('com o teclado, o foco num elemento de uma cena traz a cena para o ecrã', async ({ page }, info) => {
+    test.skip(info.project.name !== 'portatil');
+    await page.goto('/');
+    const ligacao = page.locator('.abertura__quartos').getByRole('link', { name: 'Ver os quartos' });
     await ligacao.focus();
-    await expect
-      .poll(() => ligacao.evaluate((a) => Number(getComputedStyle(a.closest('.cena__texto')!).opacity)))
-      .toBe(1);
+    await expect.poll(() => opacidadeDe(page, '.abertura__quartos')).toBeGreaterThan(0.95);
+    await expect(ligacao).toBeInViewport();
+
+    // Do último elemento da entrada, o Tab segue para a cena seguinte, que aparece.
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.getByRole('link', { name: 'Explorar o lodge' }).focus();
+    await page.keyboard.press('Tab');
+    await expect.poll(() => opacidadeDe(page, '.abertura__descoberta')).toBeGreaterThan(0.95);
   });
 
-  test('no telemóvel as cenas são uma lista normal, todas visíveis', async ({ page }, info) => {
+  test('no telemóvel as cenas são blocos normais, todos visíveis', async ({ page }, info) => {
     test.skip(!ehTelemovel(info));
     await page.goto('/');
-    await expect(page.locator('#cena .cenas__palco')).toHaveCSS('position', 'static');
-    await expect(page.getByRole('navigation', { name: 'Espaços do lodge' })).toBeHidden();
-    expect(await opacidade(page, '#cena .cena__texto')).toEqual([1, 1, 1, 1]);
+    for (const palco of ['.abertura', '.lazer']) {
+      await expect(page.locator(palco)).not.toHaveAttribute('data-cinema', 'activo');
+      await expect(page.locator(`${palco} .cinema__palco`)).not.toHaveCSS('position', 'sticky');
+    }
+    for (const seletor of [
+      '.abertura__corpo',
+      '.abertura__descoberta',
+      '.abertura__quartos',
+      '.lazer__painel',
+    ]) {
+      for (const o of await opacidade(page, seletor)) expect(o, seletor).toBe(1);
+    }
+  });
+});
+
+test.describe('carrossel de fotografias', () => {
+  test('botões, pontas e teclado', async ({ page }, info) => {
+    test.skip(!['portatil', 'telemovel'].includes(info.project.name));
+    await page.goto('/');
+    const carrossel = page.getByRole('region', { name: 'Fotografias dos quartos' });
+    const pista = carrossel.getByRole('list');
+    await pista.scrollIntoViewIfNeeded();
+    await expect(pista.getByRole('listitem')).toHaveCount(7);
+    const anterior = carrossel.getByRole('button', { name: 'Fotografia anterior' });
+    const seguinte = carrossel.getByRole('button', { name: 'Fotografia seguinte' });
+    await expect(anterior).toHaveAttribute('aria-disabled', 'true');
+    await expect(seguinte).toHaveAttribute('aria-disabled', 'false');
+
+    const posicao = () => pista.evaluate((e) => e.scrollLeft);
+    await seguinte.click();
+    await expect.poll(posicao).toBeGreaterThan(100);
+    await expect(anterior).toHaveAttribute('aria-disabled', 'false');
+
+    await pista.focus();
+    await page.keyboard.press('End');
+    await expect(seguinte).toHaveAttribute('aria-disabled', 'true');
+    await page.keyboard.press('Home');
+    await expect.poll(posicao).toBe(0);
   });
 });
 
@@ -64,8 +165,8 @@ test.describe('movimento reduzido', () => {
     for (const caminho of ['/', '/alojamento/', '/piscinas/', '/eventos/', '/galeria/']) {
       await page.goto(caminho);
       for (const o of await opacidade(page, ANIMADOS)) expect(o, caminho).toBe(1);
-      const palcos = page.locator('.cenas__palco');
-      if ((await palcos.count()) > 0) await expect(palcos.first()).not.toHaveCSS('position', 'sticky');
+      for (const palco of await page.locator('.cenas__palco, .cinema__palco').all())
+        await expect(palco).not.toHaveCSS('position', 'sticky');
       await expect(page.locator('.c-progresso')).toBeHidden();
       // Aberturas sem chegada animada nem parallax.
       const titulo = page.locator('h1');
