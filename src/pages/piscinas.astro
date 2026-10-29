@@ -1,112 +1,141 @@
 ---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Cenas, { type Cena } from '../components/Cenas.astro';
 import FichaServico from '../components/FichaServico.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
+import { lodge } from '../config/lodge';
 import Base from '../layouts/Base.astro';
+
+const pergunta = `Olá, ${lodge.nome}! Gostaria de saber as condições de acesso à piscina (horários, regras e preço).`;
+
+// Passeio pela área de lazer (palco compacto): só o que se vê em cada fotografia.
+const cenas: Cena[] = [
+  {
+    id: 'piscina',
+    etiqueta: 'A piscina',
+    titulo: 'Entre palmeiras',
+    texto: 'Uma piscina rectangular de água azul-turquesa, junto ao edifício de telhado de colmo.',
+    foto: 'piscina-palmeiras',
+  },
+  {
+    id: 'terraco',
+    etiqueta: 'O terraço',
+    titulo: 'Vista do alto',
+    texto: 'Espreguiçadeiras, relvado e um terraço com mesas, entre os edifícios de colmo.',
+    foto: 'vista-piscina-esplanada',
+  },
+  {
+    id: 'esplanada',
+    etiqueta: 'A esplanada',
+    titulo: 'À sombra',
+    texto: 'Mesas e cadeiras sob uma árvore grande, ao lado da piscina.',
+    foto: 'esplanada-arvore',
+  },
+];
 ---
 
 <Base
-  titulo="Piscinas"
-  descricao="Piscinas e espaços exteriores do Mulotane Lodge, em Boane. Confirme as condições de utilização antes da sua visita."
+  titulo="Piscina e lazer em Boane"
+  descricao="Piscinas, jardins e esplanadas à sombra no Mulotana Lodge, em Boane. Pergunte à equipa as condições de acesso à piscina antes da sua visita."
 >
   <CabecalhoPagina
-    titulo="Piscinas"
-    intro="Desfrute de momentos de lazer ao ar livre, entre o relvado e o jardim."
+    titulo="Piscinas e jardins"
+    intro="Lazer ao ar livre, entre palmeiras, jardins cuidados e esplanadas à sombra das árvores."
+    foto="piscina-topiaria"
   >
-    <a slot="accoes" class="botao botao--principal" href="#condicoes">
-      Condições de utilização
+    <BotaoWhatsApp slot="accoes" texto="Perguntar sobre a piscina" variante="principal" mensagem={pergunta} />
+    <a slot="accoes" class="ligacao-seta" href="#condicoes">
+      <span>Condições de utilização</span>
       <Icone nome="seta" tamanho={18} />
     </a>
   </CabecalhoPagina>
 
-  <section class="destaque" aria-label="Fotografia da piscina">
-    <div class="contentor">
-      <figure class="destaque__figura">
-        <Foto
-          id="piscina-espreguicadeiras"
-          sizes="(min-width: 1240px) 1160px, 94vw"
-          class="foto destaque__foto"
-        />
-        <figcaption class="legenda destaque__legenda">
-          <span>A piscina rectangular, com espreguiçadeiras e chapéus-de-sol.</span>
-          <a class="ligacao-seta" href="/galeria/">
-            <span>Ver a galeria</span>
-            <Icone nome="seta" tamanho={18} />
-          </a>
-        </figcaption>
-      </figure>
+  <section class="secao secao--escura passeio" aria-labelledby="passeio-titulo">
+    <div class="contentor passeio__intro">
+      <p class="etiqueta c-revelar">A área de lazer</p>
+      <h2 id="passeio-titulo" class="c-titulo">
+        Piscinas, jardins e <em>sombra.</em>
+      </h2>
     </div>
+    <Cenas id="lazer" cenas={cenas} variante="compacta" rotulo="Área de lazer" />
   </section>
 
-  <section class="secao secao--clara" aria-labelledby="lazer-titulo">
-    <div class="contentor grelha grelha--metades lazer">
+  <!-- Camadas: fotografias sobrepostas que sobem a velocidades diferentes. -->
+  <section class="secao secao--clara camadas" aria-labelledby="camadas-titulo">
+    <div class="contentor camadas__grelha">
+      <div class="bloco-titulo camadas__texto">
+        <p class="etiqueta c-revelar">Os jardins</p>
+        <h2 id="camadas-titulo" class="c-titulo">
+          Água, verde e <em>tempo livre.</em>
+        </h2>
+        <div class="texto c-revelar">
+          <p>
+            Uma piscina de forma irregular entre arbustos podados, outra com parede de água, decks com
+            espreguiçadeiras e mesas à sombra das árvores.
+          </p>
+        </div>
+        <a class="ligacao-seta c-revelar" href="/galeria/">
+          <span>Ver a galeria completa</span>
+          <Icone nome="seta" tamanho={18} />
+        </a>
+      </div>
+      <figure class="camadas__a c-paralaxe">
+        <Foto id="piscina-cascata" sizes="(min-width: 900px) 620px, 92vw" class="foto" />
+      </figure>
+      <figure class="camadas__b c-flutuar">
+        <Foto id="piscina-deck" sizes="(min-width: 900px) 300px, 46vw" class="foto" />
+      </figure>
+      <figure class="camadas__c c-flutuar">
+        <Foto id="mesas-sombra" sizes="(min-width: 900px) 300px, 46vw" class="foto" />
+      </figure>
+    </div>
+    <ul class="contentor tira c-cartoes" aria-label="Mais fotografias da área de lazer">
+      <li>
+        <Foto id="piscina-sombra" sizes="(min-width: 900px) 380px, 46vw" class="foto" />
+        <span class="legenda">Piscina à sombra das árvores.</span>
+      </li>
+      <li>
+        <Foto id="piscina-espreguicadeiras" sizes="(min-width: 900px) 380px, 46vw" class="foto" />
+        <span class="legenda">Espreguiçadeiras e chapéus-de-sol.</span>
+      </li>
+      <li>
+        <Foto id="piscina-jardim" sizes="(min-width: 900px) 380px, 92vw" class="foto" />
+        <span class="legenda">Piscina e relvado.</span>
+      </li>
+    </ul>
+  </section>
+
+  <section id="condicoes" class="secao secao--cinza condicoes" aria-labelledby="condicoes-titulo">
+    <div class="contentor grelha grelha--metades">
       <div class="bloco-titulo">
-        <p class="etiqueta">Lazer</p>
-        <h2 id="lazer-titulo">
-          Desfrute de momentos de <em>lazer.</em>
+        <p class="etiqueta c-revelar">Antes da visita</p>
+        <h2 id="condicoes-titulo" class="c-titulo">
+          Condições de <em>utilização.</em>
         </h2>
         <div class="texto">
-          <p>Um espaço para descontrair, aproveitar o ambiente exterior e partilhar bons momentos.</p>
           <p>
-            As fotografias mostram uma piscina rectangular, com deck, espreguiçadeiras e chapéus-de-sol entre
-            palmeiras, e uma piscina de forma irregular no meio do relvado, com uma esplanada à sombra.
-          </p>
-          <p>
-            Antes da visita, confirme os horários, as regras de utilização e o acesso de visitantes que não
-            estejam alojados.
+            Os horários, as regras de utilização, o acesso de visitantes não alojados e o preço de entrada não
+            estão publicados. Pergunte à equipa antes da sua visita.
           </p>
         </div>
         <div class="accoes">
-          <a class="botao botao--verde" href="/#disponibilidade">
-            Consultar disponibilidade
-            <Icone nome="seta" tamanho={18} />
+          <BotaoWhatsApp texto="Perguntar sobre a piscina" variante="principal" mensagem={pergunta} />
+          <a class="botao botao--contorno" href="/contactos/">
+            Outros contactos
           </a>
         </div>
       </div>
-      <div id="condicoes" class="condicoes">
-        <FichaServico servico="piscinas" titulo="Condições de utilização" />
-      </div>
-    </div>
-  </section>
-
-  <section class="secao secao--cinza" aria-labelledby="fotografias-titulo">
-    <div class="contentor">
-      <div class="mosaico__topo">
-        <h2 id="fotografias-titulo">
-          As piscinas em <em>fotografias.</em>
-        </h2>
-        <a class="ligacao-seta" href="/galeria/">
-          <span>Ver a galeria completa</span>
-          <Icone nome="seta" />
-        </a>
-      </div>
-      <ul class="mosaico">
-        <li class="mosaico__a">
-          <Foto id="piscina-terraco" sizes="(min-width: 900px) 700px, 92vw" class="foto" />
-          <span class="legenda">Vista do terraço sobre a piscina.</span>
-        </li>
-        <li class="mosaico__b">
-          <Foto id="esplanada-piscina" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
-          <span class="legenda">Esplanada à sombra, junto à água.</span>
-        </li>
-        <li class="mosaico__c">
-          <Foto id="piscina-relvado" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
-          <span class="legenda">Piscina junto ao relvado.</span>
-        </li>
-        <li class="mosaico__d">
-          <Foto id="piscina-jardim" sizes="(min-width: 900px) 700px, 92vw" class="foto" />
-          <span class="legenda">Piscina e jardim.</span>
-        </li>
-      </ul>
+      <FichaServico servico="piscinas" titulo="A piscina em resumo" tom="clara" />
     </div>
   </section>
 
   <section class="secao secao--clara" aria-labelledby="explorar-titulo">
     <div class="contentor">
-      <p class="etiqueta">Continue a explorar</p>
-      <h2 id="explorar-titulo" class="explorar__titulo">
+      <p class="etiqueta c-revelar">Continue a explorar</p>
+      <h2 id="explorar-titulo" class="explorar__titulo c-titulo">
         Mais para descobrir no lodge.
       </h2>
       <IndiceServicos variante="cartoes" excluir="piscinas" />
@@ -115,88 +144,107 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  /* A fotografia sobe sobre o fim do cabeçalho verde, para lhe dar o destaque principal da página. */
-  .destaque {
-    position: relative;
-    background: linear-gradient(to bottom, var(--verde) 0, var(--verde) 34%, var(--branco) 34%);
+  .passeio {
+    padding-bottom: 0;
   }
-  .destaque__figura {
+  .passeio__intro {
+    margin-bottom: clamp(28px, 4vw, 48px);
+  }
+  @media (max-width: 899px) {
+    .passeio {
+      padding-bottom: var(--espaco-secao);
+    }
+  }
+  .camadas__grelha {
+    display: grid;
+    gap: 24px;
+  }
+  .camadas figure {
     margin: 0;
   }
-  .destaque :global(.destaque__foto) {
+  .camadas :global(.foto) {
     display: block;
     aspect-ratio: 4 / 3;
-    max-height: 82vh;
-    width: 100%;
   }
-  .destaque :global(.destaque__foto img) {
-    object-position: 45% 50%;
+  .camadas__b,
+  .camadas__c {
+    display: none;
   }
+  /* Computador: fotografia grande à direita e duas mais pequenas à frente, a subir a outra velocidade. */
   @media (min-width: 900px) {
-    .destaque :global(.destaque__foto) {
-      aspect-ratio: 16 / 10;
+    .camadas__grelha {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-rows: auto auto;
+      gap: 0 clamp(40px, 5vw, 80px);
+      align-items: start;
+      padding-bottom: 120px;
     }
-  }
-  .destaque__legenda {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 24px;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .lazer {
-    align-items: start;
-  }
-  .mosaico__topo {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px 32px;
-    align-items: end;
-    justify-content: space-between;
-    margin-bottom: clamp(32px, 4vw, 56px);
-  }
-  .mosaico {
-    display: grid;
-    gap: clamp(20px, 2.4vw, 32px);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .mosaico li {
-    display: grid;
-    gap: 10px;
-    align-content: start;
-  }
-  .mosaico li .legenda {
-    margin: 0;
-  }
-  .mosaico :global(.foto) {
-    display: block;
-    aspect-ratio: 3 / 2;
-  }
-  @media (min-width: 900px) {
-    .mosaico {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    .camadas__texto {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
     }
-    .mosaico .mosaico__b :global(.foto),
-    .mosaico .mosaico__c :global(.foto) {
-      aspect-ratio: 4 / 3;
+    .camadas__a {
+      position: relative;
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      border-radius: var(--raio-l);
     }
-    .mosaico__c {
+    .camadas__a :global(.foto) {
+      aspect-ratio: 4 / 5;
+    }
+    .camadas__b,
+    .camadas__c {
+      display: block;
+      width: 46%;
+      border: 6px solid var(--branco);
+      border-radius: var(--raio-l);
+      box-shadow: var(--sombra);
+    }
+    .camadas__b {
+      --c-flutuar: 70px;
       grid-column: 1;
       grid-row: 2;
       justify-self: end;
-      width: 72%;
+      margin-top: 32px;
+      margin-right: -12%;
+      position: relative;
+      z-index: 1;
     }
-    .mosaico__d {
-      grid-column: 2;
+    .camadas__c {
+      --c-flutuar: 40px;
+      grid-column: 1;
       grid-row: 2;
+      margin-top: 140px;
     }
+  }
+  .tira {
+    display: grid;
+    gap: 20px;
+    margin: clamp(40px, 6vw, 80px) auto 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .tira {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .tira li {
+    display: grid;
+    gap: 2px;
+    align-content: start;
+  }
+  .tira :global(.foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .condicoes .grelha {
+    align-items: start;
   }
   .condicoes {
-    scroll-margin-top: calc(var(--cabecalho) + 24px);
+    scroll-margin-top: var(--cabecalho);
   }
   .explorar__titulo {
-    margin-bottom: clamp(36px, 5vw, 56px);
+    margin-bottom: clamp(32px, 4vw, 48px);
   }
 </style>

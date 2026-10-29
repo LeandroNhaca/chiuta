@@ -92,11 +92,11 @@ test('barra de pedidos do telemóvel: aparece depois do hero e nunca tapa um for
   const barra = page.getByRole('navigation', { name: 'Pedidos' });
   await expect(barra).not.toHaveClass(/rapidas--visivel/);
 
-  await page.locator('#restaurante-titulo').scrollIntoViewIfNeeded();
+  await page.locator('#alojamento-titulo').scrollIntoViewIfNeeded();
   await expect(barra).toHaveClass(/rapidas--visivel/);
-  await expect(barra.getByRole('link', { name: 'Orçamento de evento' })).toBeInViewport();
+  await expect(barra.getByRole('link', { name: 'Orçamento' })).toBeInViewport();
 
-  await barra.getByRole('link', { name: 'Orçamento de evento' }).click();
+  await barra.getByRole('link', { name: 'Orçamento' }).click();
   await expect(page.locator('#orcamento form')).toBeInViewport({ ratio: 0.1 });
   await expect(barra).not.toHaveClass(/rapidas--visivel/);
 });
@@ -113,7 +113,7 @@ test('a interface pública não mostra notas internas de desenvolvimento', async
   ]) {
     await page.goto(caminho);
     const texto = await page.locator('body').innerText();
-    for (const interno of ['Falta configurar', 'MIXALI', 'gerência', 'provisória', 'Em breve']) {
+    for (const interno of ['Falta configurar', 'MIXALI', 'gerência', 'provisória', 'Em breve', 'Mulotane']) {
       expect(texto, `${caminho}: ${interno}`).not.toContain(interno);
     }
   }

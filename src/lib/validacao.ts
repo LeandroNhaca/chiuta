@@ -10,19 +10,32 @@ export const LIMITES = {
   nome: { min: 2, max: 80 },
   empresa: { max: 120 },
   mensagem: { max: 1000 },
+  quarto: { max: 120 },
   hospedes: { min: 1, max: 99 },
   participantes: { min: 1, max: 2000 },
   algarismosTelefone: { min: 9, max: 15 },
 } as const;
 
 export const TIPOS_EVENTO = [
-  'Reunião ou conferência',
+  'Reunião empresarial',
+  'Conferência',
   'Formação ou workshop',
-  'Celebração familiar',
-  'Aniversário',
-  'Casamento',
-  'Evento de empresa',
+  'Encontro de grupo',
+  'Celebração ou evento privado',
   'Outro',
+] as const;
+
+/**
+ * O que o visitante pretende para o evento. São pedidos, não serviços anunciados: a equipa do lodge
+ * confirma o que está disponível para a data.
+ */
+export const SERVICOS_EVENTO = [
+  'Sala de conferências',
+  'Espaço exterior junto à piscina',
+  'Refeições ou coffee break',
+  'Alojamento para participantes',
+  'Equipamento de som ou projecção',
+  'Decoração',
 ] as const;
 
 const DATA_ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -84,7 +97,16 @@ function validarEmail(v: string, erros: Erros): void {
 
 function validarMensagem(v: string, erros: Erros): void {
   if (v.length > LIMITES.mensagem.max)
-    erros.mensagem = `A mensagem pode ter até ${LIMITES.mensagem.max} caracteres.`;
+    erros.mensagem = `O texto pode ter até ${LIMITES.mensagem.max} caracteres.`;
+}
+
+/** Lista separada por vírgulas, só com valores da lista permitida (escolhas múltiplas). */
+export function listaValida(v: string, permitidos: readonly string[]): boolean {
+  return v
+    .split(',')
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .every((x) => permitidos.includes(x));
 }
 
 function validarDataFutura(campo: string, v: string, hoje: string, vazio: string, erros: Erros): void {
@@ -125,6 +147,7 @@ export function validarAlojamento(dados: Dados, hoje: string = hojeISO()): Erros
     'Indique o número de hóspedes.',
     erros,
   );
+  if (limpo(dados.quarto).length > LIMITES.quarto.max) erros.quarto = 'Escolha um tipo de quarto da lista.';
   validarMensagem(limpo(dados.mensagem), erros);
   return erros;
 }
@@ -148,6 +171,7 @@ export function validarEvento(dados: Dados, hoje: string = hojeISO()): Erros {
     'Indique o número estimado de participantes.',
     erros,
   );
+  if (!listaValida(limpo(dados.servicos), SERVICOS_EVENTO)) erros.servicos = 'Escolha serviços da lista.';
   validarMensagem(limpo(dados.mensagem), erros);
   return erros;
 }
@@ -164,6 +188,7 @@ export const CAMPOS_ALOJAMENTO = [
   'entrada',
   'saida',
   'hospedes',
+  'quarto',
   'mensagem',
 ] as const;
 export const CAMPOS_EVENTO = [
@@ -174,5 +199,6 @@ export const CAMPOS_EVENTO = [
   'tipo',
   'data',
   'participantes',
+  'servicos',
   'mensagem',
 ] as const;

@@ -1,6 +1,6 @@
 export {};
 
-// Cabeçalho: fundo verde depois de algum scroll e menu móvel num <dialog> (foco preso e Esc nativos).
+// Cabeçalho: sombra depois de algum scroll e menu móvel num <dialog> (foco preso e Esc nativos).
 
 const cabecalho = document.querySelector<HTMLElement>('[data-cabecalho]');
 const menu = document.querySelector<HTMLDialogElement>('[data-menu-movel]');
@@ -40,7 +40,7 @@ if (menu && abrir) {
     .querySelectorAll('[data-fechar-menu-ao-navegar]')
     .forEach((a) => a.addEventListener('click', () => menu.close()));
   // Ao passar para o layout de computador com o menu aberto, fecha-o.
-  window.matchMedia('(min-width: 1300px)').addEventListener('change', (e) => {
+  window.matchMedia('(min-width: 1240px)').addEventListener('change', (e) => {
     if (e.matches && menu.open) menu.close();
   });
 }

@@ -1,0 +1,553 @@
+---
+/**
+ * Palco de cenas: a técnica de scroll cinematográfica do site, só com CSS.
+ *
+ * Em computador (≥ 900 px), com suporte de scroll-driven animations e sem movimento reduzido, a secção
+ * fica alta e o palco fica preso (sticky) ao ecrã enquanto se percorre: as fotografias de fundo cruzam-se,
+ * aproximam-se devagar, a fotografia de pormenor sobe a outra velocidade (camadas) e os textos entram e
+ * saem. O índice lateral mostra a cena actual e permite saltar para qualquer uma.
+ *
+ * Nos outros casos (telemóvel, browser sem suporte, movimento reduzido, sem JavaScript ou não) as mesmas
+ * cenas aparecem como uma lista normal de fotografia + texto: nada fica escondido nem depende de scripts.
+ */
+import type { IdFotografia } from '../data/fotografias';
+
+import Foto from './Foto.astro';
+import Icone from './Icone.astro';
+
+export interface Cena {
+  id: string;
+  etiqueta: string;
+  titulo: string;
+  texto: string;
+  foto: IdFotografia;
+  /** Fotografia de pormenor, numa camada à frente (só na variante completa). */
+  detalhe?: IdFotografia;
+  ligacao?: { href: string; texto: string };
+}
+
+interface Props {
+  id: string;
+  cenas: Cena[];
+  /** "completa": página inicial (camadas e índice); "compacta": páginas interiores (mais curta). */
+  variante?: 'completa' | 'compacta';
+  /** Rótulo do índice das cenas (navegação). */
+  rotulo: string;
+}
+
+const { id, cenas, variante = 'completa', rotulo } = Astro.props;
+const total = cenas.length;
+---
+
+<div class:list={['cenas', `cenas--${variante}`, `cenas--${total}`]} id={id} data-cenas>
+  {cenas.map((c) => (
+    <span class="cenas__ancora" id={`${id}-${c.id}`} />
+  ))}
+  <div class="cenas__palco">
+    <ol class="cenas__lista">
+      {cenas.map((c, i) => (
+        <li class="cena">
+          <div class="cena__fundo">
+            <Foto id={c.foto} sizes="100vw" class="cena__foto" />
+          </div>
+          {variante === 'completa' && c.detalhe && (
+            <div class="cena__detalhe">
+              <Foto id={c.detalhe} sizes="(min-width: 900px) 300px, 1px" class="cena__foto-detalhe" />
+            </div>
+          )}
+          <div class="cena__texto">
+            <p class="cena__etiqueta">
+              <span class="cena__numero">
+                {String(i + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+              </span>
+              {c.etiqueta}
+            </p>
+            <h3 class="cena__titulo">{c.titulo}</h3>
+            <p class="cena__descricao">{c.texto}</p>
+            {c.ligacao && (
+              <a class="ligacao-seta cena__ligacao" href={c.ligacao.href}>
+                <span>{c.ligacao.texto}</span>
+                <Icone nome="seta" tamanho={18} />
+              </a>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+    <nav class="cenas__indice" aria-label={rotulo}>
+      <ol>
+        {cenas.map((c) => (
+          <li>
+            <a href={`#${id}-${c.id}`}>
+              <span class="cenas__ponto" aria-hidden="true" />
+              <span class="cenas__nome">{c.etiqueta}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<style>
+  /* ---------- Lista (telemóvel, sem suporte ou movimento reduzido) ---------- */
+  .cenas {
+    position: relative;
+    width: 100%;
+    max-width: calc(var(--contentor) + 2 * var(--margem));
+    margin-inline: auto;
+    padding-inline: var(--margem);
+  }
+  .cenas__ancora {
+    position: absolute;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+  }
+  .cenas__lista {
+    display: grid;
+    gap: clamp(28px, 5vw, 48px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .cena {
+    display: grid;
+    gap: 16px;
+  }
+  .cena__fundo {
+    overflow: hidden;
+    border-radius: var(--raio-l);
+    background: var(--verde-2);
+  }
+  .cena :global(.cena__foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .cena :global(.cena__foto img),
+  .cena :global(.cena__foto-detalhe img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .cena__detalhe,
+  .cenas__indice {
+    display: none;
+  }
+  .cena__texto {
+    display: grid;
+    gap: 10px;
+    justify-items: start;
+    max-width: 34rem;
+  }
+  .cena__etiqueta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    align-items: baseline;
+    font-size: var(--t-etiqueta);
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--dourado);
+  }
+  .cena__numero {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+  }
+  .cena__titulo {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 1.5rem + 2vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1.05;
+  }
+  .cena__descricao {
+    color: rgb(250 248 243 / 0.86);
+  }
+  .cena__ligacao {
+    color: var(--dourado);
+  }
+
+  /* ---------- Palco preso ao ecrã (computador com suporte) ---------- */
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .cenas {
+        /* Cada cena ocupa um ecrã de scroll; o último ecrã é o do próprio palco. */
+        --altura-cena: 100svh;
+        max-width: none;
+        height: calc((var(--n) + 1) * var(--altura-cena) - var(--cabecalho));
+        padding-inline: 0;
+        view-timeline: --cenas block;
+      }
+      .cenas--compacta {
+        --altura-cena: 75svh;
+      }
+      .cenas--2 {
+        --n: 2;
+      }
+      .cenas--3 {
+        --n: 3;
+      }
+      .cenas--4 {
+        --n: 4;
+      }
+      .cenas--5 {
+        --n: 5;
+      }
+      /* Âncoras a meio da janela de scroll de cada cena (para o índice). */
+      .cenas__ancora:nth-child(1) {
+        top: calc(0.5 * var(--altura-cena));
+      }
+      .cenas__ancora:nth-child(2) {
+        top: calc(1.5 * var(--altura-cena));
+      }
+      .cenas__ancora:nth-child(3) {
+        top: calc(2.5 * var(--altura-cena));
+      }
+      .cenas__ancora:nth-child(4) {
+        top: calc(3.5 * var(--altura-cena));
+      }
+      .cenas__ancora:nth-child(5) {
+        top: calc(4.5 * var(--altura-cena));
+      }
+
+      .cenas__palco {
+        position: sticky;
+        top: var(--cabecalho);
+        height: calc(100svh - var(--cabecalho));
+        overflow: hidden;
+        background: var(--verde-profundo);
+        color: var(--branco);
+      }
+      .cenas__lista,
+      .cena {
+        position: absolute;
+        inset: 0;
+        display: block;
+      }
+      .cena__fundo {
+        position: absolute;
+        inset: 0;
+        border-radius: 0;
+      }
+      .cena :global(.cena__foto) {
+        height: 100%;
+        aspect-ratio: auto;
+      }
+      /* Véu para ler o texto sobre a fotografia. */
+      .cena__fundo::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(to right, rgb(5 22 18 / 0.78) 0%, rgb(5 22 18 / 0.45) 42%, rgb(5 22 18 / 0) 72%),
+          linear-gradient(to top, rgb(5 22 18 / 0.55), rgb(5 22 18 / 0) 45%);
+      }
+      .cena__detalhe {
+        position: absolute;
+        right: clamp(48px, 8vw, 140px);
+        bottom: 10%;
+        z-index: 1;
+        display: block;
+        width: clamp(200px, 20vw, 300px);
+        aspect-ratio: 3 / 4;
+        overflow: hidden;
+        border: 6px solid var(--branco);
+        border-radius: var(--raio-m);
+        box-shadow: 0 30px 60px rgb(5 22 18 / 0.35);
+      }
+      .cena :global(.cena__foto-detalhe) {
+        display: block;
+        height: 100%;
+      }
+      .cena__texto {
+        position: absolute;
+        left: max(var(--margem), calc((100% - var(--contentor)) / 2));
+        bottom: clamp(56px, 12vh, 120px);
+        z-index: 2;
+        max-width: min(36rem, 46%);
+      }
+      .cenas--compacta .cena__texto {
+        max-width: min(32rem, 60%);
+      }
+      .cena__descricao {
+        font-size: var(--t-lead);
+      }
+
+      /* Índice das cenas, à direita. */
+      .cenas__indice {
+        position: absolute;
+        top: 50%;
+        right: clamp(16px, 2.5vw, 40px);
+        z-index: 3;
+        display: block;
+        transform: translateY(-50%);
+      }
+      .cenas--completa .cenas__indice {
+        right: auto;
+        left: clamp(12px, 1.6vw, 28px);
+      }
+      .cenas__indice ol {
+        display: grid;
+        gap: 4px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .cenas__indice a {
+        --foco: var(--dourado);
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        min-height: 32px;
+        padding: 0 6px;
+        color: var(--branco);
+        text-decoration: none;
+      }
+      .cenas__ponto {
+        position: relative;
+        flex: none;
+        width: 10px;
+        height: 10px;
+        border: 1px solid rgb(250 248 243 / 0.75);
+        border-radius: 50%;
+      }
+      .cenas__ponto::after {
+        content: '';
+        position: absolute;
+        inset: 1px;
+        border-radius: 50%;
+        background: var(--dourado);
+        opacity: 0;
+      }
+      .cenas__nome {
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        opacity: 0;
+        transform: translateX(-4px);
+        transition:
+          opacity var(--transicao),
+          transform var(--transicao);
+      }
+      .cenas__indice a:hover .cenas__nome,
+      .cenas__indice a:focus-visible .cenas__nome {
+        opacity: 1;
+        transform: none;
+      }
+      .cenas--compacta .cenas__indice a {
+        flex-direction: row-reverse;
+      }
+      .cenas--compacta .cenas__nome {
+        transform: translateX(4px);
+      }
+
+      /* ---------- Coreografia: cada cena tem a sua janela no scroll ---------- */
+      .cena .cena__fundo,
+      .cena .cena__detalhe,
+      .cena .cena__texto,
+      .cena :global(.cena__foto img),
+      .cenas__ponto::after {
+        animation-timeline: --cenas;
+        animation-fill-mode: both;
+        animation-timing-function: linear;
+      }
+      /* Fundo: entra por cima do anterior e aproxima-se devagar durante a sua janela. */
+      .cena .cena__fundo {
+        animation-name: cena-entrar;
+      }
+      .cena:first-child .cena__fundo {
+        animation-name: none;
+      }
+      .cena :global(.cena__foto img) {
+        animation-name: cena-aproximar;
+      }
+      /* Pormenor: sobe mais depressa do que o fundo (camadas). */
+      .cena .cena__detalhe {
+        animation-name: cena-detalhe;
+      }
+      /* Texto: entra e sai; o primeiro já está visível e o último não sai. */
+      .cena .cena__texto {
+        animation-name: cena-texto;
+      }
+      .cena:first-child .cena__texto {
+        animation-name: cena-texto-primeiro;
+      }
+      .cena:last-child .cena__texto {
+        animation-name: cena-texto-ultimo;
+      }
+      .cena:only-child .cena__texto {
+        animation-name: none;
+      }
+      /* Um texto com foco do teclado fica sempre visível. */
+      .cena__texto:focus-within {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .cenas__ponto::after {
+        animation-name: cena-ponto;
+      }
+
+      /* Janelas de 2 a 5 cenas (contain 0% = o palco prende; 100% = solta). */
+      .cenas--2 .cena:nth-child(1) > *,
+      .cenas--2 .cena:nth-child(1) :global(.cena__foto img),
+      .cenas--2 li:nth-child(1) .cenas__ponto::after {
+        animation-range: contain -10% contain 50%;
+      }
+      .cenas--2 .cena:nth-child(2) > *,
+      .cenas--2 .cena:nth-child(2) :global(.cena__foto img),
+      .cenas--2 li:nth-child(2) .cenas__ponto::after {
+        animation-range: contain 40% contain 110%;
+      }
+
+      .cenas--3 .cena:nth-child(1) > *,
+      .cenas--3 .cena:nth-child(1) :global(.cena__foto img),
+      .cenas--3 li:nth-child(1) .cenas__ponto::after {
+        animation-range: contain -8% contain 33%;
+      }
+      .cenas--3 .cena:nth-child(2) > *,
+      .cenas--3 .cena:nth-child(2) :global(.cena__foto img),
+      .cenas--3 li:nth-child(2) .cenas__ponto::after {
+        animation-range: contain 26% contain 66%;
+      }
+      .cenas--3 .cena:nth-child(3) > *,
+      .cenas--3 .cena:nth-child(3) :global(.cena__foto img),
+      .cenas--3 li:nth-child(3) .cenas__ponto::after {
+        animation-range: contain 59% contain 108%;
+      }
+
+      .cenas--4 .cena:nth-child(1) > *,
+      .cenas--4 .cena:nth-child(1) :global(.cena__foto img),
+      .cenas--4 li:nth-child(1) .cenas__ponto::after {
+        animation-range: contain -6% contain 25%;
+      }
+      .cenas--4 .cena:nth-child(2) > *,
+      .cenas--4 .cena:nth-child(2) :global(.cena__foto img),
+      .cenas--4 li:nth-child(2) .cenas__ponto::after {
+        animation-range: contain 19% contain 50%;
+      }
+      .cenas--4 .cena:nth-child(3) > *,
+      .cenas--4 .cena:nth-child(3) :global(.cena__foto img),
+      .cenas--4 li:nth-child(3) .cenas__ponto::after {
+        animation-range: contain 44% contain 75%;
+      }
+      .cenas--4 .cena:nth-child(4) > *,
+      .cenas--4 .cena:nth-child(4) :global(.cena__foto img),
+      .cenas--4 li:nth-child(4) .cenas__ponto::after {
+        animation-range: contain 69% contain 106%;
+      }
+
+      .cenas--5 .cena:nth-child(1) > *,
+      .cenas--5 .cena:nth-child(1) :global(.cena__foto img),
+      .cenas--5 li:nth-child(1) .cenas__ponto::after {
+        animation-range: contain -5% contain 20%;
+      }
+      .cenas--5 .cena:nth-child(2) > *,
+      .cenas--5 .cena:nth-child(2) :global(.cena__foto img),
+      .cenas--5 li:nth-child(2) .cenas__ponto::after {
+        animation-range: contain 15% contain 40%;
+      }
+      .cenas--5 .cena:nth-child(3) > *,
+      .cenas--5 .cena:nth-child(3) :global(.cena__foto img),
+      .cenas--5 li:nth-child(3) .cenas__ponto::after {
+        animation-range: contain 35% contain 60%;
+      }
+      .cenas--5 .cena:nth-child(4) > *,
+      .cenas--5 .cena:nth-child(4) :global(.cena__foto img),
+      .cenas--5 li:nth-child(4) .cenas__ponto::after {
+        animation-range: contain 55% contain 80%;
+      }
+      .cenas--5 .cena:nth-child(5) > *,
+      .cenas--5 .cena:nth-child(5) :global(.cena__foto img),
+      .cenas--5 li:nth-child(5) .cenas__ponto::after {
+        animation-range: contain 75% contain 105%;
+      }
+    }
+  }
+
+  /* As janelas sobrepõem-se ligeiramente: os primeiros 20% de cada uma são a transição. */
+  @keyframes cena-entrar {
+    0% {
+      opacity: 0;
+    }
+    20%,
+    100% {
+      opacity: 1;
+    }
+  }
+  @keyframes cena-aproximar {
+    from {
+      transform: scale(1.12);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  @keyframes cena-detalhe {
+    0% {
+      opacity: 0;
+      transform: translateY(18vh);
+    }
+    25% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-14vh);
+    }
+  }
+  @keyframes cena-texto {
+    0% {
+      opacity: 0;
+      transform: translateY(48px);
+    }
+    22%,
+    78% {
+      opacity: 1;
+      transform: none;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-40px);
+    }
+  }
+  @keyframes cena-texto-primeiro {
+    0%,
+    78% {
+      opacity: 1;
+      transform: none;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-40px);
+    }
+  }
+  @keyframes cena-texto-ultimo {
+    0% {
+      opacity: 0;
+      transform: translateY(48px);
+    }
+    22%,
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes cena-ponto {
+    0% {
+      opacity: 0;
+    }
+    20%,
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+</style>

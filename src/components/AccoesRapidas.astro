@@ -17,7 +17,7 @@ const pedidos = ligacoesPedido(Astro.url.pathname);
   </a>
   <a class="rapidas__accao" href={pedidos.evento}>
     <Icone nome="pessoas" tamanho={18} />
-    Orçamento de evento
+    Orçamento
   </a>
 </nav>
 
@@ -36,7 +36,7 @@ const pedidos = ligacoesPedido(Astro.url.pathname);
     gap: 8px;
     padding: 10px max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom))
       max(12px, env(safe-area-inset-left));
-    background: rgb(8 40 32 / 0.96);
+    background: rgb(5 22 18 / 0.96);
     border-top: 1px solid rgb(199 161 90 / 0.35);
     box-shadow: 0 -10px 30px rgb(5 22 18 / 0.18);
     transform: translateY(110%);
@@ -60,12 +60,10 @@ const pedidos = ligacoesPedido(Astro.url.pathname);
     border: 1px solid rgb(250 248 243 / 0.5);
     border-radius: var(--raio);
     color: var(--branco);
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-size: 0.92rem;
+    font-weight: 750;
     line-height: 1.2;
     text-align: center;
-    text-transform: uppercase;
     text-decoration: none;
   }
   .rapidas__accao--principal {

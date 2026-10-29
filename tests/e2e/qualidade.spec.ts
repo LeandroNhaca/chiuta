@@ -55,6 +55,8 @@ test.describe('imagens, ligações e SEO', () => {
       for (const { href, alvo, rel } of hrefs) {
         if (/^tel:/.test(href)) {
           expect(href).toBe('tel:+258848885556');
+        } else if (/^mailto:/.test(href)) {
+          expect(href).toBe('mailto:mulotanalodge@gmail.com');
         } else if (/^https?:/.test(href)) {
           externas.add(new URL(href).origin);
           expect(alvo, href).toBe('_blank');
@@ -64,8 +66,15 @@ test.describe('imagens, ligações e SEO', () => {
         }
       }
     }
-    // Só os destinos confirmados: o WhatsApp oficial e a ficha do lodge no Google Maps.
-    expect([...externas].sort()).toEqual(['https://maps.app.goo.gl', 'https://wa.me']);
+    // Só destinos oficiais: WhatsApp, ficha e direcções do Google Maps, mapa do OpenStreetMap e redes do lodge.
+    expect([...externas].sort()).toEqual([
+      'https://maps.app.goo.gl',
+      'https://wa.me',
+      'https://www.facebook.com',
+      'https://www.google.com',
+      'https://www.instagram.com',
+      'https://www.openstreetmap.org',
+    ]);
     for (const url of internas) {
       const u = new URL(url);
       const resposta = await request.get(u.pathname);
@@ -82,7 +91,7 @@ test.describe('imagens, ligações e SEO', () => {
     const sitemap = await (await request.get('/sitemap.xml')).text();
     expect(sitemap.match(/<loc>/g)).toHaveLength(8);
     expect(sitemap).toContain('https://mulotane.onepromptstudio.com/eventos/');
-    const og = await request.get('/og/mulotane-lodge.jpg');
+    const og = await request.get('/og/mulotana-lodge.jpg');
     expect(og.status()).toBe(200);
     expect(og.headers()['content-type']).toContain('image/jpeg');
 
@@ -90,7 +99,6 @@ test.describe('imagens, ligações e SEO', () => {
     for (const [caminho, tipo] of [
       ['/favicon.ico', /image\/(x-icon|vnd\.microsoft\.icon)/],
       ['/favicon.png', /image\/png/],
-      ['/favicon.svg', /image\/svg\+xml/],
       ['/apple-touch-icon.png', /image\/png/],
     ] as const) {
       const r = await request.get(caminho);
@@ -98,7 +106,7 @@ test.describe('imagens, ligações e SEO', () => {
       expect(r.headers()['content-type'], caminho).toMatch(tipo);
     }
     const manifesto = await (await request.get('/site.webmanifest')).json();
-    expect(manifesto.name).toBe('Mulotane Lodge');
+    expect(manifesto.name).toBe('Mulotana Lodge');
     for (const icone of manifesto.icons) {
       expect((await request.get(icone.src)).status(), icone.src).toBe(200);
     }
@@ -109,10 +117,18 @@ test.describe('imagens, ligações e SEO', () => {
     const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}');
     expect(ld['@type']).toBe('LodgingBusiness');
     expect(ld.address.addressLocality).toBe('Boane');
-    expect(ld.telephone).toBe('+258 848 885556');
+    expect(ld.address.streetAddress).toBe('Bairro de Mulotana, Casa n.º 172, Quarteirão 12');
+    expect(ld.telephone).toBe('+258 84 888 5556');
+    expect(ld.email).toBe('mulotanalodge@gmail.com');
+    expect(ld.geo).toMatchObject({ latitude: -25.87061, longitude: 32.41132 });
     expect(ld.hasMap).toBe('https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6');
-    // Nada de dados não confirmados.
-    for (const campo of ['aggregateRating', 'review', 'priceRange', 'starRating', 'geo', 'email']) {
+    expect(ld.sameAs).toEqual([
+      'https://www.instagram.com/mulotana_lodge/',
+      'https://www.facebook.com/share/1JupC5A591/',
+    ]);
+    expect((await request.get(new URL(ld.logo).pathname)).status()).toBe(200);
+    // Nada inventado: sem avaliações, preços nem classificações.
+    for (const campo of ['aggregateRating', 'review', 'priceRange', 'starRating', 'award']) {
       expect(ld, campo).not.toHaveProperty(campo);
     }
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(0);
@@ -150,8 +166,11 @@ test.describe('acessibilidade (axe, WCAG 2.1 AA)', () => {
     test.skip(!['telemovel', 'portatil'].includes(info.project.name), 'axe: telemóvel e portátil'),
   );
 
+  // O contraste avalia-se no estado final do conteúdo: com movimento reduzido não há elementos a meio de
+  // uma entrada (semitransparentes no limite do ecrã). O palco animado tem o seu próprio teste abaixo.
   for (const caminho of PAGINAS) {
     test(`${caminho} sem violações`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto(caminho);
       await percorrer(page);
       const { violations } = await new AxeBuilder({ page })
@@ -161,4 +180,22 @@ test.describe('acessibilidade (axe, WCAG 2.1 AA)', () => {
       expect(resumo).toEqual([]);
     });
   }
+
+  test('palco de cenas animado (computador) sem violações', async ({ page }, info) => {
+    test.skip(info.project.name !== 'portatil');
+    await page.goto('/');
+    await page
+      .getByRole('navigation', { name: 'Espaços do lodge' })
+      .getByRole('link', { name: /Conferências/ })
+      .click();
+    await expect(page.locator('#cena .cenas__palco')).toBeInViewport({ ratio: 0.9 });
+    await page.waitForLoadState('networkidle');
+    const { violations } = await new AxeBuilder({ page })
+      .include('#cena')
+      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'])
+      .analyze();
+    expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`)).toEqual(
+      [],
+    );
+  });
 });

@@ -1,70 +1,62 @@
 ---
 /**
- * Assinatura tipográfica TEMPORÁRIA. Não é o logótipo oficial: a placa da entrada mostra um logótipo,
- * mas ainda não há ficheiro confirmado. Quando houver, basta preencher lodge.marca.logotipo.
+ * Logótipo do lodge com ligação para a página inicial. O logótipo foi desenhado sobre branco: em fundos
+ * escuros vai numa pastilha branca (`sobreEscuro`). Sem ficheiro configurado, mostra o nome em texto.
  */
 import { lodge } from '../config/lodge';
 
 interface Props {
   class?: string;
+  sobreEscuro?: boolean;
+  /** Altura em píxeis CSS (a largura acompanha a proporção do logótipo). */
+  altura?: number;
 }
-const { class: classe } = Astro.props;
+const { class: classe, sobreEscuro = false, altura = 56 } = Astro.props;
+const base = lodge.marca.logotipo;
+// Proporção dos ficheiros gerados por scripts/imagens/gerar_icones.py (480 × 311).
+const largura = Math.round((altura * 480) / 311);
 ---
 
-<a href="/" class:list={['assinatura', classe]} aria-label={`${lodge.nome}, página inicial`}>
-  {lodge.marca.logotipo ? (
-    <img src={lodge.marca.logotipo} alt="" width="160" height="48" />
+<a
+  href="/"
+  class:list={['assinatura', { 'assinatura--pastilha': sobreEscuro && base }, classe]}
+  aria-label={`${lodge.nome}, página inicial`}
+>
+  {base ? (
+    <img
+      src={`${base}-240.webp`}
+      srcset={`${base}-240.webp 240w, ${base}-480.webp 480w`}
+      sizes={`${largura}px`}
+      width={largura}
+      height={altura}
+      alt=""
+      decoding="async"
+    />
   ) : (
-    <>
-      <span class="assinatura__nome" aria-hidden="true">
-        Mulotane
-      </span>
-      <span class="assinatura__sub" aria-hidden="true">
-        Lodge
-      </span>
-    </>
+    <span class="assinatura__nome">{lodge.nome}</span>
   )}
 </a>
 
 <style>
   .assinatura {
-    display: inline-grid;
-    justify-items: center;
-    gap: 7px;
-    padding: 6px 0;
+    display: inline-flex;
+    align-items: center;
+    flex: none;
     color: inherit;
     line-height: 1;
     text-decoration: none;
   }
+  .assinatura img {
+    height: auto;
+  }
+  .assinatura--pastilha {
+    padding: 8px 12px;
+    border-radius: var(--raio-m);
+    background: #fff;
+  }
   .assinatura__nome {
-    margin-right: -0.2em;
-    font-family: var(--serif);
-    font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.5rem);
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-  }
-  .assinatura__sub {
-    display: flex;
-    align-items: center;
-    gap: 0.7em;
-    margin-right: -0.42em;
-    font-family: var(--sans);
-    font-size: 0.58rem;
-    font-weight: 700;
-    letter-spacing: 0.42em;
-    text-transform: uppercase;
-    color: var(--dourado);
-  }
-  .assinatura__sub::before,
-  .assinatura__sub::after {
-    content: '';
-    width: 18px;
-    height: 1px;
-    background: currentColor;
-    opacity: 0.8;
-  }
-  .assinatura__sub::after {
-    margin-left: -0.42em;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
   }
 </style>

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/cinema.css';
 
 import Cabecalho from '../components/Cabecalho.astro';
 import AccoesRapidas from '../components/AccoesRapidas.astro';
@@ -14,14 +15,19 @@ interface Props {
   inicio?: boolean;
   /** Dados estruturados (só com informação confirmada). */
   dadosEstruturados?: Record<string, unknown>;
+  /**
+   * Intensidade do movimento (src/styles/cinema.css): "completo" nas páginas de apresentação, "moderado"
+   * na galeria e nas páginas de apoio, "minimo" nas páginas que têm de ser rápidas (contactos, privacidade).
+   */
+  movimento?: 'completo' | 'moderado' | 'minimo';
 }
 
-const { titulo, descricao, inicio = false, dadosEstruturados } = Astro.props;
-const tituloCompleto = inicio ? titulo : `${titulo} · ${lodge.nome}, Boane`;
+const { titulo, descricao, inicio = false, dadosEstruturados, movimento = 'completo' } = Astro.props;
+const tituloCompleto = inicio ? titulo : `${titulo} | ${lodge.nome}`;
 const indexavel = !lodge.demonstracao.activa && Boolean(lodge.site.dominioFinal);
 const canonical = lodge.site.dominioFinal ? new URL(Astro.url.pathname, lodge.site.dominioFinal).href : null;
 const urlPagina = new URL(Astro.url.pathname, Astro.site).href;
-const imagemPartilha = new URL('/og/mulotane-lodge.jpg', Astro.site).href;
+const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
 ---
 
 <!doctype html>
@@ -34,15 +40,15 @@ const imagemPartilha = new URL('/og/mulotane-lodge.jpg', Astro.site).href;
     <meta name="description" content={descricao} />
     {canonical && <link rel="canonical" href={canonical} />}
     {!indexavel && <meta name="robots" content="noindex, nofollow" />}
-    <meta name="theme-color" content="#0b3027" />
+    <meta name="theme-color" content="#faf8f3" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link
       rel="preload"
-      href="/fonts/cormorant-garamond-latin-500-normal.woff2"
+      href="/fonts/cormorant-garamond-latin-600-normal.woff2"
       as="font"
       type="font/woff2"
       crossorigin
@@ -64,14 +70,18 @@ const imagemPartilha = new URL('/og/mulotane-lodge.jpg', Astro.site).href;
     <meta property="og:image" content={imagemPartilha} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Piscina e jardim do Mulotane Lodge, em Boane." />
+    <meta
+      property="og:image:alt"
+      content="Piscina do Mulotana Lodge, com palmeiras e um edifício de telhado de colmo, em Boane."
+    />
     <meta name="twitter:card" content="summary_large_image" />
 
     {dadosEstruturados && (
       <script is:inline type="application/ld+json" set:html={JSON.stringify(dadosEstruturados)} />
     )}
   </head>
-  <body>
+  <body data-movimento={movimento}>
+    {movimento !== 'minimo' && <div class="c-progresso" aria-hidden="true" />}
     <a class="saltar" href="#conteudo">
       Saltar para o conteúdo
     </a>

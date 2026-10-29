@@ -3,17 +3,20 @@ import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
 import ComoChegar from '../components/ComoChegar.astro';
 import Icone from '../components/Icone.astro';
-import { canaisContacto, temContactosDirectos } from '../lib/site';
+import RedesSociais from '../components/RedesSociais.astro';
+import { lodge } from '../config/lodge';
+import { canaisContacto, localizacaoCompleta, temContactosDirectos } from '../lib/site';
 import Base from '../layouts/Base.astro';
 ---
 
 <Base
-  titulo="Contactos e como chegar"
-  descricao="Fale com o Mulotane Lodge, em Boane, província de Maputo: consulte disponibilidade, peça um orçamento para um evento e prepare a viagem."
+  movimento="minimo"
+  titulo="Contactos e localização"
+  descricao="Contactos do Mulotana Lodge, em Boane: telefone de reservas, WhatsApp, e-mail, morada e mapa. Consulte a disponibilidade ou peça um orçamento para o seu evento."
 >
   <CabecalhoPagina
     titulo="Fale connosco"
-    intro="Peça informações, consulte a disponibilidade ou prepare o seu evento no Mulotane Lodge, em Boane."
+    intro="Peça informações, consulte a disponibilidade ou prepare o seu evento no Mulotana Lodge, em Boane."
   />
 
   <section class="secao secao--clara" aria-labelledby="contactos-titulo">
@@ -28,7 +31,9 @@ import Base from '../layouts/Base.astro';
             <li>
               <Icone nome={c.id} tamanho={22} />
               <span class="contactos__canal">
-                <span class="contactos__rotulo">{c.rotulo}</span>
+                <span class="contactos__rotulo">
+                  {c.id === 'telefone' ? 'Telefone de reservas' : c.rotulo}
+                </span>
                 {c.href ? (
                   <a
                     href={c.href}
@@ -46,11 +51,14 @@ import Base from '../layouts/Base.astro';
         </ul>
         {!temContactosDirectos && (
           <p class="contactos__nota">
-            O telefone, o WhatsApp e o e-mail oficiais estão a ser confirmados pelo Mulotane Lodge e serão
+            O telefone, o WhatsApp e o e-mail oficiais estão a ser confirmados pelo Mulotana Lodge e serão
             publicados nesta página. Até lá, pode preparar o seu pedido de disponibilidade ou de orçamento.
           </p>
         )}
-        <BotaoWhatsApp />
+        <div class="accoes">
+          <BotaoWhatsApp variante="principal" />
+        </div>
+        <RedesSociais />
       </div>
 
       <ul class="contactos__accoes">
@@ -74,7 +82,11 @@ import Base from '../layouts/Base.astro';
           <a class="contactos__cartao" href="#como-chegar">
             <Icone nome="pino" tamanho={28} />
             <span class="contactos__titulo">Como chegar</span>
-            <span class="contactos__texto">Boane, província de Maputo, Moçambique.</span>
+            <span class="contactos__texto">
+              {lodge.localizacao.morada
+                ? `${lodge.localizacao.morada}, ${lodge.localizacao.localidade}`
+                : localizacaoCompleta}
+            </span>
             <Icone nome="seta" tamanho={20} class="contactos__seta" />
           </a>
         </li>
@@ -116,15 +128,19 @@ import Base from '../layouts/Base.astro';
     justify-content: space-between;
   }
   .contactos__lista a {
-    font-family: var(--serif);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--verde);
     text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .contactos__lista a:hover {
+    text-decoration: underline;
   }
   .contactos__rotulo {
-    font-size: var(--t-etiqueta);
+    font-size: var(--t-pequeno);
     font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
     color: var(--texto-suave);
   }
   .contactos__nota {
@@ -144,7 +160,7 @@ import Base from '../layouts/Base.astro';
     gap: 8px;
     padding: 26px 64px 26px 28px;
     border: 1px solid var(--linha);
-    border-radius: var(--raio);
+    border-radius: var(--raio-l);
     background: #fff;
     text-decoration: none;
     color: inherit;
@@ -153,16 +169,17 @@ import Base from '../layouts/Base.astro';
       transform var(--transicao);
   }
   .contactos__cartao:hover {
-    border-color: var(--dourado);
+    border-color: var(--dourado-texto);
+    box-shadow: var(--sombra);
     transform: translateY(-2px);
   }
   .contactos__cartao > :global(svg:first-child) {
     color: var(--dourado-texto);
   }
   .contactos__titulo {
-    font-family: var(--serif);
-    font-size: 1.6rem;
-    line-height: 1.15;
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.2;
   }
   .contactos__texto {
     font-size: 0.95rem;

@@ -1,27 +1,30 @@
-/* Mulotane Lodge · sistema visual
-   Verde-floresta como identidade, branco quente para respirar, dourado só em acentos.
-   Linguagem editorial: tipografia serifada em grande escala, filetes finos, capítulos numerados e
-   fotografias em molduras de arco (um gesto orgânico, como a copa de uma árvore). */
+/* Mulotana Lodge · sistema visual
+   Paleta do site mantida a pedido do responsável (29/10/2026): verde-floresta como identidade, branco quente
+   para respirar, dourado só em acentos. O logótipo oficial (colorido) aparece sobre fundo claro.
+   Títulos de destaque (h1, h2) em Cormorant Garamond, como no site publicado; o resto em Manrope, muito
+   legível. Fotografias reais em grande formato e molduras simples. O movimento está em cinema.css. */
 
+/* Serifada dos títulos: "optional" (com preload) usa-a se chegar a tempo e nunca troca a meio, para não
+   deslocar o título do hero (CLS). */
 @font-face {
   font-family: 'Cormorant Garamond';
   font-style: normal;
   font-weight: 500;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/cormorant-garamond-latin-500-normal.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Cormorant Garamond';
   font-style: normal;
   font-weight: 600;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/cormorant-garamond-latin-600-normal.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Cormorant Garamond';
   font-style: italic;
   font-weight: 500;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/cormorant-garamond-latin-500-italic.woff2') format('woff2');
 }
 @font-face {
@@ -42,6 +45,7 @@
   --dourado-texto: #7a5b22; /* dourado legível sobre fundos claros (5,9:1) */
   --branco: #faf8f3;
   --cinzento: #e8e5de;
+  --cinzento-2: #dedad1;
   --texto: #202923;
   --texto-suave: #4d5951;
   --erro: #9b2c1f;
@@ -49,26 +53,29 @@
   --linha-clara: rgb(250 248 243 / 0.18);
 
   --serif: 'Cormorant Garamond', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --titulos: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
-  --t-hero: clamp(2.7rem, 1.45rem + 5.2vw, 6.25rem);
-  --t-h1: clamp(2.5rem, 1.6rem + 3.8vw, 5rem);
-  --t-h2: clamp(2.05rem, 1.4rem + 2.7vw, 3.85rem);
-  --t-h3: clamp(1.45rem, 1.22rem + 0.85vw, 2rem);
+  --t-hero: clamp(3rem, 1.6rem + 6vw, 7rem);
+  --t-h1: clamp(2.6rem, 1.7rem + 3.8vw, 5rem);
+  --t-h2: clamp(2.1rem, 1.45rem + 2.7vw, 3.75rem);
+  --t-h3: clamp(1.25rem, 1.12rem + 0.55vw, 1.6rem);
   --t-lead: clamp(1.08rem, 1rem + 0.35vw, 1.25rem);
   --t-corpo: clamp(1rem, 0.97rem + 0.15vw, 1.0625rem);
   --t-pequeno: 0.875rem;
-  --t-etiqueta: 0.75rem;
+  --t-etiqueta: 0.78rem;
 
   --contentor: 1240px;
   --margem: clamp(16px, 4.5vw, 48px);
-  --espaco-secao: clamp(76px, 10vw, 148px);
-  --raio: 3px;
-  --raio-m: 8px;
-  --raio-arco: 999px 999px var(--raio) var(--raio);
+  --espaco-secao: clamp(64px, 8.5vw, 120px);
+  --raio: 12px; /* botões e campos: moderadamente arredondados */
+  --raio-m: 16px;
+  --raio-l: 20px; /* fotografias e cartões */
+  --raio-arco: var(--raio-l);
+  --sombra: 0 1px 2px rgb(32 41 35 / 0.06), 0 8px 24px rgb(32 41 35 / 0.08);
   --cabecalho: 72px;
   --foco: var(--verde);
-  --transicao: 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  --transicao: 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
 
   color-scheme: light;
 }
@@ -112,8 +119,7 @@ body {
   color: var(--texto);
   font-family: var(--sans);
   font-size: var(--t-corpo);
-  line-height: 1.7;
-  font-optical-sizing: auto;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
 }
@@ -140,11 +146,18 @@ h2,
 h3,
 h4 {
   margin: 0;
-  font-family: var(--serif);
-  font-weight: 500;
-  line-height: 1.06;
-  letter-spacing: -0.005em;
+  font-family: var(--titulos);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.022em;
   text-wrap: balance;
+}
+h1,
+h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.01em;
 }
 
 h1 {
@@ -155,12 +168,15 @@ h2 {
 }
 h3 {
   font-size: var(--t-h3);
-  line-height: 1.15;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
 }
 
 h1 em,
 h2 em {
   font-style: italic;
+  font-weight: 500;
   color: var(--dourado-texto);
 }
 
@@ -174,9 +190,9 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--foco);
+  outline: 3px solid var(--foco);
   outline-offset: 3px;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 
 ::selection {
@@ -234,27 +250,6 @@ a {
 .secao--cinza {
   background: var(--cinzento);
 }
-/* Transição para as secções cor de areia: um losango dourado sobre a fronteira, com um filete curto. */
-.secao--cinza::before,
-.secao--cinza::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  pointer-events: none;
-}
-.secao--cinza::before {
-  width: min(220px, 40vw);
-  height: 1px;
-  background: linear-gradient(to right, transparent, rgb(199 161 90 / 0.8), transparent);
-  transform: translateX(-50%);
-}
-.secao--cinza::after {
-  width: 9px;
-  height: 9px;
-  background: var(--dourado);
-  transform: translate(-50%, -50%) rotate(45deg);
-}
 .secao--escura {
   --foco: var(--dourado);
   background: var(--verde);
@@ -267,7 +262,7 @@ a {
 
 .grelha {
   display: grid;
-  gap: clamp(40px, 6vw, 96px);
+  gap: clamp(36px, 5vw, 80px);
   align-items: center;
 }
 
@@ -283,22 +278,23 @@ a {
   }
 }
 
-/* ---------- Tipografia editorial ---------- */
+/* ---------- Tipografia ---------- */
 
 .etiqueta {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 22px;
+  gap: 12px;
+  margin-bottom: 18px;
   font-family: var(--sans);
   font-size: var(--t-etiqueta);
-  font-weight: 700;
-  letter-spacing: 0.24em;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--dourado-texto);
 }
 .etiqueta::before {
   content: '';
+  flex: none;
   width: 32px;
   height: 1px;
   background: currentColor;
@@ -310,23 +306,18 @@ a {
 }
 
 .etiqueta__numero {
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.05rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: none;
+  font-variant-numeric: tabular-nums;
 }
 
 .lead {
   font-size: var(--t-lead);
-  line-height: 1.65;
+  line-height: 1.6;
   max-width: 34em;
 }
 
 .texto {
   display: grid;
-  gap: 1.1em;
+  gap: 1em;
   max-width: 36em;
   color: var(--texto-suave);
 }
@@ -336,7 +327,7 @@ a {
 
 .bloco-titulo {
   display: grid;
-  gap: 26px;
+  gap: 22px;
 }
 
 /* ---------- Botões e ligações ---------- */
@@ -357,18 +348,17 @@ a {
   justify-content: center;
   gap: 10px;
   min-height: 52px;
-  padding: 0 28px;
-  border: 1px solid var(--b-borda);
+  padding: 0 24px;
+  border: 2px solid var(--b-borda);
   border-radius: var(--raio);
   background: var(--b-fundo);
   color: var(--b-cor);
   font-family: var(--sans);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.13em;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: 0;
   line-height: 1.2;
   text-align: center;
-  text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
   transition:
@@ -388,6 +378,7 @@ a {
   transform: translateX(3px);
 }
 
+/* Acção principal: dourado com texto verde (5,9:1). */
 .botao--principal {
   --b-fundo: var(--dourado);
   --b-cor: var(--verde);
@@ -400,7 +391,7 @@ a {
 
 .botao--verde {
   --b-fundo: var(--verde);
-  --b-cor: var(--branco);
+  --b-cor: #fff;
   --b-borda: var(--verde);
 }
 .botao--verde:hover {
@@ -419,12 +410,12 @@ a {
 }
 
 .botao--contorno-claro {
-  --b-cor: var(--branco);
+  --b-cor: #fff;
   --b-borda: rgb(250 248 243 / 0.6);
 }
 .botao--contorno-claro:hover {
   --b-fundo: rgb(250 248 243 / 0.12);
-  --b-borda: var(--branco);
+  --b-borda: #fff;
 }
 
 .botao[disabled],
@@ -445,20 +436,18 @@ a {
 /* Ecrãs estreitos: rótulos longos ("Pedir orçamento para um evento") numa só linha. */
 @media (max-width: 479px) {
   .botao {
-    padding-inline: 18px;
-    letter-spacing: 0.08em;
+    padding-inline: 16px;
+    font-size: 0.97rem;
   }
 }
 
 .ligacao-seta {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   min-height: 44px;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: 750;
   text-decoration: none;
   color: var(--verde);
 }
@@ -466,12 +455,12 @@ a {
   color: var(--dourado);
 }
 .ligacao-seta span {
-  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 2px no-repeat;
   transition: background-size var(--transicao);
   padding-bottom: 2px;
 }
 .ligacao-seta:hover span {
-  background-size: 100% 1px;
+  background-size: 100% 2px;
 }
 .ligacao-seta svg {
   transition: transform var(--transicao);
@@ -485,8 +474,8 @@ a {
 .foto {
   position: relative;
   overflow: hidden;
-  background: var(--cinzento);
-  border-radius: var(--raio);
+  background: var(--cinzento-2);
+  border-radius: var(--raio-l);
 }
 .foto img {
   width: 100%;
@@ -500,28 +489,14 @@ a {
 .moldura {
   position: relative;
 }
-@media (min-width: 900px) {
-  .moldura::before {
-    content: '';
-    position: absolute;
-    inset: 22px -22px -22px 22px;
-    border: 1px solid var(--dourado);
-    border-radius: var(--raio);
-    opacity: 0.55;
-    pointer-events: none;
-  }
-  .moldura--esquerda::before {
-    inset: 22px 22px -22px -22px;
-  }
-}
 
 .legenda {
-  margin-top: 14px;
+  margin-top: 12px;
   font-size: var(--t-pequeno);
   color: var(--texto-suave);
 }
 .secao--escura .legenda {
-  color: rgb(250 248 243 / 0.7);
+  color: rgb(250 248 243 / 0.72);
 }
 
 /* ---------- Notas e avisos ---------- */
@@ -529,16 +504,18 @@ a {
 .nota {
   display: flex;
   gap: 12px;
-  padding: 16px 18px;
-  border-left: 2px solid var(--dourado);
-  background: rgb(199 161 90 / 0.1);
+  padding: 14px 16px;
+  border: 1px solid rgb(199 161 90 / 0.45);
+  border-radius: var(--raio);
+  background: rgb(199 161 90 / 0.12);
   font-size: var(--t-pequeno);
   line-height: 1.6;
   color: var(--texto);
 }
 .secao--escura .nota {
-  background: rgb(199 161 90 / 0.12);
-  color: rgb(250 248 243 / 0.88);
+  border-color: rgb(199 161 90 / 0.4);
+  background: rgb(199 161 90 / 0.1);
+  color: rgb(250 248 243 / 0.9);
 }
 .nota svg {
   flex: none;
@@ -561,88 +538,62 @@ a {
   display: flex;
   gap: 14px;
   align-items: baseline;
-  padding: 14px 0;
+  padding: 13px 0;
   border-bottom: 1px solid var(--linha);
 }
 .lista-traco li::before {
   content: '';
   flex: none;
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--dourado);
-  transform: translateY(-2px);
+  transform: translateY(-1px);
 }
 .secao--escura .lista-traco,
 .secao--escura .lista-traco li {
   border-color: var(--linha-clara);
 }
 
-/* ---------- Revelação suave (só CSS, sem bloquear o conteúdo) ---------- */
+/* ---------- Molduras ---------- */
 
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .revelar {
-      animation: revelar linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 35%;
-    }
-  }
-}
-
-@keyframes revelar {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* ---------- Molduras em arco ---------- */
-
+/* Nome histórico: as antigas molduras em arco são agora rectângulos arredondados, como as restantes. */
 .arco {
   display: block;
   overflow: hidden;
-  border-radius: var(--raio-arco);
-  background: var(--verde-2);
+  border-radius: var(--raio-l);
+  background: var(--cinzento-2);
 }
 .arco img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-/* Filete dourado que acompanha o arco, ligeiramente desencontrado (só em ecrãs largos). */
 .arco-filete {
   position: relative;
-  isolation: isolate;
-}
-@media (min-width: 900px) {
-  .arco-filete::before {
-    content: '';
-    position: absolute;
-    inset: -18px 18px 18px -18px;
-    z-index: -1;
-    border: 1px solid var(--dourado);
-    border-radius: var(--raio-arco);
-    opacity: 0.6;
-    pointer-events: none;
-  }
 }
 
 /* ---------- Cartões e estados ---------- */
+
+.cartao {
+  display: grid;
+  gap: 18px;
+  align-content: start;
+  padding: clamp(24px, 3.4vw, 40px);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio-l);
+  background: #fff;
+}
 
 .cartao-verde {
   --foco: var(--dourado);
   position: relative;
   display: grid;
-  gap: 22px;
+  gap: 20px;
   align-content: start;
-  padding: clamp(28px, 4vw, 48px);
+  padding: clamp(26px, 3.6vw, 44px);
   overflow: hidden;
-  border-radius: var(--raio);
+  border-radius: var(--raio-l);
   background: var(--verde);
   color: var(--branco);
 }
@@ -651,15 +602,6 @@ a {
 }
 .cartao-verde .lista-numerada li {
   border-color: var(--linha-clara);
-}
-.cartao-verde__folhagem {
-  position: absolute;
-  right: -70px;
-  bottom: -60px;
-  width: 260px;
-  height: auto;
-  opacity: 0.14;
-  pointer-events: none;
 }
 
 .lista-numerada {
@@ -671,23 +613,29 @@ a {
 }
 .lista-numerada li {
   display: flex;
-  gap: 18px;
+  gap: 16px;
   align-items: baseline;
-  padding: 14px 0;
+  padding: 13px 0;
   border-bottom: 1px solid var(--linha);
   counter-increment: item;
 }
 .lista-numerada li::before {
-  content: counter(item, decimal-leading-zero);
+  content: counter(item);
   flex: none;
-  min-width: 1.6em;
-  font-family: var(--serif);
-  font-style: italic;
-  font-size: 1.15rem;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgb(199 161 90 / 0.18);
+  font-size: 0.85rem;
+  font-weight: 800;
   color: var(--dourado-texto);
+  transform: translateY(-2px);
 }
 .secao--escura .lista-numerada li::before,
 .cartao-verde .lista-numerada li::before {
+  background: rgb(199 161 90 / 0.18);
   color: var(--dourado);
 }
 
@@ -697,13 +645,12 @@ a {
   align-items: center;
   gap: 6px;
   padding: 3px 10px;
-  border: 1px solid rgb(122 91 34 / 0.45);
+  border: 1px solid rgb(122 91 34 / 0.4);
   border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-size: 0.74rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
   line-height: 1.5;
-  text-transform: uppercase;
   white-space: nowrap;
   color: var(--dourado-texto);
 }
@@ -716,10 +663,10 @@ a {
 .filete-titulo {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
   font-size: var(--t-etiqueta);
-  font-weight: 700;
-  letter-spacing: 0.22em;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--dourado-texto);
 }
@@ -728,7 +675,7 @@ a {
   flex: 1;
   height: 1px;
   background: currentColor;
-  opacity: 0.35;
+  opacity: 0.3;
 }
 .secao--escura .filete-titulo,
 .cartao-verde .filete-titulo {

@@ -8,12 +8,13 @@ const autores = [...new Set(fotografias.filter((f) => f.autor).map((f) => f.auto
 ---
 
 <Base
+  movimento="moderado"
   titulo="Galeria"
-  descricao="Fotografias reais do Mulotane Lodge, em Boane: as piscinas e o jardim, a entrada, o restaurante e as salas para eventos."
+  descricao="Fotografias reais do Mulotana Lodge, em Boane: quartos, piscinas e jardins, salas de conferências, restaurante e espaços do lodge."
 >
   <CabecalhoPagina
     titulo="Galeria"
-    intro="Os espaços do Mulotane Lodge em fotografias reais: as piscinas e o jardim, a entrada, o restaurante e as salas."
+    intro="Os espaços do Mulotana Lodge em fotografias reais: quartos, piscinas e jardins, salas de conferências e restaurante."
   />
 
   <section class="secao secao--clara" aria-label="Fotografias">
@@ -23,8 +24,9 @@ const autores = [...new Set(fotografias.filter((f) => f.autor).map((f) => f.auto
         <aside class="creditos" aria-labelledby="creditos-titulo">
           <h2 id="creditos-titulo">Créditos fotográficos</h2>
           <p>
-            Algumas fotografias são contribuições de visitantes no Google Maps e são apresentadas com
-            indicação de autoria: {autores.join(', ')}.
+            A maior parte das fotografias foi publicada pelo próprio lodge no Instagram e no Facebook; as
+            datas vão de 2016 a 2025. Algumas são contribuições de visitantes no Google Maps e são
+            apresentadas com indicação de autoria: {autores.join(', ')}.
           </p>
         </aside>
       )}
@@ -46,8 +48,8 @@ const autores = [...new Set(fotografias.filter((f) => f.autor).map((f) => f.auto
   .creditos h2 {
     font-family: var(--sans);
     font-size: var(--t-etiqueta);
-    font-weight: 700;
-    letter-spacing: 0.2em;
+    font-weight: 800;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--dourado-texto);
   }

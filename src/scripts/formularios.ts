@@ -1,5 +1,6 @@
-// Formulários de pedido: validação acessível, WhatsApp pré-preenchido e envio opcional para um endpoint.
-// Nunca diz que uma reserva está confirmada e nunca finge um envio que não aconteceu.
+// Formulários de pedido: validação acessível, mensagem pré-preenchida para o WhatsApp ou o e-mail do lodge e
+// envio opcional para um endpoint. Nunca diz que uma reserva está confirmada e nunca finge um envio que não
+// aconteceu: sem endpoint, o pedido só chega ao lodge quando o visitante o envia na sua aplicação.
 
 import { enviarPedido } from '../lib/pedidos';
 import {
@@ -13,9 +14,9 @@ import {
   validarEvento,
   type Erros,
 } from '../lib/validacao';
-import { linkWhatsApp, mensagemPedido, type TipoPedido } from '../lib/whatsapp';
+import { assuntoPedido, linkEmail, linkWhatsApp, mensagemPedido, type TipoPedido } from '../lib/whatsapp';
 
-type Estado = 'enviado' | 'whatsapp' | 'demonstracao';
+type Estado = 'enviado' | 'mensagem' | 'demonstracao';
 
 const ROTULOS: Record<string, string> = {
   nome: 'Nome',
@@ -25,9 +26,11 @@ const ROTULOS: Record<string, string> = {
   entrada: 'Entrada',
   saida: 'Saída',
   hospedes: 'Hóspedes',
+  quarto: 'Tipo de quarto',
   tipo: 'Tipo de evento',
   data: 'Data pretendida',
   participantes: 'Participantes',
+  servicos: 'Serviços pretendidos',
   mensagem: 'Mensagem',
 };
 
@@ -38,30 +41,33 @@ const RESPOSTA: Record<TipoPedido, string> = {
 };
 const NAO_E_RESERVA: Record<TipoPedido, string> = {
   alojamento:
-    'Este pedido não é uma reserva: a estadia só fica garantida depois de confirmada pelo Mulotane Lodge.',
+    'Este pedido não é uma reserva: a estadia só fica garantida depois de confirmada pela equipa do lodge.',
   evento:
-    'Este pedido não é uma reserva: o evento só fica garantido depois de confirmado pelo Mulotane Lodge.',
+    'Este pedido não é uma reserva: o evento só fica garantido depois de confirmado pela equipa do lodge.',
 };
 
 // Nunca se diz que um pedido foi enviado ou guardado sem a resposta do servidor o confirmar.
-const TEXTOS: Record<Estado, { titulo: string; texto: (nome: string, tipo: TipoPedido) => string }> = {
+const TEXTOS: Record<
+  Estado,
+  { titulo: string; texto: (nome: string, tipo: TipoPedido, canais: string) => string }
+> = {
   enviado: {
     titulo: 'Pedido enviado',
     texto: (nome, tipo) =>
-      `Obrigado, ${nome}. A equipa do Mulotane Lodge vai responder ${RESPOSTA[tipo]}. ${NAO_E_RESERVA[tipo]}`,
+      `Obrigado, ${nome}. A equipa do lodge vai responder ${RESPOSTA[tipo]}. ${NAO_E_RESERVA[tipo]}`,
   },
-  whatsapp: {
-    titulo: 'Mensagem pronta para o WhatsApp',
-    texto: (_nome, tipo) =>
-      'O pedido ainda não foi enviado: para concluir, toque em "Continuar no WhatsApp" e envie a mensagem ' +
-      `ao Mulotane Lodge. ${NAO_E_RESERVA[tipo]}`,
+  mensagem: {
+    titulo: 'Falta enviar o pedido',
+    texto: (_nome, tipo, canais) =>
+      `O pedido ainda não foi enviado. Escolha como o quer enviar (${canais}): a mensagem abre já ` +
+      'preenchida na sua aplicação e só chega à equipa do lodge quando a enviar. ' +
+      `A equipa responde ${RESPOSTA[tipo]}. ${NAO_E_RESERVA[tipo]}`,
   },
   demonstracao: {
     titulo: 'Pedido validado',
     texto: () =>
-      'Os dados estão correctos, mas este formulário ainda é de demonstração: nenhum dado foi enviado nem ' +
-      'guardado, por isso o pedido não chegou à equipa do Mulotane Lodge. O envio pelo WhatsApp aguarda a ' +
-      'configuração do número oficial; esta é a mensagem que vai ser preparada.',
+      'Os dados estão correctos, mas este formulário ainda não tem destino: nenhum dado foi enviado nem ' +
+      'guardado, por isso o pedido não chegou à equipa do lodge. Esta é a mensagem que vai ser preparada.',
   },
 };
 
@@ -69,7 +75,8 @@ function iniciar(form: HTMLFormElement): void {
   const tipo = form.dataset.tipo as TipoPedido;
   const endpoint = form.dataset.endpoint ?? '';
   const whatsapp = form.dataset.whatsapp ?? '';
-  const nomeLodge = form.dataset.lodge ?? 'Mulotane Lodge';
+  const email = form.dataset.email ?? '';
+  const nomeLodge = form.dataset.lodge ?? 'Mulotana Lodge';
   const campos = tipo === 'alojamento' ? CAMPOS_ALOJAMENTO : CAMPOS_EVENTO;
   const validar = tipo === 'alojamento' ? validarAlojamento : validarEvento;
 
@@ -82,7 +89,9 @@ function iniciar(form: HTMLFormElement): void {
   if (!contentor || !resultado || !resumoErros || !falha || !botao || !rotuloBotao) return;
 
   let tentou = false;
-  const campo = (nome: string) => form.elements.namedItem(nome) as HTMLInputElement | null;
+  let aEnviar = false;
+  // Primeiro elemento com este nome (nas escolhas múltiplas, a primeira caixa).
+  const campo = (nome: string) => form.querySelector<HTMLInputElement>(`[name="${nome}"]`);
 
   // A página é estática: a data mínima tem de vir do browser, não do momento do build.
   const hoje = hojeISO();
@@ -93,9 +102,13 @@ function iniciar(form: HTMLFormElement): void {
     if (saida && entrada.value) saida.min = adicionarDias(entrada.value, 1);
   });
 
+  // As escolhas múltiplas (serviços pretendidos) juntam-se numa lista separada por vírgulas.
   const ler = () => {
     const dados: Record<string, string> = {};
-    new FormData(form).forEach((v, k) => (dados[k] = typeof v === 'string' ? v : ''));
+    new FormData(form).forEach((v, k) => {
+      const valor = typeof v === 'string' ? v : '';
+      dados[k] = dados[k] ? `${dados[k]}, ${valor}` : valor;
+    });
     return normalizar(dados, campos);
   };
 
@@ -104,8 +117,9 @@ function iniciar(form: HTMLFormElement): void {
       const el = campo(nome);
       const msg = form.querySelector<HTMLElement>(`[data-erro-para="${nome}"]`);
       if (!el || !msg) continue;
-      if (erros[nome]) el.setAttribute('aria-invalid', 'true');
-      else el.removeAttribute('aria-invalid');
+      const alvo = el.type === 'checkbox' ? (el.closest('fieldset') ?? el) : el;
+      if (erros[nome]) alvo.setAttribute('aria-invalid', 'true');
+      else alvo.removeAttribute('aria-invalid');
       msg.textContent = erros[nome] ?? '';
     }
     const n = Object.keys(erros).length;
@@ -120,7 +134,12 @@ function iniciar(form: HTMLFormElement): void {
   form.addEventListener('input', revalidar);
   form.addEventListener('change', revalidar);
 
-  const mostrarResultado = (estado: Estado, dados: Record<string, string>, wa: string | null) => {
+  const mostrarResultado = (
+    estado: Estado,
+    dados: Record<string, string>,
+    wa: string | null,
+    mail: string | null,
+  ) => {
     const t = TEXTOS[estado];
     const blocoMensagem = resultado.querySelector<HTMLElement>('[data-resultado-mensagem]');
     const textoMensagem = resultado.querySelector('[data-mensagem-texto]');
@@ -135,8 +154,10 @@ function iniciar(form: HTMLFormElement): void {
     const texto = resultado.querySelector('[data-resultado-texto]');
     const resumo = resultado.querySelector('[data-resultado-resumo]');
     const botaoWa = resultado.querySelector<HTMLAnchorElement>('[data-resultado-whatsapp]');
+    const botaoEmail = resultado.querySelector<HTMLAnchorElement>('[data-resultado-email]');
+    const canais = [wa && 'WhatsApp', mail && 'e-mail'].filter(Boolean).join(' ou ');
     if (titulo) titulo.textContent = t.titulo;
-    if (texto) texto.textContent = t.texto(dados.nome, tipo);
+    if (texto) texto.textContent = t.texto(dados.nome, tipo, canais);
     if (resumo) {
       resumo.replaceChildren();
       for (const nome of campos) {
@@ -149,8 +170,13 @@ function iniciar(form: HTMLFormElement): void {
       }
     }
     if (botaoWa) {
-      botaoWa.hidden = !wa;
+      // Depois de um envio real, o WhatsApp deixa de ser um passo do pedido.
+      botaoWa.hidden = !wa || estado === 'enviado';
       if (wa) botaoWa.href = wa;
+    }
+    if (botaoEmail) {
+      botaoEmail.hidden = !mail || estado === 'enviado';
+      if (mail) botaoEmail.href = mail;
     }
     form.hidden = true;
     resultado.hidden = false;
@@ -159,6 +185,8 @@ function iniciar(form: HTMLFormElement): void {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    // Um segundo clique durante o envio não cria um pedido repetido.
+    if (aEnviar) return;
     tentou = true;
     falha.hidden = true;
     const dados = ler();
@@ -173,13 +201,16 @@ function iniciar(form: HTMLFormElement): void {
       return;
     }
 
-    const wa = whatsapp ? linkWhatsApp(whatsapp, mensagemPedido(tipo, dados, nomeLodge)) : null;
+    const texto = mensagemPedido(tipo, dados, nomeLodge);
+    const wa = whatsapp ? linkWhatsApp(whatsapp, texto) : null;
+    const mail = email ? linkEmail(email, assuntoPedido(tipo, dados), texto) : null;
     if (!endpoint) {
-      mostrarResultado(wa ? 'whatsapp' : 'demonstracao', dados, wa);
+      mostrarResultado(wa || mail ? 'mensagem' : 'demonstracao', dados, wa, mail);
       return;
     }
 
     const rotulo = rotuloBotao.textContent;
+    aEnviar = true;
     botao.disabled = true;
     botao.setAttribute('aria-busy', 'true');
     rotuloBotao.textContent = 'A enviar…';
@@ -189,11 +220,12 @@ function iniciar(form: HTMLFormElement): void {
       website: campo('website')?.value ?? '',
       origem: window.location.pathname,
     });
+    aEnviar = false;
     botao.disabled = false;
     botao.removeAttribute('aria-busy');
     rotuloBotao.textContent = rotulo;
     if (r.ok) {
-      mostrarResultado('enviado', dados, wa);
+      mostrarResultado('enviado', dados, wa, mail);
     } else {
       falha.textContent = r.erro;
       falha.hidden = false;
@@ -224,3 +256,17 @@ function iniciar(form: HTMLFormElement): void {
 }
 
 document.querySelectorAll<HTMLFormElement>('form[data-formulario]').forEach(iniciar);
+
+// "Consultar disponibilidade" num tipo de quarto: pré-escolhe esse quarto no pedido. Funciona com o botão
+// na mesma página (data-escolher-quarto) e com ligações de outras páginas (?quarto=).
+function escolherQuarto(id: string): void {
+  document.querySelectorAll<HTMLSelectElement>('select[name="quarto"]').forEach((select) => {
+    const opcao = [...select.options].find((o) => o.dataset.id === id);
+    if (opcao) select.value = opcao.value;
+  });
+}
+document
+  .querySelectorAll<HTMLElement>('[data-escolher-quarto]')
+  .forEach((el) => el.addEventListener('click', () => escolherQuarto(el.dataset.escolherQuarto ?? '')));
+const quartoPedido = new URLSearchParams(window.location.search).get('quarto');
+if (quartoPedido) escolherQuarto(quartoPedido);

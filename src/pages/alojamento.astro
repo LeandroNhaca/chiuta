@@ -1,23 +1,53 @@
 ---
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Cenas, { type Cena } from '../components/Cenas.astro';
 import FichaServico from '../components/FichaServico.astro';
+import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
 import QuartosLista from '../components/QuartosLista.astro';
 import SecaoDisponibilidade from '../components/SecaoDisponibilidade.astro';
 import { lodge } from '../config/lodge';
+import { fotografias } from '../data/fotografias';
 import Base from '../layouts/Base.astro';
+
+// Transição entre quartos (palco compacto): só a descrição do que se vê em cada fotografia, sem atribuir
+// tipos de quarto (as fotografias das redes não dizem a que tipo pertencem).
+const cenas: Cena[] = [
+  {
+    id: 'cama-redonda',
+    etiqueta: 'Quarto',
+    titulo: 'Cabeceira alta e base redonda',
+    texto: 'Cama de casal sobre uma base redonda de madeira escura, com dois candeeiros de cabeceira.',
+    foto: 'quarto-cama-redonda',
+  },
+  {
+    id: 'duas-camas',
+    etiqueta: 'Quarto',
+    titulo: 'Duas camas',
+    texto: 'Duas camas individuais de cabeceira estofada e chão de mármore claro.',
+    foto: 'quarto-duas-camas',
+  },
+  {
+    id: 'zona-de-estar',
+    etiqueta: 'Quarto',
+    titulo: 'Zona de estar',
+    texto: 'Duas poltronas e uma mesa redonda, televisor e secretária com chaleira.',
+    foto: 'quarto-poltronas',
+  },
+];
+const naCena = new Set(['quarto-cadeirao', ...cenas.map((c) => c.foto)]);
+const quartos = fotografias.filter((f) => f.categoria === 'quartos' && !naCena.has(f.id));
 ---
 
 <Base
-  titulo="Alojamento"
-  descricao="Alojamento no Mulotane Lodge, em Boane. Consulte a disponibilidade para as datas da sua visita e peça informações sobre os quartos."
+  titulo="Alojamento e quartos em Boane"
+  descricao="Quartos no Mulotana Lodge, em Boane: Quarto Standard e Quarto Executivo. Veja as fotografias e consulte a disponibilidade para as datas da sua visita."
 >
   <CabecalhoPagina
     titulo="Alojamento"
-    intro="O seu espaço para descansar, depois de um dia de lazer, de trabalho ou de celebração."
-    foto="entrada-coberta"
-    formato="paisagem"
+    intro="Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração, a sós, em família ou em grupo."
+    foto="quarto-cadeirao"
   >
     <a slot="accoes" class="botao botao--principal" href="#disponibilidade">
       Consultar disponibilidade
@@ -25,43 +55,94 @@ import Base from '../layouts/Base.astro';
     </a>
   </CabecalhoPagina>
 
-  <section class="secao secao--clara" aria-labelledby="quartos-titulo">
-    <div class="contentor grelha grelha--metades detalhe">
-      <div class="bloco-titulo">
-        <p class="etiqueta">Os quartos</p>
-        <h2 id="quartos-titulo">
-          Descanso com <em>tranquilidade.</em>
-        </h2>
-        <div class="texto">
-          <p>Conheça as opções de alojamento e consulte a disponibilidade para as datas da sua visita.</p>
-          <p>
-            Os tipos de quarto, a capacidade de cada um, as comodidades e as tarifas são publicados aqui assim
-            que forem confirmados pelo Mulotane Lodge. Entretanto, pode indicar no pedido o que procura.
-          </p>
+  {lodge.quartos.length > 0 && (
+    <section class="secao secao--clara" aria-labelledby="tipos-titulo">
+      <div class="contentor">
+        <div class="bloco-titulo tipos__topo">
+          <p class="etiqueta c-revelar">Tipos de quarto</p>
+          <h2 id="tipos-titulo" class="c-titulo">
+            Escolha o seu <em>quarto.</em>
+          </h2>
+          <div class="texto">
+            <p>
+              Os tipos de quarto e os preços abaixo foram publicados pelo lodge nas redes sociais. Ao
+              consultar a disponibilidade, a equipa confirma o preço actual, a capacidade e o que está
+              incluído.
+            </p>
+          </div>
         </div>
-        <div class="accoes">
-          <a class="botao botao--verde" href="#disponibilidade">
-            Consultar disponibilidade
-            <Icone nome="seta" tamanho={18} />
-          </a>
-        </div>
-      </div>
-      <FichaServico servico="alojamento" titulo="O que pode saber antes de reservar" tom="clara" />
-    </div>
-    {lodge.quartos.length > 0 && (
-      <div class="contentor quartos-secao">
-        <h2 class="quartos-secao__titulo">Tipos de quarto</h2>
         <QuartosLista />
       </div>
-    )}
+    </section>
+  )}
+
+  <section class="secao secao--escura quartos-cenas" aria-labelledby="fotos-titulo">
+    <div class="contentor">
+      <div class="bloco-titulo fotos__topo">
+        <p class="etiqueta c-revelar">Os quartos em fotografias</p>
+        <h2 id="fotos-titulo" class="c-titulo">
+          Conforto nos <em>detalhes.</em>
+        </h2>
+        <div class="texto c-revelar">
+          <p>
+            Fotografias de vários quartos do lodge, publicadas nas suas redes. O tipo de quarto de cada uma é
+            indicado pela equipa, a pedido.
+          </p>
+        </div>
+      </div>
+    </div>
+    <Cenas id="quarto" cenas={cenas} variante="compacta" rotulo="Fotografias de quartos" />
+  </section>
+
+  <section class="secao secao--cinza" aria-labelledby="mais-titulo">
+    <div class="contentor">
+      <h2 id="mais-titulo" class="visualmente-oculto">
+        Mais fotografias de quartos
+      </h2>
+      <ul class="fotos">
+        {quartos.map((f) => (
+          <li class="c-cortina">
+            <Foto id={f.id} sizes="(min-width: 1100px) 380px, (min-width: 640px) 46vw, 92vw" class="foto" />
+            <span class="legenda">{f.legenda}</span>
+          </li>
+        ))}
+      </ul>
+      <a class="ligacao-seta fotos__galeria" href="/galeria/">
+        <span>Ver a galeria completa</span>
+        <Icone nome="seta" tamanho={18} />
+      </a>
+    </div>
+  </section>
+
+  <section class="secao secao--clara" aria-labelledby="saber-titulo">
+    <div class="contentor grelha grelha--metades detalhe">
+      <div class="bloco-titulo">
+        <p class="etiqueta c-revelar">Antes de reservar</p>
+        <h2 id="saber-titulo" class="c-titulo">
+          O que pode <em>saber.</em>
+        </h2>
+        <div class="texto">
+          <p>
+            O lodge anuncia quartos para estadias curtas e para grupos, e decoração do quarto para ocasiões
+            especiais. O que ainda não está publicado, como as comodidades e os horários de entrada e saída, é
+            indicado pela equipa no seu pedido.
+          </p>
+        </div>
+        <figure class="decoracao c-cortina">
+          <Foto id="decoracao-quarto" sizes="(min-width: 900px) 520px, 92vw" class="foto decoracao__foto" />
+          <figcaption class="legenda">Um quarto decorado para uma ocasião especial.</figcaption>
+        </figure>
+      </div>
+      <FichaServico servico="alojamento" titulo="O alojamento em resumo" tom="clara" />
+    </div>
   </section>
 
   <SecaoDisponibilidade prefixo="aloj" />
 
   <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
     <div class="contentor">
-      <p class="etiqueta">Continue a explorar</p>
-      <h2 id="explorar-titulo" class="explorar__titulo">
+      <p class="etiqueta c-revelar">Continue a explorar</p>
+      <h2 id="explorar-titulo" class="explorar__titulo c-titulo">
         Mais para descobrir no lodge.
       </h2>
       <IndiceServicos variante="cartoes" excluir="alojamento" />
@@ -70,17 +151,62 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
+  .tipos__topo,
+  .fotos__topo {
+    max-width: 46rem;
+    margin-bottom: clamp(28px, 4vw, 44px);
+  }
+  .fotos {
+    display: grid;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .fotos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .fotos {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .fotos li {
+    --c-cortina: var(--cinzento);
+    display: grid;
+    gap: 2px;
+    align-content: start;
+    border-radius: var(--raio-l);
+  }
+  .quartos-cenas {
+    padding-bottom: 0;
+  }
+  @media (max-width: 899px) {
+    .quartos-cenas {
+      padding-bottom: var(--espaco-secao);
+    }
+  }
+  .fotos :global(.foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .fotos__galeria {
+    margin-top: 24px;
+  }
   .detalhe {
     align-items: start;
   }
-  .quartos-secao {
-    margin-top: clamp(56px, 7vw, 96px);
+  .decoracao {
+    margin: 8px 0 0;
+    border-radius: var(--raio-l);
   }
-  .quartos-secao__titulo {
-    margin-bottom: 32px;
-    font-size: var(--t-h3);
+  .decoracao :global(.decoracao__foto) {
+    display: block;
+    aspect-ratio: 16 / 10;
   }
   .explorar__titulo {
-    margin-bottom: clamp(36px, 5vw, 56px);
+    margin-bottom: clamp(32px, 4vw, 48px);
   }
 </style>

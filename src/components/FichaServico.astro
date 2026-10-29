@@ -1,7 +1,8 @@
 ---
 /**
  * Ficha de um serviço com os dados de src/config/lodge.ts (`detalhes`). O que ainda não foi confirmado
- * aparece como "A confirmar": a estrutura fica visível para o proprietário e nada é inventado.
+ * aparece como "A confirmar"; o que vem das publicações do lodge e ainda não foi validado diz de onde vem.
+ * Nada é inventado.
  */
 import { lodge } from '../config/lodge';
 
@@ -15,17 +16,10 @@ interface Props {
 const { servico, titulo, tom = 'verde' } = Astro.props;
 const detalhes = lodge.detalhes[servico];
 const pendentes = detalhes.filter((d) => !d.valor).length;
+const publicados = detalhes.some((d) => d.valor && d.aValidar);
 ---
 
 <div class:list={['ficha', `ficha--${tom}`]}>
-  <img
-    class="ficha__folhagem"
-    src="/images/mulotane/conceptual/folhagem.svg"
-    alt=""
-    width="520"
-    height="600"
-    loading="lazy"
-  />
   <p class="filete-titulo">{titulo}</p>
   <dl class="ficha__lista">
     {detalhes.map((d) => (
@@ -33,7 +27,10 @@ const pendentes = detalhes.filter((d) => !d.valor).length;
         <dt>{d.rotulo}</dt>
         <dd>
           {d.valor ? (
-            d.valor
+            <>
+              <span class="ficha__valor">{d.valor}</span>
+              {d.aValidar && <span class="ficha__origem">Publicado pelo lodge ({d.aValidar})</span>}
+            </>
           ) : (
             <span class:list={['pendente', { 'pendente--claro': tom === 'verde' }]}>A confirmar</span>
           )}
@@ -41,11 +38,14 @@ const pendentes = detalhes.filter((d) => !d.valor).length;
       </div>
     ))}
   </dl>
-  {pendentes > 0 && (
+  {(pendentes > 0 || publicados) && (
     <p class="ficha__nota">
-      {pendentes === detalhes.length
-        ? 'Estes dados estão a ser confirmados pelo Mulotane Lodge.'
-        : 'Os dados assinalados estão a ser confirmados pelo Mulotane Lodge.'}
+      {publicados &&
+        'Os valores publicados pelo lodge nas redes sociais podem ter mudado: confirme-os no pedido. '}
+      {pendentes > 0 &&
+        (pendentes === detalhes.length
+          ? 'Estes dados são indicados pela equipa do lodge, a pedido.'
+          : 'Os dados "a confirmar" são indicados pela equipa do lodge, a pedido.')}
     </p>
   )}
 </div>
@@ -53,20 +53,18 @@ const pendentes = detalhes.filter((d) => !d.valor).length;
 <style>
   .ficha {
     --foco: var(--dourado);
-    position: relative;
     display: grid;
-    gap: 18px;
+    gap: 16px;
     align-content: start;
-    padding: clamp(28px, 4vw, 44px);
-    overflow: hidden;
-    border-radius: var(--raio);
-    isolation: isolate;
+    padding: clamp(24px, 3.6vw, 40px);
+    border-radius: var(--raio-l);
   }
   .ficha--verde {
     background: var(--verde);
     color: var(--branco);
   }
   .ficha--clara {
+    --foco: var(--verde);
     border: 1px solid var(--linha);
     background: #fff;
     color: var(--texto);
@@ -82,47 +80,46 @@ const pendentes = detalhes.filter((d) => !d.valor).length;
   .ficha--verde .filete-titulo {
     color: var(--dourado);
   }
-  .ficha__folhagem {
-    position: absolute;
-    right: -80px;
-    bottom: -70px;
-    z-index: -1;
-    width: 260px;
-    height: auto;
-    opacity: 0.12;
-    pointer-events: none;
-  }
-  .ficha--clara .ficha__folhagem {
-    opacity: 0.18;
-  }
   .ficha__lista {
     display: grid;
     margin: 0;
   }
   .ficha__linha {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 16px;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    gap: 4px 20px;
     padding: 13px 0;
     border-bottom: 1px solid var(--linha);
+  }
+  @media (min-width: 560px) {
+    .ficha__linha {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      align-items: baseline;
+    }
   }
   .ficha--verde .ficha__linha {
     border-color: var(--linha-clara);
   }
   .ficha__linha dt {
-    font-family: var(--serif);
-    font-size: 1.2rem;
-    line-height: 1.25;
+    font-weight: 750;
+    line-height: 1.35;
   }
   .ficha__linha dd {
+    display: grid;
+    gap: 2px;
+    justify-items: start;
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.97rem;
+  }
+  .ficha__origem {
+    font-size: 0.8rem;
+    color: var(--texto-suave);
+  }
+  .ficha--verde .ficha__origem {
+    color: rgb(250 248 243 / 0.72);
   }
   .ficha__nota {
     font-size: var(--t-pequeno);
     line-height: 1.55;
-    opacity: 0.85;
+    opacity: 0.9;
   }
 </style>

@@ -1,7 +1,8 @@
 ---
 /**
- * Tipos de quarto confirmados (src/config/lodge.ts → `quartos`). Sem quartos confirmados não mostra nada:
- * a ficha do alojamento assinala esses dados como "A confirmar".
+ * Tipos de quarto (src/config/lodge.ts → `quartos`), cada um com "Consultar disponibilidade", que
+ * pré-escolhe o quarto no pedido. Sem quartos não mostra nada. Os valores ainda não validados pela
+ * gerência dizem de onde vêm; o que falta aparece como "A confirmar".
  */
 import { lodge, type TipoQuarto } from '../config/lodge';
 
@@ -10,31 +11,40 @@ import Icone from './Icone.astro';
 
 interface Props {
   quartos?: TipoQuarto[];
+  /** Onde está o pedido de disponibilidade: nesta página (âncora) ou noutra (ligação com ?quarto=). */
+  pedido?: string;
 }
 
-const { quartos = lodge.quartos } = Astro.props;
+const { quartos = lodge.quartos, pedido = '#disponibilidade' } = Astro.props;
+const naPagina = pedido.startsWith('#');
+const href = (id: string) =>
+  naPagina ? pedido : `${pedido.replace(/#.*$/, '')}?quarto=${id}#disponibilidade`;
 ---
 
 {quartos.length > 0 && (
-  <ul class="quartos">
+  <ul class="quartos c-cartoes">
     {quartos.map((q) => (
       <li class="quarto">
-        {q.fotografia ? (
+        {q.fotografia && (
           <Foto id={q.fotografia} sizes="(min-width: 900px) 400px, 92vw" class="foto quarto__foto" />
-        ) : (
-          <span class="quarto__foto quarto__foto--vazia" aria-hidden="true">
-            <Icone nome="cama" tamanho={36} />
-          </span>
         )}
-        <h3 class="quarto__nome">{q.nome}</h3>
+        <div class="quarto__topo">
+          <span class="quarto__icone" aria-hidden="true">
+            <Icone nome="cama" tamanho={26} />
+          </span>
+          <div>
+            <h3 class="quarto__nome">{q.nome}</h3>
+            {q.descricao && <p class="quarto__descricao">{q.descricao}</p>}
+          </div>
+        </div>
         <dl class="quarto__dados">
+          <div>
+            <dt>Preço publicado</dt>
+            <dd class="quarto__preco">{q.tarifa || <span class="pendente">A confirmar</span>}</dd>
+          </div>
           <div>
             <dt>Capacidade</dt>
             <dd>{q.capacidade || <span class="pendente">A confirmar</span>}</dd>
-          </div>
-          <div>
-            <dt>Tarifa</dt>
-            <dd>{q.tarifa || <span class="pendente">A confirmar</span>}</dd>
           </div>
         </dl>
         {q.comodidades.length > 0 && (
@@ -44,6 +54,21 @@ const { quartos = lodge.quartos } = Astro.props;
             ))}
           </ul>
         )}
+        {q.aValidar && (
+          <p class="quarto__origem">
+            Valor publicado pelo lodge ({q.aValidar}). A equipa confirma o preço actual e as condições no
+            pedido.
+          </p>
+        )}
+        <a
+          class="botao botao--principal quarto__botao"
+          href={href(q.id)}
+          data-escolher-quarto={naPagina ? q.id : undefined}
+        >
+          Consultar disponibilidade
+          <span class="visualmente-oculto">: {q.nome}</span>
+          <Icone nome="seta" tamanho={18} />
+        </a>
       </li>
     ))}
   </ul>
@@ -52,49 +77,79 @@ const { quartos = lodge.quartos } = Astro.props;
 <style>
   .quartos {
     display: grid;
-    gap: 32px;
+    gap: 20px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
   @media (min-width: 760px) {
     .quartos {
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
   }
   .quarto {
     display: grid;
-    gap: 14px;
-    align-content: start;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 18px;
+    padding: clamp(22px, 3vw, 32px);
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-l);
+    background: #fff;
   }
   .quarto :global(.quarto__foto) {
     display: block;
     aspect-ratio: 4 / 3;
   }
-  .quarto .quarto__foto--vazia {
-    display: grid;
+  .quarto__topo {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+  .quarto__icone {
+    display: inline-grid;
+    flex: none;
     place-items: center;
-    border-radius: var(--raio);
-    background: var(--verde);
-    color: var(--dourado);
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: rgb(199 161 90 / 0.08);
+    color: var(--dourado-texto);
   }
   .quarto__nome {
     font-size: var(--t-h3);
+  }
+  .quarto__descricao {
+    color: var(--texto-suave);
   }
   .quarto__dados {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
     margin: 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--linha);
   }
   .quarto__dados dt {
     font-size: var(--t-etiqueta);
-    font-weight: 700;
-    letter-spacing: 0.18em;
+    font-weight: 800;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--dourado-texto);
   }
   .quarto__dados dd {
-    margin: 4px 0 0;
+    margin: 6px 0 0;
+  }
+  .quarto__preco {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+  }
+  .quarto__origem {
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    color: var(--texto-suave);
+  }
+  .quarto__botao {
+    justify-self: start;
   }
 </style>

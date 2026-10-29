@@ -1,277 +1,253 @@
 ---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+import Cenas, { type Cena } from '../components/Cenas.astro';
 import ComoChegar from '../components/ComoChegar.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
+import QuartosLista from '../components/QuartosLista.astro';
 import SecaoPedidos from '../components/SecaoPedidos.astro';
 import { lodge } from '../config/lodge';
 import Base from '../layouts/Base.astro';
+import { dadosLodge } from '../lib/dados-estruturados';
 
 const site = Astro.site?.href ?? lodge.site.urlDemonstracao;
-// Só informação confirmada: nome, localidade e país. Sem classificações, preços nem avaliações.
-const dadosEstruturados = {
-  '@context': 'https://schema.org',
-  '@type': 'LodgingBusiness',
-  name: lodge.nome,
-  url: site,
-  image: new URL('/og/mulotane-lodge.jpg', site).href,
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: lodge.localizacao.localidade,
-    addressRegion: lodge.localizacao.provincia,
-    addressCountry: lodge.localizacao.codigoPais,
-  },
-  ...(lodge.contactos.telefone ? { telephone: lodge.contactos.telefone } : {}),
-  ...(lodge.mapa.urlDireccoes ? { hasMap: lodge.mapa.urlDireccoes } : {}),
-};
+const salas = lodge.detalhes.eventos.find((d) => d.rotulo === 'Salas de conferências');
+const exterior = lodge.detalhes.eventos.find((d) => d.rotulo === 'Eventos ao ar livre');
+// Capacidades das salas tal como o lodge as publicou (src/config/lodge.ts → detalhes.eventos).
+const capacidades = salas?.valor.match(/\d+/g) ?? [];
 
-const atalhos = [
-  { href: '/alojamento/', nome: 'Alojamento' },
-  { href: '/restaurante/', nome: 'Restaurante' },
-  { href: '/piscinas/', nome: 'Piscinas' },
-  { href: '/eventos/', nome: 'Eventos' },
+const cenas: Cena[] = [
+  {
+    id: 'alojamento',
+    etiqueta: 'Alojamento',
+    titulo: 'Quartos para descansar',
+    texto:
+      'Para uma noite, um fim de semana ou um grupo inteiro, depois de um dia de lazer, de trabalho ou de celebração.',
+    foto: 'quarto-cadeirao',
+    detalhe: 'quarto-cama-redonda',
+    ligacao: { href: '/alojamento/', texto: 'Ver o alojamento' },
+  },
+  {
+    id: 'conferencias',
+    etiqueta: 'Conferências',
+    titulo: 'Salas para reunir',
+    texto: salas?.valor
+      ? `${salas.valor}, segundo o lodge: reuniões, formações, conferências e encontros de grupo.`
+      : 'Reuniões, formações, conferências e encontros de grupo.',
+    foto: 'sala-conferencias-plateia',
+    detalhe: 'sala-conferencias-u',
+    ligacao: { href: '/eventos/', texto: 'Conhecer as salas' },
+  },
+  {
+    id: 'piscinas',
+    etiqueta: 'Piscinas e jardins',
+    titulo: 'Lazer ao ar livre',
+    texto: 'Piscinas entre palmeiras e jardins cuidados, com esplanadas à sombra das árvores.',
+    foto: 'piscina-topiaria',
+    detalhe: 'piscina-cascata',
+    ligacao: { href: '/piscinas/', texto: 'Piscinas e jardins' },
+  },
+  {
+    id: 'restaurante',
+    etiqueta: 'Restaurante',
+    titulo: 'À mesa',
+    texto: 'Uma sala ampla, com janelas a toda a volta, e buffets para grupos e eventos.',
+    foto: 'restaurante-janelas',
+    detalhe: 'restaurante-buffet',
+    ligacao: { href: '/restaurante/', texto: 'Conhecer o restaurante' },
+  },
 ];
 ---
 
 <Base
   inicio
-  titulo="Mulotane Lodge · Um refúgio de tranquilidade em Boane, Moçambique"
-  descricao="Alojamento, restaurante, piscinas e espaços para eventos em Boane, província de Maputo. Consulte a disponibilidade ou peça um orçamento para o seu evento."
-  dadosEstruturados={dadosEstruturados}
+  titulo="Mulotana Lodge · Alojamento, conferências e piscina em Boane"
+  descricao="Alojamento, salas de conferências, restaurante e piscina em Boane, província de Maputo. Consulte a disponibilidade ou peça um orçamento para o seu evento."
+  dadosEstruturados={dadosLodge(site)}
 >
+  <!-- Abertura: a fotografia ocupa o ecrã; ao descer, o texto sai mais depressa do que a imagem. -->
   <section class="hero" aria-labelledby="hero-titulo">
-    <img
-      class="hero__folhagem"
-      src="/images/mulotane/conceptual/folhagem.svg"
-      alt=""
-      width="520"
-      height="600"
-    />
-    <div class="contentor hero__grelha">
-      <div class="hero__texto">
-        <p class="etiqueta etiqueta--clara">Boane · Moçambique</p>
-        <h1 id="hero-titulo">
-          Um refúgio de <em>tranquilidade.</em>
-        </h1>
-        <p class="hero__sub">
-          Descubra um espaço para descansar, conviver e desfrutar de bons momentos, entre o lazer, a
-          gastronomia e a natureza.
-        </p>
-        <div class="accoes hero__accoes">
-          <a class="botao botao--principal" href="#disponibilidade">
-            Consultar disponibilidade
-            <Icone nome="seta" tamanho={18} />
-          </a>
-          <a class="botao botao--contorno-claro" href="#o-lodge">
-            Conhecer o lodge
-          </a>
-        </div>
-      </div>
-      <figure class="hero__figura">
-        <Foto
-          id="piscina-espreguicadeiras"
-          prioridade
-          sizes="(min-width: 1024px) 55vw, 100vw"
-          class="hero__foto"
-        />
-        <figcaption class="hero__legenda">
-          <Icone nome="ondas" tamanho={16} />
-          Piscina do Mulotane Lodge
-        </figcaption>
-      </figure>
+    <div class="hero__fundo">
+      <Foto id="piscina-palmeiras" prioridade sizes="100vw" class="hero__foto" />
     </div>
-    <nav class="contentor hero__atalhos" aria-label="Espaços do lodge">
-      {atalhos.map((a, i) => (
-        <a href={a.href}>
-          <span class="hero__num" aria-hidden="true">
-            {String(i + 1).padStart(2, '0')}
-          </span>
-          {a.nome}
+    <div class="contentor hero__texto">
+      <p class="etiqueta etiqueta--clara hero__entrar">Boane · Província de Maputo</p>
+      <h1 id="hero-titulo" class="hero__entrar">
+        {lodge.nome}
+      </h1>
+      <p class="hero__subtitulo hero__entrar">
+        O seu espaço para descansar, <em>celebrar e reunir.</em>
+      </p>
+      <p class="hero__apoio hero__entrar">
+        Descubra um espaço em Boane dedicado ao alojamento, ao lazer e à realização de eventos. Consulte a
+        disponibilidade e fale directamente com a nossa equipa.
+      </p>
+      <div class="accoes hero__accoes hero__entrar">
+        <a class="botao botao--principal" href="#disponibilidade">
+          Consultar disponibilidade
+          <Icone nome="seta" tamanho={18} />
         </a>
-      ))}
-    </nav>
+        <a class="botao botao--contorno-claro" href="#orcamento">
+          Pedir orçamento para um evento
+        </a>
+        <a class="ligacao-seta hero__explorar" href="#o-lodge">
+          <span>Explorar o lodge</span>
+          <Icone nome="seta" tamanho={18} />
+        </a>
+      </div>
+    </div>
+    <p class="hero__legenda">
+      <Icone nome="ondas" tamanho={16} />A piscina e o edifício de colmo
+    </p>
   </section>
 
-  <section id="o-lodge" class="secao secao--clara apresentacao" aria-labelledby="apresentacao-titulo">
+  <section id="o-lodge" class="secao secao--cinza apresentacao" aria-labelledby="apresentacao-titulo">
     <div class="contentor">
       <div class="apresentacao__topo">
         <div class="bloco-titulo">
-          <p class="etiqueta">O lodge</p>
-          <h2 id="apresentacao-titulo" class="apresentacao__titulo">
-            Mais do que uma estadia, <em>momentos para recordar.</em>
+          <p class="etiqueta c-revelar">O lodge</p>
+          <h2 id="apresentacao-titulo" class="c-titulo">
+            Alojamento, conferências e lazer <em>em Boane.</em>
           </h2>
         </div>
-        <div class="apresentacao__texto revelar">
-          <div class="texto">
-            <p>
-              No Mulotane Lodge, o descanso, a gastronomia e o convívio encontram espaço para acontecer.
-              Explore as instalações, descubra as opções disponíveis e prepare a sua próxima visita.
-            </p>
-          </div>
+        <div class="texto apresentacao__texto c-revelar">
+          <p>
+            Entre a localidade de Mulotana e as margens do rio Matola, o {lodge.nome} reúne quartos para
+            descansar, salas de conferências, um restaurante e uma área de lazer com piscina e jardins.
+          </p>
           <a class="ligacao-seta" href="/galeria/">
-            <span>Ver a galeria</span>
-            <Icone nome="seta" />
+            <span>Ver todas as fotografias</span>
+            <Icone nome="seta" tamanho={18} />
           </a>
         </div>
       </div>
-      <figure class="apresentacao__figura moldura revelar">
-        <Foto id="entrada-coberta" sizes="(min-width: 1240px) 1160px, 92vw" class="foto apresentacao__foto" />
-        <figcaption class="legenda">A entrada do Mulotane Lodge.</figcaption>
-      </figure>
       <IndiceServicos />
     </div>
   </section>
 
-  <section class="secao secao--cinza alojamento" aria-labelledby="alojamento-titulo">
-    <div class="contentor grelha grelha--texto-foto">
-      <div class="bloco-titulo revelar">
-        <p class="etiqueta">
-          <span class="etiqueta__numero">01</span> Alojamento
-        </p>
-        <h2 id="alojamento-titulo">
-          O seu espaço para <em>descansar.</em>
-        </h2>
-        <div class="texto">
-          <p>
-            Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração. Consulte a
-            disponibilidade para as datas da sua visita: a equipa do lodge indica os tipos de quarto
-            disponíveis e as condições da estadia.
-          </p>
-        </div>
-        <div class="accoes">
-          <a class="botao botao--verde" href="#disponibilidade">
-            Consultar disponibilidade
-            <Icone nome="seta" tamanho={18} />
-          </a>
-          <a class="ligacao-seta" href="/alojamento/">
-            <span>Sobre o alojamento</span>
-            <Icone nome="seta" />
-          </a>
-        </div>
-      </div>
-      <div class="cartao-verde alojamento__cartao revelar">
-        <img
-          class="cartao-verde__folhagem"
-          src="/images/mulotane/conceptual/folhagem.svg"
-          alt=""
-          width="520"
-          height="600"
-          loading="lazy"
-        />
-        <p class="filete-titulo">Pedido de disponibilidade</p>
-        <h3>Indique no seu pedido</h3>
-        <ol class="lista-numerada">
-          <li>As datas de entrada e de saída</li>
-          <li>O número de hóspedes</li>
-          <li>Um telefone ou WhatsApp para a resposta</li>
-        </ol>
-      </div>
+  <!-- O palco de cenas: preso ao ecrã no computador; lista de cenas no telemóvel. -->
+  <section class="secao secao--escura experiencia" aria-labelledby="experiencia-titulo">
+    <div class="contentor experiencia__intro">
+      <p class="etiqueta c-revelar">Conhecer o lodge</p>
+      <h2 id="experiencia-titulo" class="c-titulo">
+        Quatro espaços, <em>um só lugar.</em>
+      </h2>
     </div>
+    <Cenas id="cena" cenas={cenas} rotulo="Espaços do lodge" />
   </section>
 
-  <section class="secao secao--escura restaurante" aria-labelledby="restaurante-titulo">
-    <div class="contentor grelha grelha--texto-foto">
-      <div class="bloco-titulo revelar">
-        <p class="etiqueta">
-          <span class="etiqueta__numero">02</span> Restaurante
-        </p>
-        <h2 id="restaurante-titulo">
-          Sabores e momentos <em>à mesa.</em>
+  <section class="secao secao--clara eventos" aria-labelledby="eventos-titulo">
+    <div class="contentor grelha grelha--texto-foto eventos__grelha">
+      <div class="bloco-titulo">
+        <p class="etiqueta c-revelar">Conferências e eventos</p>
+        <h2 id="eventos-titulo" class="c-titulo">
+          Salas para reunir, espaço para <em>celebrar.</em>
         </h2>
-        <div class="texto">
+        <div class="texto c-revelar">
           <p>
-            Refeições numa sala ampla, com janelas largas sobre a vegetação. A oferta, os horários e as
-            refeições para grupos são indicados pela equipa do lodge.
+            Reuniões de empresa, formações, conferências, encontros de grupo e celebrações. Indique a data, o
+            número de participantes e o que precisa: a equipa prepara o orçamento e confirma a sala.
           </p>
         </div>
-        <div class="accoes">
-          <a class="botao botao--principal" href="/restaurante/">
-            Conhecer o restaurante
-            <Icone nome="seta" tamanho={18} />
-          </a>
-        </div>
-      </div>
-      <div class="restaurante__fotos revelar">
-        <Foto
-          id="sala-refeicoes-bar"
-          sizes="(min-width: 900px) 660px, 92vw"
-          class="foto restaurante__principal"
-        />
-        <Foto
-          id="restaurante-buffet"
-          sizes="(min-width: 900px) 240px, 40vw"
-          class="arco restaurante__detalhe"
-        />
-      </div>
-    </div>
-  </section>
-
-  <section class="secao secao--clara piscinas" aria-labelledby="piscinas-titulo">
-    <div class="contentor grelha grelha--metades">
-      <div class="piscinas__fotos revelar">
-        <Foto id="piscina-terraco" sizes="(min-width: 900px) 600px, 92vw" class="foto piscinas__principal" />
-        <Foto id="piscina-jardim" sizes="(min-width: 900px) 240px, 40vw" class="arco piscinas__detalhe" />
-      </div>
-      <div class="bloco-titulo revelar">
-        <p class="etiqueta">
-          <span class="etiqueta__numero">03</span> Piscinas
-        </p>
-        <h2 id="piscinas-titulo">
-          Desfrute de momentos de <em>lazer.</em>
-        </h2>
-        <div class="texto">
-          <p>Um espaço para descontrair ao ar livre, entre as palmeiras, o relvado e o jardim.</p>
-          <p>
-            As fotografias mostram uma piscina rectangular, com espreguiçadeiras e chapéus-de-sol, e outra de
-            forma irregular, no meio do relvado. Os horários e as regras de utilização estão a ser confirmados
-            pelo Mulotane Lodge.
-          </p>
-        </div>
-        <div class="accoes">
-          <a class="botao botao--verde" href="/piscinas/">
-            Conhecer as piscinas
-            <Icone nome="seta" tamanho={18} />
-          </a>
-          <a class="ligacao-seta" href="/piscinas/#condicoes">
-            <span>Condições de utilização</span>
-            <Icone nome="seta" />
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="secao secao--cinza eventos" aria-labelledby="eventos-titulo">
-    <div class="contentor eventos__grelha">
-      <figure class="eventos__figura arco-filete revelar">
-        <Foto id="sala-conferencias" sizes="(min-width: 900px) 440px, 92vw" class="arco eventos__foto" />
-      </figure>
-      <div class="bloco-titulo eventos__conteudo revelar">
-        <p class="etiqueta">
-          <span class="etiqueta__numero">04</span> Eventos e conferências
-        </p>
-        <h2 id="eventos-titulo">
-          Um espaço para reunir <em>e celebrar.</em>
-        </h2>
-        <div class="texto">
-          <p>
-            Está a planear uma reunião, uma celebração ou um encontro de grupo? Peça um orçamento com a data
-            pretendida, o número de participantes e o tipo de evento.
-          </p>
-        </div>
-        <ul class="lista-traco">
-          <li>Reuniões, formações e conferências</li>
-          <li>Celebrações familiares e aniversários</li>
-          <li>Encontros de grupo e eventos de empresa</li>
-        </ul>
-        <div class="accoes">
-          <a class="botao botao--verde" href="#orcamento">
+        {capacidades.length > 0 && (
+          <div class="capacidades">
+            <ul class="capacidades__lista c-cartoes" aria-label="Capacidade das salas de conferências">
+              {capacidades.map((n) => (
+                <li>
+                  <span class="capacidades__numero">{n}</span>
+                  <span class="capacidades__texto">pessoas</span>
+                </li>
+              ))}
+            </ul>
+            {exterior?.valor && <p class="capacidades__exterior">{exterior.valor}.</p>}
+            <p class="capacidades__nota">
+              {salas?.valor}: capacidades publicadas pelo lodge ({salas?.aValidar}). A equipa confirma a sala
+              e a montagem para o seu evento.
+            </p>
+          </div>
+        )}
+        <div class="accoes c-revelar">
+          <a class="botao botao--principal" href="#orcamento">
             Pedir orçamento para um evento
             <Icone nome="seta" tamanho={18} />
           </a>
           <a class="ligacao-seta" href="/eventos/">
-            <span>Sobre os eventos</span>
-            <Icone nome="seta" />
+            <span>Conhecer as salas</span>
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </div>
+      </div>
+      <div class="eventos__fotos">
+        <Foto
+          id="sala-conferencias-palco"
+          sizes="(min-width: 900px) 600px, 92vw"
+          class="foto eventos__principal c-paralaxe"
+        />
+        <Foto id="buffet-evento" sizes="(min-width: 900px) 280px, 45vw" class="foto eventos__detalhe" />
+      </div>
+    </div>
+  </section>
+
+  <section class="secao secao--cinza alojamento" aria-labelledby="alojamento-titulo">
+    <div class="contentor">
+      <div class="alojamento__topo">
+        <div class="bloco-titulo">
+          <p class="etiqueta c-revelar">Alojamento</p>
+          <h2 id="alojamento-titulo" class="c-titulo">
+            Quartos para <em>descansar.</em>
+          </h2>
+        </div>
+        <div class="texto c-revelar">
+          <p>
+            Escolha o tipo de quarto e consulte a disponibilidade: a equipa confirma o preço actual e as
+            condições da estadia.
+          </p>
+          <a class="ligacao-seta" href="/alojamento/">
+            <span>Ver o alojamento</span>
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </div>
+      </div>
+      <ul class="alojamento__fotos" aria-label="Fotografias de quartos" tabindex="0">
+        <li class="c-cortina">
+          <Foto id="quarto-duas-camas" sizes="(min-width: 760px) 400px, 80vw" class="foto" />
+        </li>
+        <li class="c-cortina">
+          <Foto id="quarto-poltronas" sizes="(min-width: 760px) 400px, 80vw" class="foto" />
+        </li>
+        <li class="c-cortina">
+          <Foto id="quarto-casal" sizes="(min-width: 760px) 400px, 80vw" class="foto" />
+        </li>
+      </ul>
+      <QuartosLista />
+    </div>
+  </section>
+
+  <!-- Faixa da piscina em grande formato, com parallax suave. -->
+  <section class="faixa" aria-labelledby="piscinas-titulo">
+    <div class="faixa__fundo c-paralaxe">
+      <Foto id="vista-piscina-esplanada" sizes="100vw" class="faixa__foto" />
+    </div>
+    <div class="contentor faixa__conteudo">
+      <div class="faixa__cartao c-revelar">
+        <p class="etiqueta">Piscinas e jardins</p>
+        <h2 id="piscinas-titulo">
+          Um dia à beira da <em>piscina.</em>
+        </h2>
+        <p>
+          Quer saber as condições de acesso, os horários ou se a piscina está aberta a visitantes não
+          alojados? Pergunte directamente à equipa.
+        </p>
+        <div class="accoes">
+          <BotaoWhatsApp
+            texto="Perguntar sobre a piscina"
+            variante="principal"
+            mensagem={`Olá, ${lodge.nome}! Gostaria de saber as condições de acesso à piscina (horários, regras e preço).`}
+          />
+          <a class="ligacao-seta" href="/piscinas/">
+            <span>Piscinas e jardins</span>
+            <Icone nome="seta" tamanho={18} />
           </a>
         </div>
       </div>
@@ -281,348 +257,344 @@ const atalhos = [
   <SecaoPedidos />
 
   <ComoChegar />
-
-  <section class="secao secao--cinza fecho" aria-labelledby="fecho-titulo">
-    <div class="contentor fecho__conteudo">
-      <p class="etiqueta">Mulotane Lodge · Boane</p>
-      <h2 id="fecho-titulo">
-        Prepare a sua próxima <em>visita.</em>
-      </h2>
-      <div class="accoes">
-        <a class="botao botao--verde" href="#disponibilidade">
-          Consultar disponibilidade
-          <Icone nome="seta" tamanho={18} />
-        </a>
-        <a class="botao botao--contorno" href="#orcamento">
-          Pedir orçamento para um evento
-        </a>
-      </div>
-    </div>
-  </section>
 </Base>
 
 <style>
-  /* ---------- Hero ----------
-     Telemóvel: texto e, por baixo, a fotografia de margem a margem.
-     Computador: texto à esquerda; a fotografia ocupa a metade direita até à borda do ecrã, com um arco
-     largo no canto (o gesto das molduras do site), e a faixa dos espaços fecha a secção. */
+  /* ---------- Abertura ---------- */
   .hero {
     --foco: var(--dourado);
     position: relative;
     display: grid;
-    padding-top: var(--cabecalho);
-    background: var(--verde);
-    color: var(--branco);
+    align-items: end;
+    min-height: calc(100svh - var(--cabecalho));
     overflow: hidden;
+    background: var(--verde-profundo);
+    color: var(--branco);
     isolation: isolate;
   }
-  .hero__folhagem {
+  .hero__fundo {
     position: absolute;
-    top: 14%;
-    left: -120px;
+    inset: 0;
     z-index: -1;
-    width: clamp(280px, 36vw, 560px);
-    height: auto;
-    opacity: 0.08;
-    pointer-events: none;
-  }
-  .hero__grelha {
-    display: grid;
-    gap: clamp(36px, 6vw, 56px);
-  }
-  .hero__texto {
-    display: grid;
-    gap: 24px;
-    justify-items: start;
-    padding-top: clamp(28px, 6vw, 48px);
-  }
-  .hero__texto .etiqueta {
-    margin: 0;
-  }
-  .hero h1 {
-    max-width: 12ch;
-    font-size: var(--t-hero);
-    line-height: 0.98;
-  }
-  .hero h1 em {
-    color: var(--dourado);
-  }
-  .hero__sub {
-    max-width: 31rem;
-    font-size: var(--t-lead);
-    line-height: 1.6;
-    color: rgb(250 248 243 / 0.88);
-  }
-  .hero__accoes {
-    margin-top: 6px;
-  }
-  .hero__figura {
-    position: relative;
-    margin: 0 calc(-1 * var(--margem));
   }
   .hero :global(.hero__foto) {
     display: block;
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    background: var(--verde-2);
-    border-radius: clamp(120px, 34vw, 200px) 0 0 0;
-    animation: hero-entrada 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    width: 100%;
+    height: 100%;
   }
   .hero :global(.hero__foto img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 40% 50%;
+    object-position: 50% 62%;
   }
-  @keyframes hero-entrada {
-    from {
-      opacity: 0;
+  /* Véu: escurece a base e a esquerda, onde está o texto. */
+  .hero__fundo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(5 22 18 / 0.88) 0%, rgb(5 22 18 / 0.5) 45%, rgb(5 22 18 / 0.1) 80%),
+      linear-gradient(to right, rgb(5 22 18 / 0.55), rgb(5 22 18 / 0) 65%);
+  }
+  .hero__texto {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    padding-block: clamp(96px, 16vh, 180px) clamp(56px, 9vh, 96px);
+  }
+  .hero__texto .etiqueta {
+    margin-bottom: 0;
+  }
+  .hero h1 {
+    font-size: var(--t-hero);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+  }
+  .hero__subtitulo {
+    max-width: 18em;
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.6rem);
+    font-weight: 500;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+  .hero__subtitulo em {
+    color: var(--dourado-claro);
+  }
+  .hero__apoio {
+    max-width: 36em;
+    font-size: var(--t-lead);
+    line-height: 1.6;
+    color: rgb(250 248 243 / 0.88);
+  }
+  .hero__accoes {
+    margin-top: 10px;
+  }
+  .hero__explorar {
+    color: var(--branco);
+  }
+  @media (max-width: 559px) {
+    .hero__accoes .botao {
+      width: 100%;
     }
   }
   .hero__legenda {
     position: absolute;
-    left: var(--margem);
-    bottom: 16px;
-    display: inline-flex;
+    right: var(--margem);
+    bottom: 20px;
+    display: none;
     gap: 8px;
     align-items: center;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: rgb(8 40 32 / 0.78);
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--branco);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: rgb(250 248 243 / 0.8);
   }
-  .hero__legenda :global(svg) {
-    color: var(--dourado);
-  }
-  .hero__atalhos {
-    display: none;
-  }
-  @media (max-width: 759px) {
-    .hero__accoes {
-      display: grid;
-      width: 100%;
-    }
-  }
-  @media (min-width: 760px) {
-    .hero__atalhos {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      border-top: 1px solid var(--linha-clara);
-    }
-    .hero__atalhos a {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      min-height: 72px;
-      padding-left: 24px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: rgb(250 248 243 / 0.85);
-      border-left: 1px solid var(--linha-clara);
-      transition: color var(--transicao);
-    }
-    .hero__atalhos a:first-child {
-      padding-left: 0;
-      border-left: 0;
-    }
-    .hero__atalhos a:hover {
-      color: var(--dourado);
-    }
-    .hero__num {
-      font-family: var(--serif);
-      font-size: 1.05rem;
-      font-style: italic;
-      font-weight: 500;
-      letter-spacing: 0;
-      text-transform: none;
-      color: var(--dourado);
-    }
-  }
-  @media (min-width: 760px) and (max-width: 1023px) {
-    .hero :global(.hero__foto) {
-      aspect-ratio: 16 / 10;
-    }
-  }
-  @media (min-width: 1024px) {
-    .hero h1 {
-      font-size: clamp(3.4rem, 1.2rem + 3.6vw, 5.6rem);
-    }
-    .hero__grelha {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
-      gap: clamp(40px, 5vw, 80px);
-      min-height: clamp(560px, calc(100svh - var(--cabecalho) - 73px), 820px);
-    }
-    .hero__texto {
-      align-self: center;
-      padding-block: 56px;
-    }
-    /* Até à borda direita do ecrã: a margem do contentor mais o espaço fora dele. */
-    .hero__figura {
-      margin: 0 calc(-1 * (var(--margem) + max(0px, (100vw - var(--contentor) - 2 * var(--margem)) / 2))) 0 0;
-    }
-    .hero :global(.hero__foto) {
-      height: 100%;
-      aspect-ratio: auto;
-      border-radius: clamp(180px, 16vw, 280px) 0 0 0;
-    }
-    .hero :global(.hero__foto img) {
-      object-position: 42% 50%;
-    }
+  @media (min-width: 900px) {
     .hero__legenda {
-      left: clamp(48px, 6vw, 96px);
-      bottom: 24px;
-    }
-  }
-  @media (min-width: 1024px) and (max-width: 1279px) {
-    /* Moldura mais estreita: centra a piscina, que está à esquerda na fotografia original. */
-    .hero :global(.hero__foto img) {
-      object-position: 34% 50%;
+      display: inline-flex;
     }
   }
 
-  /* ---------- Apresentação ---------- */
-  .apresentacao__topo {
+  /* Chegada (uma só vez, por tempo): a fotografia afasta-se devagar e o texto sobe em sequência. Só a
+     imagem muda de escala, nunca de opacidade, para não atrasar a pintura principal (LCP). */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero :global(.hero__foto) {
+      animation: hero-afastar 2.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .hero__entrar {
+      animation: hero-chegar 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .hero__entrar:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+    .hero__entrar:nth-child(3) {
+      animation-delay: 0.22s;
+    }
+    .hero__entrar:nth-child(4) {
+      animation-delay: 0.34s;
+    }
+    .hero__entrar:nth-child(5) {
+      animation-delay: 0.46s;
+    }
+    /* Ao descer: a fotografia desce devagar e o texto sobe e desvanece mais depressa (camadas). */
+    @supports (animation-timeline: view()) {
+      .hero :global(.hero__foto img) {
+        animation: hero-paralaxe linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 100%;
+      }
+      .hero__texto {
+        animation: hero-sair linear both;
+        animation-timeline: view();
+        animation-range: exit 0% exit 70%;
+      }
+    }
+  }
+  @keyframes hero-afastar {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes hero-chegar {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes hero-paralaxe {
+    to {
+      transform: translateY(18%);
+    }
+  }
+  @keyframes hero-sair {
+    to {
+      opacity: 0;
+      transform: translateY(-80px);
+    }
+  }
+
+  /* ---------- Apresentação e alojamento ---------- */
+  .apresentacao__topo,
+  .alojamento__topo {
     display: grid;
-    gap: 32px;
-    margin-bottom: clamp(40px, 5vw, 64px);
-  }
-  .apresentacao__titulo {
-    max-width: 15ch;
-    font-size: clamp(2.3rem, 1.5rem + 3.2vw, 4.4rem);
-  }
-  .apresentacao__figura {
-    margin: 0 0 clamp(64px, 8vw, 112px);
-  }
-  .apresentacao :global(.apresentacao__foto) {
-    display: block;
-    aspect-ratio: 3 / 2;
+    gap: 20px 64px;
+    align-items: end;
+    margin-bottom: clamp(32px, 4vw, 48px);
   }
   @media (min-width: 900px) {
-    .apresentacao :global(.apresentacao__foto) {
-      aspect-ratio: 21 / 9;
-    }
-    .apresentacao :global(.apresentacao__foto img) {
-      object-position: 50% 40%;
+    .apresentacao__topo,
+    .alojamento__topo {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     }
   }
-  .apresentacao__texto {
-    display: grid;
-    gap: 20px;
+  .apresentacao__texto,
+  .alojamento__topo .texto {
     justify-items: start;
   }
-  @media (min-width: 900px) {
-    .apresentacao__topo {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-      gap: clamp(40px, 6vw, 96px);
-      align-items: end;
-    }
-  }
 
-  /* ---------- Alojamento ---------- */
-  .alojamento__cartao {
-    max-width: 560px;
+  /* ---------- Palco de cenas ---------- */
+  .experiencia {
+    padding-bottom: 0;
   }
-  @media (min-width: 900px) {
-    .alojamento__cartao {
-      justify-self: end;
-      width: 100%;
-    }
-  }
-
-  /* ---------- Restaurante ---------- */
-  .restaurante__fotos {
-    position: relative;
-    padding-bottom: 18%;
-  }
-  .restaurante :global(.restaurante__principal) {
-    display: block;
-    aspect-ratio: 3 / 2;
-  }
-  .restaurante :global(.restaurante__detalhe) {
-    position: absolute;
-    left: -5%;
-    bottom: 0;
-    width: 34%;
-    aspect-ratio: 3 / 4;
-    outline: 6px solid var(--verde);
+  .experiencia__intro {
+    margin-bottom: clamp(32px, 4vw, 56px);
   }
   @media (max-width: 899px) {
-    .restaurante :global(.restaurante__detalhe) {
-      left: auto;
-      right: 5%;
-    }
-  }
-
-  /* ---------- Piscinas ---------- */
-  .piscinas__fotos {
-    position: relative;
-    padding-bottom: 16%;
-  }
-  .piscinas :global(.piscinas__principal) {
-    display: block;
-    aspect-ratio: 3 / 2;
-  }
-  .piscinas :global(.piscinas__detalhe) {
-    position: absolute;
-    right: -4%;
-    bottom: 0;
-    width: 34%;
-    aspect-ratio: 3 / 4;
-    outline: 6px solid var(--branco);
-  }
-  .piscinas :global(.piscinas__detalhe img) {
-    object-position: 30% 50%;
-  }
-  @media (max-width: 899px) {
-    .piscinas :global(.piscinas__detalhe) {
-      right: 5%;
+    .experiencia {
+      padding-bottom: var(--espaco-secao);
     }
   }
 
   /* ---------- Eventos ---------- */
   .eventos__grelha {
+    align-items: start;
+  }
+  .capacidades {
     display: grid;
-    gap: clamp(48px, 7vw, 112px);
-    align-items: center;
+    gap: 12px;
   }
-  .eventos__figura {
+  .capacidades__lista {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
     margin: 0;
-    width: min(100%, 460px);
+    padding: 0;
+    list-style: none;
   }
-  .eventos :global(.eventos__foto) {
-    aspect-ratio: 4 / 5;
+  .capacidades__lista li {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    padding: 16px 14px;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-m);
+    background: #fff;
+  }
+  .capacidades__numero {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 1.7rem + 1.8vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--verde);
+  }
+  .capacidades__texto {
+    font-size: 0.85rem;
+    line-height: 1.35;
+    color: var(--texto-suave);
+  }
+  .capacidades__exterior {
+    font-weight: 700;
+  }
+  .capacidades__nota {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--texto-suave);
+  }
+  .eventos__fotos {
+    position: relative;
+    display: grid;
+    gap: 14px;
+  }
+  .eventos :global(.eventos__principal) {
+    display: block;
+    aspect-ratio: 1 / 1;
+  }
+  .eventos :global(.eventos__detalhe) {
+    display: block;
+    aspect-ratio: 4 / 3;
   }
   @media (min-width: 900px) {
-    .eventos__grelha {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    .eventos__fotos {
+      padding-bottom: 72px;
     }
-    .eventos__figura {
-      justify-self: center;
+    .eventos :global(.eventos__detalhe) {
+      position: absolute;
+      left: -32px;
+      bottom: 0;
+      width: 46%;
+      border: 6px solid var(--branco);
     }
   }
 
-  /* ---------- Fecho ---------- */
-  .fecho__conteudo {
+  /* ---------- Alojamento ---------- */
+  .alojamento {
+    --c-cortina: var(--cinzento);
+  }
+  .alojamento__fotos {
     display: grid;
-    gap: 28px;
-    justify-items: center;
-    text-align: center;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(240px, 80%);
+    gap: 14px;
+    margin: 0 0 clamp(28px, 4vw, 44px);
+    padding: 0 0 8px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    list-style: none;
   }
-  .fecho .etiqueta {
-    margin: 0;
+  .alojamento__fotos li {
+    overflow: hidden;
+    border-radius: var(--raio-l);
+    scroll-snap-align: start;
   }
-  .fecho h2 {
-    max-width: 14ch;
-    font-size: clamp(2.4rem, 1.5rem + 3.4vw, 4.6rem);
+  .alojamento__fotos :global(.foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
   }
-  .fecho .accoes {
-    justify-content: center;
+  @media (min-width: 760px) {
+    .alojamento__fotos {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      overflow: visible;
+    }
+  }
+
+  /* ---------- Faixa da piscina ---------- */
+  .faixa {
+    position: relative;
+    display: grid;
+    align-items: center;
+    min-height: min(88svh, 760px);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .faixa__fundo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .faixa :global(.faixa__foto) {
+    display: block;
+    height: 100%;
+  }
+  .faixa :global(.faixa__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .faixa__conteudo {
+    padding-block: clamp(64px, 10vw, 120px);
+  }
+  .faixa__cartao {
+    display: grid;
+    gap: 18px;
+    max-width: 34rem;
+    padding: clamp(24px, 4vw, 44px);
+    border-radius: var(--raio-l);
+    background: rgb(250 248 243 / 0.96);
+    box-shadow: 0 30px 60px rgb(5 22 18 / 0.25);
+  }
+  .faixa__cartao .etiqueta {
+    margin-bottom: 0;
+  }
+  .faixa__cartao p:not(.etiqueta) {
+    color: var(--texto-suave);
   }
 </style>

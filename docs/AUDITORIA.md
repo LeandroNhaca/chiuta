@@ -1,71 +1,89 @@
-# Auditoria do website · 28/10/2026
+# Auditoria do website · 29/10/2026
 
-Estado de partida: `main` em `a0f5dbb` (PR #2), publicado no VPS da One Prompt Studio como `ghcr.io/leandronhaca/mulotane-lodge:sha-a0f5dbb`.
+Estado de partida: `main` em `3623ef8` (PR #3), publicado no VPS da One Prompt Studio como `ghcr.io/leandronhaca/mulotane-lodge:sha-3623ef8`. Briefing: "Auditoria, redesign e finalização do website — Mulotana Lodge", com capturas do Instagram e do Facebook oficiais enviadas pelo responsável.
 
 ## Cópia de segurança
 
-- **Código**: o commit `a0f5dbb` em `main` é o ponto de partida. Todas as alterações desta revisão entram por pull request, e o Git guarda a versão anterior de cada ficheiro alterado. A etiqueta `backup/antes-auditoria-2026-10-28` foi criada mas não pôde ser enviada (o proxy desta sessão só permite push para a branch de trabalho).
-- **Servidor**: a imagem `sha-a0f5dbb` fica no GHCR. Para voltar atrás no VPS, basta trocar `:demo` por `:sha-a0f5dbb` no compose do projecto `mulotane` e recriá-lo (ver `docs/PUBLICACAO.md`).
+- **Código**: o commit `3623ef8` em `main` é o ponto de partida. As alterações desta revisão entram por pull request, e o Git guarda a versão anterior de cada ficheiro.
+- **Servidor**: a imagem `sha-3623ef8` fica no GHCR. Para voltar atrás no VPS, basta trocar `:demo` por `:sha-3623ef8` no compose do projecto `mulotane` e recriá-lo (ver `docs/PUBLICACAO.md`).
+- **Imagens**: nenhum original foi apagado. As capturas do Google Maps que saíram do site continuam em `assets-originais/`.
 
-## Decisões do responsável (28/10/2026)
+## Decisões do responsável (29/10/2026)
 
-- A fotografia do quarto ("ALD. TUR. MIXALI-XAU") **continua fora** do site até ser confirmada.
-- As 10 capturas do Google Maps **continuam fora** (sem autorização dos autores).
-- O site usa apenas as 4 fotografias enviadas pelo cliente.
+- **Marca**: "Mulotana Lodge" e o logótipo colorido das contas oficiais (casa magenta, sol laranja e amarelo, onda verde, pessoas).
+  - Nota: a placa nova da entrada (Google Maps, Set. 2026) e a faixa da entrada (Google Maps, Set. 2025) dizem "Mulotane Lodge", com outro logótipo. O nome que o Instagram mostra também passou a "Mulotane lodge". **Confirmar com a gerência qual é a marca actual** antes do domínio definitivo.
+- **WhatsApp**: o número de reservas +258 84 888 5556 tem WhatsApp.
+- **Cores**: manter as cores anteriores do site (verde-floresta, dourado e branco quente). Numa primeira versão desta revisão, a paleta foi refeita a partir do logótipo (magenta, laranja, verde-lima); o responsável pediu para manter as anteriores, e assim ficou. O logótipo oficial, colorido, aparece sobre o cabeçalho claro.
+- **Quarto twin**: volta ao site. A inscrição "ALD. TUR. MIXALI-XAU" corresponde ao "Aldeamento Turístico de Michachau" da placa antiga do lodge e aparece também numa fotografia de quarto da página de Facebook do lodge (2016).
 
-### Decisões posteriores do responsável (28/10/2026, durante a revisão)
+## O que existia face ao briefing
 
-- **Número oficial**: +258 848 885556, o da placa da entrada. Usado para o telefone e o WhatsApp; falta confirmar que este número tem WhatsApp.
-- **Localização**: ficha do Google Maps `https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6`. O texto da morada não pôde ser lido desta sessão: o Google Maps está fora da rede permitida.
-- **Fotografias**: usar as melhores capturas do Google Maps. Entram 8, com crédito; ficam de fora as desactualizadas, por identificar ou com pessoas (ver `docs/VALIDACAO.md`).
-
-Com o número oficial configurado, os pedidos passam a seguir pelo WhatsApp (opção 2 abaixo). O visitante revê a mensagem e envia-a ele próprio no WhatsApp. O site continua sem enviar nem guardar dados.
-
-## Requisitos face ao que existia
-
-| Requisito | Estado em `a0f5dbb` | Acção nesta revisão |
+| Requisito do briefing | Estado em `3623ef8` | Acção nesta revisão |
 | --- | --- | --- |
-| Rotas (8 páginas + 404, robots, sitemap) | Implementado e testado | Manter |
-| Configuração única do lodge (`src/config/lodge.ts`) | Implementado | Acrescentar fichas por serviço e tipos de quarto |
-| Hero com fotografia real da piscina | Implementado (arco pequeno) | Dar mais presença à fotografia |
-| Hierarquia, legibilidade, espaçamentos, botões | Bom, com pequenas inconsistências | Uniformizar e melhorar contraste em fundos escuros |
-| Transição entre secções | Fundos alternados, sem ligação visual | Filetes de transição e rodapé coerente |
-| Experiência móvel | Boa (barra de pedidos, separadores) | Índice de espaços mais compacto, mais folga |
-| Galeria com lightbox acessível | Implementado (teclado, gestos) | Acrescentar **categorias filtráveis**, com o visualizador a respeitar o filtro |
-| Contactos pendentes | "Em breve" no rodapé, nos contactos e no mapa | Indicação explícita **"A confirmar"**, com texto explicativo |
-| Números, e-mails ou redes fictícios | Nenhum no site (o número da placa só existe num comentário da configuração) | Manter |
-| Botões sem destino | Nenhum | Manter (verificado nos testes de ligações) |
-| Localização preparada para ponto exacto e direcções | Preparada, mas sem testes do caso configurado | Funções testáveis e testes com coordenadas de teste |
-| Formulário de disponibilidade (7 campos pedidos) | Implementado, campos certos | Agrupar campos (estadia / contactos) |
-| Formulário de orçamento (8 campos pedidos) | Implementado, campos certos | Agrupar campos: evento primeiro (tipo, data, participantes) |
-| Validação e mensagens de erro claras | Implementado e testado | Foco no primeiro erro pela ordem visual |
-| Estado de carregamento | Só no envio real, nunca testado num browser | Testar com servidor simulado (sucesso, 429, erro) |
-| Confirmação honesta, sem "enviado" falso | Implementado | Mostrar a mensagem preparada para o WhatsApp e explicar que a integração aguarda o número oficial |
-| Backend de pedidos | **Inexistente** | Não criar (ver abaixo) |
-| Alojamento: fotografias dos quartos | Não há fotografia autorizada | Estrutura para tipos de quarto, capacidade, comodidades e tarifas confirmados |
-| Restaurante: oferta, horários, menus, preços | Texto genérico | Ficha com dados a confirmar |
-| Piscinas: condições de utilização | Cartão com lista | Ficha com dados a confirmar e fotografia em destaque na página |
-| Eventos: sala e pedidos | Formulário logo a seguir à abertura | Ficha da sala (capacidade, equipamento, catering, pacotes a confirmar) e campos do evento primeiro |
-| SEO técnico | Títulos 31–65 car., descrições 104–154 car., 1 `h1` por página, sem saltos de headings | Descrição da 404 curta (53 car.), corrigida |
-| Imagens: dimensões, lazy, AVIF/WebP | Implementado | Manter |
-| Erros de consola, ligações quebradas, axe | 0 nos testes | Manter os testes |
-| Favicon e manifesto | Implementado | Manter |
+| Nome e identidade | "Mulotane Lodge", assinatura tipográfica temporária, verde-floresta e dourado | Nome "Mulotana Lodge"; logótipo oficial no cabeçalho e no rodapé; verde-floresta e dourado mantidos a pedido do responsável |
+| Tipografia moderna e muito legível | Serifada fina (Cormorant Garamond) nos títulos | Só Manrope, com títulos a 800; botões em minúsculas, maiores |
+| Botões arredondados, sem decoração inútil | Botões rectos em maiúsculas; arcos, losangos, filetes e folhagem decorativa | Raio de 12 px; arcos, losangos e folhagem retirados |
+| Fotografias reais | 4 do cliente + 8 capturas do Google Maps; nenhuma de quartos | 25 das contas oficiais + 5 do cliente + 2 do Google Maps; 7 de quartos |
+| Vídeos | Nenhum ficheiro | Continua sem vídeos: as capturas de vídeos do Instagram não são ficheiros de vídeo (ver "Bloqueios") |
+| Hero | "Um refúgio de tranquilidade", 2 botões | Título e textos do briefing, 3 botões, piscina oficial |
+| Alojamento | Ficha "A confirmar"; nenhum tipo de quarto | Quarto Standard e Quarto Executivo com o preço publicado e a origem; "Consultar disponibilidade" por quarto, que pré-escolhe o quarto |
+| Piscinas | Fichas "A confirmar" | Mosaico de fotografias oficiais; "Perguntar sobre a piscina" pelo WhatsApp; ficha "a confirmar" |
+| Restaurante | Fotografias e ficha "A confirmar" | Igual, com mais uma fotografia oficial e o botão "Perguntar pelo menu" |
+| Conferências e eventos | Ficha "A confirmar", formulário sem serviços nem observações | Capacidades publicadas (300, 150, 20 e 100 ao ar livre) com a origem; campos "Serviços pretendidos" e "Observações" |
+| Galeria por categorias | 4 categorias | Quartos, Piscinas e jardins, Conferências e eventos, Restaurante, Experiências e lazer, Espaços do lodge |
+| Localização e contactos | Morada e e-mail "A confirmar"; sem coordenadas | Morada, coordenadas, telefone, WhatsApp e e-mail publicados pelo lodge; mapa a pedido; Google Maps e direcções |
+| Redes sociais | Nenhuma | Instagram e Facebook no rodapé e nos contactos, sem widgets |
+| Formulários | Mensagem pelo WhatsApp | WhatsApp **ou** e-mail (mailto: com assunto e corpo); protecção contra envio repetido |
+| SEO | Títulos genéricos; dados estruturados só com nome, telefone e mapa | Títulos com as palavras-chave do briefing; morada, coordenadas, e-mail, logótipo e redes nos dados estruturados |
+| "Em breve" / "Mapa em breve" | Nenhum | Continua sem nenhum; os "A confirmar" que restam são de dados que não existem |
 
-## Porque não há envio real dos pedidos
+## Inventário das imagens recebidas a 29/10/2026
 
-Opções avaliadas:
+Recebidas 55 capturas de ecrã de telemóvel (1080 × 2400) das contas oficiais: 27 do Instagram e 28 do Facebook. Em cada uma ficou só a área da fotografia, recortada sem perdas e sem a interface da aplicação. Os contadores como "2/4" foram tirados com um recorte no topo; nenhuma fotografia foi retocada.
 
-1. **Backend existente e seguro**: não existe nenhum neste projecto. O n8n do VPS pertence a outro projecto e a regra do responsável é não usar nada dos outros projectos do servidor.
-2. **Criar um backend novo só para guardar pedidos**: guardaria dados pessoais de clientes do lodge sem que ninguém do lodge os receba ou leia. Não há canal aprovado: nem e-mail, nem WhatsApp, nem acesso para a gerência. Seria um risco de privacidade sem benefício.
-3. **Fluxo de demonstração honesto** (escolhido):
-   - valida os campos e mostra os erros;
-   - mostra a mensagem que será enviada pelo WhatsApp quando o número oficial existir, e permite copiá-la;
-   - diz claramente que nada foi enviado nem guardado.
+| Situação | Quantas | Detalhe |
+| --- | --- | --- |
+| Publicadas | 25 | Ver `docs/VALIDACAO.md`, secção 3 |
+| Logótipo | 1 | Fotografia de perfil do Instagram, recortada; gera o logótipo transparente e os ícones |
+| Fora do site | 29 | Ver abaixo |
 
-O envio para um endpoint (`pedidos.endpoint`) continua implementado no cliente e passa a ser testado num browser contra um servidor simulado. O serviço real que o receber terá de:
+O que ficou de fora, e porquê:
 
-- validar de novo os dados no servidor;
-- descartar pedidos com a armadilha anti-spam preenchida;
-- limitar pedidos por IP.
+- **Com pessoas, ou com matrículas de carros visíveis**: sala de refeições com um empregado, bar com clientes, edifício com carros estacionados.
+- **Com texto ou ícones sobrepostos, ou sem fotografia útil**: história do Instagram ("Bom dia"), imagem de um vídeo com o ícone do som, página de perfil, logótipo pequeno.
+- **Cartazes promocionais**: São Valentim, Dia da Mulher Moçambicana, "Descubra o refúgio perfeito".
+- **Placa antiga**: "Aldeamento Turístico de Michachau". Foi usada só como prova de que o quarto twin é do lodge.
+- **Casas de banho** (duche e banheira, 2016): sugeririam casas de banho privativas em todos os quartos, o que não está confirmado.
+- **Repetidas**: a mesma fotografia em várias publicações; a piscina rectangular de 2016, igual à de 2024.
+- **Mais antigas e menos claras** (2016): fachadas, corredor, panorama, recepção, sala de estar e dois quartos. Ficou uma fachada de 2016; as de 2020 e 2024 mostram melhor o lodge actual.
 
-Ver o `README.md`.
+## Formulários: porque não há envio por servidor
+
+1. **Backend existente e seguro**: não existe neste projecto. O n8n e o Supabase ligados à conta servem outros projectos; a regra do responsável é não usar nada dos outros projectos do servidor.
+2. **Criar um serviço de envio de e-mails**: precisa de uma conta de e-mail ou de um serviço de envio (credenciais SMTP ou chave de API) em nome do lodge, e da aprovação para o pôr a correr no VPS. Não há nenhuma das duas. Uma subscrição paga ou uma conta em nome do lodge sem autorização ficaria fora do que foi pedido.
+3. **Solução aplicada (real, sem servidor)**: o formulário valida os dados e prepara a mensagem, que o visitante envia ao lodge pelo **WhatsApp oficial** ou pelo **seu próprio e-mail**, para mulotanalodge@gmail.com. O pedido chega mesmo à equipa, mas só quando o visitante o envia na sua aplicação, e o site diz-lhe isso antes e depois de preencher.
+
+O envio para um endpoint continua implementado e testado contra um servidor simulado. O que o proprietário tem de fornecer para o activar está em `docs/ENVIO-PEDIDOS.md`.
+
+## Bloqueios e limitações desta sessão
+
+- **Google Maps, OpenStreetMap, Instagram e Facebook não abrem a partir desta sessão** (rede bloqueada). Não foi possível:
+  - confirmar no mapa as coordenadas publicadas;
+  - descarregar as fotografias originais em alta resolução. As fotografias são recortes das capturas, com 1080 px no lado maior.
+- **Vídeos**: as capturas de vídeos do Instagram são imagens paradas. Sem os ficheiros de vídeo originais, o site não tem vídeos; nenhum URL foi inventado.
+- **Logótipo**: há apenas a fotografia de perfil (cerca de 580 px). Falta o ficheiro vectorial.
+
+## Adenda (29/10/2026, mais tarde): experiência cinematográfica
+
+A pedido do responsável, o site passou a ter uma experiência visual cinematográfica em todas as páginas:
+
+- palco de cenas preso ao ecrã;
+- camadas fotográficas e parallax suave;
+- transições entre páginas.
+
+Mantêm-se as cores e as páginas existentes. Os títulos voltaram à serifada do site publicado.
+
+O acabamento das fotografias foi melhorado e ficou preparado o tratamento de vídeos, mas não foram recebidos vídeos.
+
+Relatório por página, ficheiros, testes e problemas: `docs/MOVIMENTO.md`.
+

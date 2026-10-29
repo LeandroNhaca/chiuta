@@ -2,14 +2,22 @@
 /** Campo de formulário com rótulo, ajuda e mensagem de erro ligadas por aria-describedby. */
 import type { HTMLAttributes } from 'astro/types';
 
+/** Opção de uma lista: o texto é também o valor enviado; `id` serve para a pré-escolher por ligação. */
+export interface Opcao {
+  valor: string;
+  id?: string;
+}
+
 interface Props {
   prefixo: string;
   nome: string;
   rotulo: string;
-  tipo?: 'text' | 'tel' | 'email' | 'date' | 'number' | 'textarea' | 'select';
+  tipo?: 'text' | 'tel' | 'email' | 'date' | 'number' | 'textarea' | 'select' | 'escolhas';
   obrigatorio?: boolean;
   ajuda?: string;
-  opcoes?: readonly string[];
+  opcoes?: readonly (string | Opcao)[];
+  /** Texto da primeira opção de uma lista (sem valor). */
+  vazio?: string;
   largo?: boolean;
   atributos?: HTMLAttributes<'input'> & HTMLAttributes<'textarea'>;
 }
@@ -22,54 +30,81 @@ const {
   obrigatorio = false,
   ajuda,
   opcoes = [],
+  vazio = 'Escolha uma opção',
   largo,
   atributos = {},
 } = Astro.props;
 const id = `${prefixo}-${nome}`;
 const descricao = [ajuda && `${id}-ajuda`, `${id}-erro`].filter(Boolean).join(' ');
+const lista: Opcao[] = opcoes.map((o) => (typeof o === 'string' ? { valor: o } : o));
 ---
 
-<div class:list={['campo', { 'campo--largo': largo }]}>
-  <label for={id}>
-    {rotulo}
-    {obrigatorio ? (
-      <span class="campo__obrigatorio" aria-hidden="true">
-        *
-      </span>
-    ) : (
+{tipo === 'escolhas' ? (
+  <fieldset class="campo campo--largo campo--escolhas" id={id} aria-describedby={descricao}>
+    <legend>
+      {rotulo}
       <span class="campo__opcional">(opcional)</span>
+    </legend>
+    {ajuda && (
+      <p class="campo__ajuda" id={`${id}-ajuda`}>
+        {ajuda}
+      </p>
     )}
-  </label>
-  {ajuda && (
-    <p class="campo__ajuda" id={`${id}-ajuda`}>
-      {ajuda}
-    </p>
-  )}
-  {tipo === 'textarea' ? (
-    <textarea
-      id={id}
-      name={nome}
-      rows="4"
-      aria-describedby={descricao}
-      required={obrigatorio}
-      {...atributos}
-    />
-  ) : tipo === 'select' ? (
-    <select id={id} name={nome} aria-describedby={descricao} required={obrigatorio}>
-      <option value="">Escolha uma opção</option>
-      {opcoes.map((o) => (
-        <option value={o}>{o}</option>
+    <div class="campo__opcoes">
+      {lista.map((o, i) => (
+        <label class="campo__opcao" for={`${id}-${i}`}>
+          <input id={`${id}-${i}`} type="checkbox" name={nome} value={o.valor} />
+          <span>{o.valor}</span>
+        </label>
       ))}
-    </select>
-  ) : (
-    <input
-      id={id}
-      name={nome}
-      type={tipo}
-      aria-describedby={descricao}
-      required={obrigatorio}
-      {...atributos}
-    />
-  )}
-  <p class="campo__erro" id={`${id}-erro`} data-erro-para={nome}></p>
-</div>
+    </div>
+    <p class="campo__erro" id={`${id}-erro`} data-erro-para={nome} />
+  </fieldset>
+) : (
+  <div class:list={['campo', { 'campo--largo': largo }]}>
+    <label for={id}>
+      {rotulo}
+      {obrigatorio ? (
+        <span class="campo__obrigatorio" aria-hidden="true">
+          *
+        </span>
+      ) : (
+        <span class="campo__opcional">(opcional)</span>
+      )}
+    </label>
+    {ajuda && (
+      <p class="campo__ajuda" id={`${id}-ajuda`}>
+        {ajuda}
+      </p>
+    )}
+    {tipo === 'textarea' ? (
+      <textarea
+        id={id}
+        name={nome}
+        rows="4"
+        aria-describedby={descricao}
+        required={obrigatorio}
+        {...atributos}
+      />
+    ) : tipo === 'select' ? (
+      <select id={id} name={nome} aria-describedby={descricao} required={obrigatorio}>
+        <option value="">{vazio}</option>
+        {lista.map((o) => (
+          <option value={o.valor} data-id={o.id}>
+            {o.valor}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <input
+        id={id}
+        name={nome}
+        type={tipo}
+        aria-describedby={descricao}
+        required={obrigatorio}
+        {...atributos}
+      />
+    )}
+    <p class="campo__erro" id={`${id}-erro`} data-erro-para={nome} />
+  </div>
+)}

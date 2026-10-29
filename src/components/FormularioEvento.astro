@@ -1,5 +1,6 @@
 ---
-import { LIMITES, TIPOS_EVENTO } from '../lib/validacao';
+import { lodge } from '../config/lodge';
+import { LIMITES, SERVICOS_EVENTO, TIPOS_EVENTO } from '../lib/validacao';
 
 import Campo from './Campo.astro';
 import GrupoCampos from './GrupoCampos.astro';
@@ -38,11 +39,19 @@ const { prefixo = 'evento' } = Astro.props;
     />
     <Campo
       prefixo={prefixo}
+      nome="servicos"
+      rotulo="Serviços pretendidos"
+      tipo="escolhas"
+      opcoes={SERVICOS_EVENTO}
+      ajuda="Marque o que gostaria de ter. A equipa confirma o que está disponível para a data."
+    />
+    <Campo
+      prefixo={prefixo}
       nome="mensagem"
-      rotulo="Mensagem adicional"
+      rotulo="Observações"
       tipo="textarea"
       largo
-      ajuda="Horário, refeições, equipamento ou outras necessidades que queira indicar."
+      ajuda="Horário, formato da sala, refeições ou outras necessidades."
       atributos={{ maxlength: LIMITES.mensagem.max }}
     />
   </GrupoCampos>
@@ -78,7 +87,7 @@ const { prefixo = 'evento' } = Astro.props;
     />
   </GrupoCampos>
   <Fragment slot="aviso">
-    O orçamento é preparado pela equipa do Mulotane Lodge de acordo com a disponibilidade do espaço na data
-    pretendida. Um pedido de orçamento não é uma reserva.
+    Não há orçamentos automáticos: a equipa do {lodge.nome} prepara-o de acordo com a disponibilidade do
+    espaço na data pretendida. Um pedido de orçamento não é uma reserva.
   </Fragment>
 </Pedido>

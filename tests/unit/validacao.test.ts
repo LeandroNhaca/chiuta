@@ -28,7 +28,7 @@ const eventoValido = {
   empresa: '',
   telefone: '840000000',
   email: 'carlos@example.com',
-  tipo: 'Reunião ou conferência',
+  tipo: 'Conferência',
   data: '2026-12-05',
   participantes: '40',
   mensagem: 'Precisamos de projector.',
@@ -124,5 +124,24 @@ describe('normalizar', () => {
     expect(dados).not.toHaveProperty('extra');
     expect(dados).not.toHaveProperty('website');
     expect(Object.keys(dados)).toEqual([...CAMPOS_ALOJAMENTO]);
+  });
+});
+
+describe('campos opcionais novos', () => {
+  it('serviços pretendidos: só valores da lista, em escolha múltipla', () => {
+    const ok = validarEvento(
+      { ...eventoValido, servicos: 'Sala de conferências, Espaço exterior junto à piscina' },
+      HOJE,
+    );
+    expect(ok.servicos).toBeUndefined();
+    expect(validarEvento({ ...eventoValido, servicos: '' }, HOJE).servicos).toBeUndefined();
+    expect(
+      validarEvento({ ...eventoValido, servicos: 'Sala de conferências, Piscina grátis' }, HOJE).servicos,
+    ).toBe('Escolha serviços da lista.');
+  });
+
+  it('tipo de quarto é opcional e limitado', () => {
+    expect(validarAlojamento({ ...alojamentoValido, quarto: '' }, HOJE).quarto).toBeUndefined();
+    expect(validarAlojamento({ ...alojamentoValido, quarto: 'x'.repeat(121) }, HOJE).quarto).toBeDefined();
   });
 });

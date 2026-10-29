@@ -1,69 +1,65 @@
-# Mulotane Lodge · website de demonstração
+# Mulotana Lodge · website de demonstração
 
-Website premium de demonstração comercial para o **Mulotane Lodge** (Boane, província de Maputo, Moçambique), preparado pela **One Prompt Studio** para apresentar ao proprietário.
+Website de demonstração comercial para o **Mulotana Lodge** (Bairro de Mulotana, Boane, província de Maputo, Moçambique), preparado pela **One Prompt Studio** para apresentar ao proprietário.
 
 - Demonstração: **https://mulotane.onepromptstudio.com** (fora dos motores de busca enquanto for demonstração)
 - Repositório: `LeandroNhaca/chiuta`
 - O que falta confirmar com o proprietário: [`docs/VALIDACAO.md`](docs/VALIDACAO.md)
+- Auditoria de 29/10/2026: [`docs/AUDITORIA.md`](docs/AUDITORIA.md)
+- Experiência cinematográfica (relatório por página): [`docs/MOVIMENTO.md`](docs/MOVIMENTO.md)
+- Envio dos pedidos (o que existe e o que falta): [`docs/ENVIO-PEDIDOS.md`](docs/ENVIO-PEDIDOS.md)
 - Publicação no VPS: [`docs/PUBLICACAO.md`](docs/PUBLICACAO.md)
 - Testes executados: [`docs/RELATORIO-TESTES.md`](docs/RELATORIO-TESTES.md)
-- Auditoria de 28/10/2026: [`docs/AUDITORIA.md`](docs/AUDITORIA.md)
 
 ## O que tem
 
 | Página | Conteúdo |
 | --- | --- |
-| `/` | Hero com a fotografia real da piscina até à borda do ecrã, o lodge e os quatro espaços, alojamento, restaurante, piscinas (com as condições), eventos, **pedidos em separadores (estadia / evento)**, como chegar |
-| `/alojamento/` | Ficha do alojamento (tipos de quarto, capacidade, comodidades, tarifas, horários), lista de quartos quando houver dados confirmados, formulário de disponibilidade |
-| `/restaurante/` | Sala de refeições e buffet, ficha do restaurante (horário, cozinha, menu, preços), pedido para grupos |
-| `/piscinas/` | Fotografia da piscina em destaque, ficha das condições de utilização |
-| `/eventos/` | **Formulário de orçamento logo a seguir à abertura** (primeiro o evento, depois os contactos), ficha das salas e do serviço |
-| `/galeria/` | 12 fotografias reais (4 do cliente e 8 capturas do Google Maps com crédito), grelha editorial, **filtros por categoria**, visualizador ampliado acessível |
-| `/contactos/` | Número oficial (telefone e WhatsApp), e-mail "A confirmar", atalhos para pedidos, como chegar com a ficha do Google Maps |
-| `/privacidade/` | Política de privacidade (o que os formulários fazem hoje) |
+| `/` | Hero "Mulotana Lodge · O seu espaço para descansar, celebrar e reunir" com a piscina real e três acções; os quatro espaços; conferências e eventos (capacidades publicadas); quartos com preço publicado; piscinas e jardins; restaurante; **pedidos em separadores (estadia / evento)**; localização e contactos |
+| `/alojamento/` | Tipos de quarto (Standard e Executivo) com "Consultar disponibilidade" que pré-escolhe o quarto, fotografias dos quartos, ficha do alojamento, formulário de disponibilidade |
+| `/eventos/` | Capacidade das salas, fotografias, **formulário de orçamento** (tipo, data, participantes, serviços pretendidos, observações), tipos de evento, ficha |
+| `/piscinas/` | Mosaico das piscinas e jardins, "Perguntar sobre a piscina" (WhatsApp), condições "a confirmar" |
+| `/restaurante/` | Fotografias da sala e do buffet, "Perguntar pelo menu", ficha "a confirmar" |
+| `/galeria/` | 32 fotografias reais por categorias (Quartos, Piscinas e jardins, Conferências e eventos, Restaurante, Experiências e lazer, Espaços do lodge), visualizador acessível |
+| `/contactos/` | Telefone de reservas, WhatsApp, e-mail, redes sociais, morada, coordenadas, Google Maps e mapa a pedido |
+| `/privacidade/` | Política de privacidade (o que os formulários, o mapa e as ligações fazem) |
 
-No telemóvel, uma barra fixa com "Disponibilidade" e "Orçamento de evento" aparece depois do primeiro ecrã e esconde-se sobre os formulários e o rodapé.
+No telemóvel, uma barra fixa com "Disponibilidade" e "Orçamento" aparece depois do primeiro ecrã e esconde-se sobre os formulários e o rodapé.
 
 ### Estado actual (interno; não aparece no site)
 
-Testado e a funcionar:
+A funcionar e testado:
 
-- navegação, incluindo o menu móvel, os separadores de pedidos e a barra móvel;
-- galeria com filtros, teclado e gestos;
-- validação completa dos dois formulários;
-- mensagem preparada para o WhatsApp, com botão para a copiar;
-- favicon e manifesto;
-- SEO técnico, com hierarquia de títulos verificada;
-- acessibilidade WCAG 2.1 AA verificada com axe.
+- **Pedidos pelo WhatsApp ou por e-mail**:
+  - o formulário valida os dados e prepara a mensagem;
+  - "Enviar pelo WhatsApp" abre `wa.me/258848885556` com a mensagem pré-preenchida;
+  - "Enviar por e-mail" abre a aplicação de e-mail com assunto e corpo para mulotanalodge@gmail.com;
+  - o site não envia nem guarda dados e diz ao visitante que o pedido só chega quando o enviar.
+- **Contactos e localização**:
+  - telefone (`tel:`), WhatsApp, e-mail (`mailto:`), morada e coordenadas publicadas pelo lodge;
+  - "Abrir no Google Maps" (ficha do lodge) e "Obter direcções" (até às coordenadas);
+  - o mapa do OpenStreetMap só carrega quando o visitante o pede.
+- **Dados publicados pelo lodge**: preços dos quartos, capacidades das salas e número de quartos, mostrados como "publicados pelo lodge" e com a data.
+- **Redes sociais**: Instagram e Facebook no rodapé e nos contactos, sem widgets.
+- **Identidade**: logótipo oficial, ícones gerados a partir dele e 32 fotografias reais; cores do site (verde-floresta e dourado) mantidas.
+- **Qualidade**: navegação, galeria, validação, SEO técnico e acessibilidade WCAG 2.1 AA (axe).
 
-Activo desde 28/10/2026 (dados indicados pelo responsável):
+Preparado mas **inactivo**:
 
-- **Número oficial +258 848 885556**: telefone (`tel:`) e WhatsApp (`wa.me`) no rodapé, nos contactos e nos dados estruturados.
-- **Pedidos pelo WhatsApp**:
-  - os formulários validam os dados e preparam a mensagem com eles;
-  - "Continuar no WhatsApp" abre a conversa com a mensagem pré-preenchida;
-  - o visitante sabe, antes de preencher, que o pedido só segue quando o enviar no WhatsApp;
-  - o site não envia nem guarda dados.
-- **Direcções**: o botão "Obter direcções" abre a ficha do lodge no Google Maps.
-
-Preparado mas **inactivo** (precisa de dados do proprietário):
-
-- **Envio directo dos pedidos para um serviço** (`pedidos.endpoint`). Foi testado num browser contra um **servidor simulado pelo teste**: carregamento, sucesso, erro 429 e erro 500. Não existe ainda serviço real (ver `docs/AUDITORIA.md`).
-- **E-mail e redes sociais**: o e-mail aparece "A confirmar"; as redes não aparecem.
-- **Morada escrita e mapa incorporado**: `localizacao.morada` e `mapa.coordenadas`.
-- **Fichas dos serviços e tipos de quarto**: estrutura pronta em `detalhes` e `quartos`; tudo "A confirmar".
+- **Envio directo por um servidor** (`pedidos.endpoint`): testado contra um servidor simulado; falta o serviço real (ver `docs/ENVIO-PEDIDOS.md`).
 - **Domínio definitivo e indexação**: o site está em `noindex` e o `robots.txt` bloqueia tudo.
-- **Logótipo oficial**: a assinatura tipográfica "Mulotane Lodge" é temporária.
 
-A confirmar com o proprietário: ver [`docs/VALIDACAO.md`](docs/VALIDACAO.md) (serviços, fotografias retiradas, contactos, localização, textos).
+A confirmar com o proprietário: a marca (Mulotana ou Mulotane), os preços, as capacidades, as coordenadas e os originais das fotografias. Ver [`docs/VALIDACAO.md`](docs/VALIDACAO.md).
 
 ## Stack
 
 - [Astro 6](https://astro.build) em modo estático, TypeScript estrito, sem framework de UI nem dependências em runtime.
-- CSS próprio com tokens (verde-floresta `#0B3027`, dourado `#C7A15A`, branco quente `#FAF8F3`), Cormorant Garamond + Manrope (só os ficheiros latinos, servidos pelo próprio site, licença OFL em `public/fonts/`).
-- JavaScript mínimo e só onde é preciso (cabeçalho, formulários, separadores de pedidos, barra móvel, galeria).
+- CSS próprio com tokens: verde-floresta `#0B3027` (identidade), dourado `#C7A15A` (acções principais e acentos), branco quente `#FAF8F3`. Cores mantidas a pedido do responsável (29/10/2026); o logótipo oficial, colorido, aparece sobre o cabeçalho claro.
+- Títulos em Cormorant Garamond e texto em Manrope, servidos pelo próprio site (licenças OFL em `public/fonts/`).
+- Movimento só com CSS (`src/styles/cinema.css` e `src/components/Cenas.astro`): scroll-driven animations, palco de cenas preso ao ecrã e View Transitions entre páginas. Sem bibliotecas, com movimento reduzido respeitado e conteúdo visível sem JavaScript (ver `docs/MOVIMENTO.md`).
+- JavaScript mínimo e só onde é preciso (cabeçalho, formulários, separadores de pedidos, barra móvel, galeria, mapa a pedido).
 - Imagens AVIF + WebP em várias larguras, com `width`/`height` explícitos e `loading="lazy"` fora do primeiro ecrã.
-- Content-Security-Policy estrita (sem `unsafe-inline`), sem cookies, sem estatísticas, sem pedidos a terceiros.
+- Content-Security-Policy estrita (sem `unsafe-inline`), sem cookies, sem estatísticas, sem pedidos a terceiros ao carregar (o mapa só carrega a pedido).
 - Servidor: nginx sem privilégios em contentor só de leitura; HTTPS no Caddy da One Prompt Studio.
 
 Requer Node.js ≥ 22.12.
@@ -91,26 +87,26 @@ Todos os dados do estabelecimento estão num único ficheiro: [`src/config/lodge
 
 | Campo | Efeito quando preenchido |
 | --- | --- |
-| `contactos.telefone` | Telefone no rodapé, na página de contactos e nos dados estruturados (deixa de aparecer "A confirmar") |
-| `contactos.whatsapp` | Botões de WhatsApp activos e mensagens pré-preenchidas depois de cada pedido |
-| `contactos.email` | E-mail no rodapé, contactos e política de privacidade |
-| `redesSociais` | Ligações no rodapé (`{ nome: 'Instagram', url: 'https://…' }`) |
-| `localizacao.morada` | Morada na secção "Como chegar" (deixa de aparecer "A confirmar") |
-| `mapa.coordenadas` | Mapa incorporado (OpenStreetMap) e botão "Obter direcções"; a CSP é ajustada sozinha |
-| `mapa.urlDireccoes` | Ligação "Obter direcções" confirmada (por exemplo, a partilha do Google Maps do próprio lodge) |
-| `pedidos.endpoint` | Os formulários passam a enviar os pedidos (POST JSON) para esse endereço e o aviso "Formulário de demonstração" desaparece |
+| `contactos.telefone` | Telefone de reservas no rodapé, nos contactos e nos dados estruturados |
+| `contactos.whatsapp` | Botões de WhatsApp e envio dos pedidos pelo WhatsApp |
+| `contactos.email` | E-mail nos contactos e no rodapé, e botão "Enviar por e-mail" nos pedidos |
+| `redesSociais` | Ligações no rodapé e nos contactos (`{ nome: 'Instagram', url: 'https://…' }`) |
+| `localizacao.morada` | Morada na secção de localização e nos dados estruturados |
+| `mapa.coordenadas` | Mapa do OpenStreetMap a pedido, "Obter direcções" e coordenadas; a CSP é ajustada sozinha |
+| `mapa.urlDireccoes` | "Abrir no Google Maps" (ficha do lodge no Google Maps) |
+| `pedidos.endpoint` | Os formulários passam a enviar os pedidos (POST JSON) para esse endereço (ver `docs/ENVIO-PEDIDOS.md`) |
 | `site.dominioFinal` | Canonical e URLs absolutos no domínio definitivo |
 | `demonstracao.activa` | `false` com `dominioFinal` preenchido: o site passa a ser indexável (robots.txt e meta robots) |
-| `marca.logotipo` | Caminho do logótipo oficial em `public/` (substitui a assinatura tipográfica temporária) |
+| `marca.logotipo` | Caminho do logótipo em `public/`, sem largura nem extensão (`/images/marca/mulotana-lodge`) |
 | `servicos[].estado` | Estado de confirmação de cada serviço (só para a gestão; não aparece no site) |
-| `detalhes.<serviço>[].valor` | Preenche a linha da ficha (alojamento, restaurante, piscinas, eventos); vazio = "A confirmar" |
-| `quartos` | Lista de tipos de quarto (`nome`, `capacidade`, `comodidades`, `tarifa`, `fotografia` opcional) mostrada no alojamento |
+| `detalhes.<serviço>[].valor` | Preenche a linha da ficha (alojamento, restaurante, piscinas, eventos); vazio = "A confirmar"; com `aValidar`, o site indica que o valor foi publicado pelo lodge e quando |
+| `quartos` | Tipos de quarto (`id`, `nome`, `descricao`, `capacidade`, `comodidades`, `tarifa`, `aValidar`, `fotografia` opcional), com "Consultar disponibilidade" e escolha no formulário |
 
-Formatos: números em formato internacional (`+258 84 …`). Nunca colocar dados que não tenham sido confirmados pela gerência.
+Formatos: números em formato internacional (`+258 84 …`). Nunca colocar dados que não tenham sido confirmados pela gerência ou publicados pelo próprio lodge (e, neste caso, com `aValidar`).
 
 ### Pedidos (endpoint)
 
-Sem `pedidos.endpoint`, os formulários só validam no browser e mostram uma confirmação honesta ("nenhum dado foi enviado nem guardado"), com a mensagem que seguirá pelo WhatsApp e um botão para a copiar. Com endpoint, enviam (com o botão em estado de carregamento até haver resposta):
+Sem `pedidos.endpoint`, os formulários validam no browser, preparam a mensagem e oferecem "Enviar pelo WhatsApp" e "Enviar por e-mail" (o visitante conclui o envio na sua aplicação), com um botão para copiar a mensagem. Com endpoint, enviam (com o botão em estado de carregamento até haver resposta e sem envios repetidos):
 
 ```json
 POST <endpoint>
@@ -123,10 +119,10 @@ O serviço que recebe deve: validar de novo no servidor com as mesmas regras (`s
 
 - `assets-originais/mulotane/real/`: originais, nunca alterados (fora da área pública). Ver `assets-originais/mulotane/LEIA-ME.md`.
 - `public/images/mulotane/real/`: versões para a web geradas pelo script.
-- `public/images/mulotane/conceptual/`: só uma ilustração decorativa de folhagem (não é fotografia nem representa nenhum espaço).
+- `public/images/marca/`: logótipo transparente e símbolo, gerados a partir do perfil do Instagram oficial.
 - `src/data/fotografias.ts`: texto alternativo, legenda, categoria e autoria de cada fotografia publicada.
 
-O site usa as 4 fotografias enviadas pelo cliente e, por decisão do responsável (28/10/2026), as 8 melhores capturas do Google Maps, com o autor e a data no visualizador e nos créditos da galeria. A do quarto continua fora. Motivos e lista completa em [`docs/VALIDACAO.md`](docs/VALIDACAO.md). Sem fotografia, um espaço aparece com um painel tipográfico, nunca com uma imagem de outro sítio.
+O site usa 25 fotografias das contas oficiais do lodge (Instagram e Facebook), as 5 enviadas pelo cliente e 2 capturas do Google Maps com crédito. Motivos e lista completa em [`docs/VALIDACAO.md`](docs/VALIDACAO.md). Nenhuma foi gerada por IA nem é de outro sítio.
 
 Para regenerar as versões web (por exemplo, depois de receber fotografias novas do proprietário):
 
@@ -136,9 +132,11 @@ python3 -m venv .venv-imagens
 .venv-imagens/bin/python scripts/imagens/tratar_fotografias.py
 ```
 
-O script só corrige a técnica (luz, contraste, ruído, nitidez e optimização para a web), sem mexer na saturação nem no conteúdo. Para acrescentar uma fotografia: colocar o original em `assets-originais/mulotane/real/`, acrescentar uma entrada em `FOTOGRAFIAS` no script e em `metadados` em `src/data/fotografias.ts`.
+O script faz o acabamento técnico (níveis, luz, contraste global e local, vibração moderada, ruído, nitidez e optimização para a web), sem alterar o conteúdo e sem IA generativa. As fotografias de grande formato têm uma versão de 1600 px.
 
-Ícones (favicon.ico 16/32/48, favicon.png, apple-touch-icon e ícones do manifesto), redesenhados a partir de `public/favicon.svg`:
+Vídeos: quando houver ficheiros originais do lodge, `scripts/videos/tratar_video.sh <original> <nome> [início] [duração]` estabiliza, limpa, corrige a cor e exporta MP4 + WebM + capa para `public/videos/mulotane/`. Para acrescentar uma fotografia: colocar o original em `assets-originais/mulotane/real/`, acrescentar uma entrada em `FOTOGRAFIAS` no script e em `metadados` em `src/data/fotografias.ts`.
+
+Logótipo transparente e ícones (favicon.ico 16/32/48, favicon.png, apple-touch-icon e ícones do manifesto), a partir do logótipo do perfil do Instagram (`assets-originais/mulotane/marca/`):
 
 ```bash
 .venv-imagens/bin/python scripts/imagens/gerar_icones.py
@@ -167,5 +165,5 @@ src/styles/global.css      tokens e estilos base
 scripts/imagens/           tratamento reprodutível das fotografias e dos ícones (Python)
 deploy/                    nginx, compose do VPS, bloco Caddy, cópia de segurança
 tests/unit, tests/e2e      Vitest e Playwright
-docs/                      validação, publicação e relatório de testes
+docs/                      auditoria, validação, envio de pedidos, publicação e relatório de testes
 ```
