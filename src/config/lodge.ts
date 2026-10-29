@@ -95,7 +95,11 @@ export interface ConfiguracaoLodge {
     endpoint: string;
   };
   demonstracao: {
-    /** Mantém o site fora dos motores de busca enquanto é uma demonstração (noindex e robots.txt). */
+    /**
+     * true: fora dos motores de busca (meta robots noindex e robots.txt a bloquear tudo).
+     * false: indexável no endereço do site (site.dominioFinal ou, sem ele, site.urlDemonstracao), com o
+     * sitemap no robots.txt.
+     */
     activa: boolean;
     autor: string;
   };
@@ -152,7 +156,9 @@ export const lodge: ConfiguracaoLodge = {
     endpoint: '',
   },
   demonstracao: {
-    activa: true,
+    // Indexação ligada a 29/10/2026, a pedido do responsável, no endereço actual (também para demonstrar o
+    // SEO). Com um domínio próprio, basta preencher site.dominioFinal: canonical e sitemap passam para ele.
+    activa: false,
     autor: 'One Prompt Studio',
   },
   servicos: [

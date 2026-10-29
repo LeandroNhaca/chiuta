@@ -2,7 +2,7 @@
 
 Website de demonstração comercial para o **Mulotana Lodge** (Bairro de Mulotana, Boane, província de Maputo, Moçambique), preparado pela **One Prompt Studio** para apresentar ao proprietário.
 
-- Demonstração: **https://mulotane.onepromptstudio.com** (fora dos motores de busca enquanto for demonstração)
+- Endereço: **https://mulotane.onepromptstudio.com** (indexável pelos motores de busca desde 29/10/2026)
 - Repositório: `LeandroNhaca/chiuta`
 - O que falta confirmar com o proprietário: [`docs/VALIDACAO.md`](docs/VALIDACAO.md)
 - Auditoria de 29/10/2026: [`docs/AUDITORIA.md`](docs/AUDITORIA.md)
@@ -47,7 +47,7 @@ A funcionar e testado:
 Preparado mas **inactivo**:
 
 - **Envio directo por um servidor** (`pedidos.endpoint`): testado contra um servidor simulado; falta o serviço real (ver `docs/ENVIO-PEDIDOS.md`).
-- **Domínio definitivo e indexação**: o site está em `noindex` e o `robots.txt` bloqueia tudo.
+- **Domínio definitivo**: o site é indexável desde 29/10/2026 no endereço actual (`robots.txt` com o sitemap, sem `noindex`); com um domínio próprio, basta preencher `site.dominioFinal`.
 
 A confirmar com o proprietário: a marca (Mulotana ou Mulotane), os preços, as capacidades, as coordenadas e os originais das fotografias. Ver [`docs/VALIDACAO.md`](docs/VALIDACAO.md).
 
@@ -96,7 +96,7 @@ Todos os dados do estabelecimento estão num único ficheiro: [`src/config/lodge
 | `mapa.urlDireccoes` | "Abrir no Google Maps" (hoje, o ponto das coordenadas indicado pelo responsável) |
 | `pedidos.endpoint` | Os formulários passam a enviar os pedidos (POST JSON) para esse endereço (ver `docs/ENVIO-PEDIDOS.md`) |
 | `site.dominioFinal` | Canonical e URLs absolutos no domínio definitivo |
-| `demonstracao.activa` | `false` com `dominioFinal` preenchido: o site passa a ser indexável (robots.txt e meta robots) |
+| `demonstracao.activa` | `true`: fora dos motores de busca (noindex e robots.txt a bloquear); `false` (actual): indexável no endereço do site, com o sitemap no robots.txt |
 | `marca.logotipo` | Caminho do logótipo em `public/`, sem largura nem extensão (`/images/marca/mulotana-lodge`) |
 | `servicos[].estado` | Estado de confirmação de cada serviço (só para a gestão; não aparece no site) |
 | `detalhes.<serviço>[].valor` | Preenche a linha da ficha (alojamento, restaurante, piscinas, eventos); vazio = "A confirmar"; com `aValidar`, o site indica que o valor foi publicado pelo lodge e quando |

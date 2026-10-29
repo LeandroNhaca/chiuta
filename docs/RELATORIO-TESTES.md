@@ -60,7 +60,7 @@ Tamanhos: telemóvel pequeno (360×740), telemóvel (Pixel 7), tablet (820×1180
 
 - **Rotas** (5 tamanhos × 8 páginas):
   - resposta 200, um `h1`, título com "Mulotana Lodge" e descrição;
-  - `noindex`, Open Graph (`/og/mulotana-lodge.jpg`) e `lang`;
+  - indexável (sem meta robots), Open Graph (`/og/mulotana-lodge.jpg`) e `lang`;
   - sem scroll horizontal e sem erros na consola;
   - **nenhum pedido a terceiros ao carregar** (o mapa só carrega a pedido);
   - 404 própria.
