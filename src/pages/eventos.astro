@@ -3,6 +3,7 @@ import CabecalhoPagina from '../components/CabecalhoPagina.astro';
 import Cenas, { type Cena } from '../components/Cenas.astro';
 import FichaServico from '../components/FichaServico.astro';
 import FormularioEvento from '../components/FormularioEvento.astro';
+import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
 import { lodge } from '../config/lodge';
@@ -38,14 +39,6 @@ const montagens: Cena[] = [
     titulo: 'Estrado e mesa de honra',
     texto: 'Estrado, mesa de honra e púlpito, para sessões formais e cerimónias.',
     foto: 'sala-conferencias-palco',
-    ligacao: orcamento,
-  },
-  {
-    id: 'buffet',
-    etiqueta: 'Refeições',
-    titulo: 'Buffet para os participantes',
-    texto: 'Um balcão de buffet montado para um evento. Indique no pedido as refeições que pretende.',
-    foto: 'buffet-evento',
     ligacao: orcamento,
   },
 ];
@@ -158,6 +151,13 @@ const tipos = [
           <li>A equipa confirma a disponibilidade e envia o orçamento.</li>
           <li>O evento fica garantido só depois de confirmado pelo lodge.</li>
         </ol>
+        <!-- Fotografia pequena (780 px de origem): fora do palco em ecrã inteiro, onde ficaria desfocada. -->
+        <figure class="pedido-evento__foto c-revelar">
+          <Foto id="buffet-evento" sizes="(min-width: 1000px) 480px, 92vw" class="foto" />
+          <figcaption class="legenda">
+            Buffet montado para um evento. Indique no pedido as refeições que pretende.
+          </figcaption>
+        </figure>
       </div>
     </div>
   </section>
@@ -271,6 +271,13 @@ const tipos = [
   .pedido-evento__lista {
     display: grid;
     gap: 6px;
+  }
+  .pedido-evento__foto {
+    margin: 26px 0 0;
+  }
+  .pedido-evento__foto :global(.foto) {
+    display: block;
+    aspect-ratio: 5 / 4;
   }
   @media (min-width: 1000px) {
     .pedido-evento__grelha {

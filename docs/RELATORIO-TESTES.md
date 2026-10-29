@@ -110,16 +110,18 @@ Tamanhos: telemóvel pequeno (360×740), telemóvel (Pixel 7), tablet (820×1180
   - dados estruturados com a morada, as coordenadas, o telefone, o e-mail, o logótipo e as redes.
 - **Acessibilidade**: axe-core WCAG 2.0/2.1 A e AA + boas práticas, em todas as páginas, no telemóvel e no portátil: **0 violações**.
 
-## Desempenho (medido localmente, sem limitação de rede, depois da reconstrução cinematográfica)
+## Desempenho (medido localmente, sem limitação de rede, depois da revisão da nitidez das fotografias)
 
 | Página | Ecrã | Transferido no carregamento | LCP (local) | CLS |
 | --- | --- | --- | --- | --- |
-| `/` | 390×844 @3x | 452 KB | 316 ms | 0,000 |
-| `/` | 1440×900 | 419 KB | 324 ms | 0,000 |
-| `/eventos/` | 390×844 @3x | 249 KB | 192 ms | 0,000 |
-| `/eventos/` | 1440×900 | 280 KB | 216 ms | 0,000 |
-| `/galeria/` | 390×844 @3x | 322 KB | 180 ms | 0,000 |
-| `/galeria/` | 1440×900 | 386 KB | 176 ms | 0,000 |
+| `/` | 390×844 @3x | 562 KB | 136 ms | 0,000 |
+| `/` | 1440×900 | 528 KB | 212 ms | 0,000 |
+| `/eventos/` | 390×844 @3x | 302 KB | 128 ms | 0,000 |
+| `/eventos/` | 1440×900 | 343 KB | 160 ms | 0,000 |
+| `/galeria/` | 390×844 @3x | 434 KB | 100 ms | 0,000 |
+| `/galeria/` | 1440×900 | 467 KB | 132 ms | 0,000 |
+
+O peso subiu cerca de 25% na página inicial: é o preço de fotografias mais nítidas (menos redução de ruído, compressão de melhor qualidade e versões grandes). Ver a secção "Nitidez das fotografias" abaixo.
 
 Na página inicial:
 
@@ -197,3 +199,19 @@ Nenhum erro nos registos do nginx. A CSP gerada permite iframes só do OpenStree
 2. **Moldura com margens no tablet ao alto.** A imagem compensava o eixo errado. Passou a compensar o eixo que encolhe mais.
 3. **Teclado durante uma transição.** O motor decidia pela opacidade do momento, que pode estar a meio de uma transição suavizada. Passou a decidir pela posição de scroll.
 4. **Última fotografia do carrossel.** Ficava por carregar até se deslizar a faixa. As fotografias da faixa passam a carregar quando o carrossel se aproxima do ecrã.
+
+## Nitidez das fotografias (revisão de 29/10/2026)
+
+Medido antes e depois, fotografia a fotografia.
+
+- **Ruído nas zonas lisas** (σ, depois dos ajustes de luz): abaixo de 1 em 24 das 32 fotografias.
+  - Em 12 (σ < 0,5) já não se aplica redução de ruído.
+  - Nas outras, a redução é proporcional ao ruído medido, com h ≤ 2,5 e mistura de 60%. Antes, h ia de 2 a 5 em todas, com mistura de 75%.
+- **Pormenor fino** (energia de alta frequência do AVIF em relação ao original): antes, de 0,70 a 1,38 (as fotografias do cliente perdiam cerca de 30%); depois, de 0,98 a 1,66.
+- **Ampliação no ecrã** (píxeis do ecrã por píxel do ficheiro, no pior momento de cada página, a 1366 × 768 e 1920 × 1080):
+  - antes, até 2,7× (o buffet nos eventos), 1,9× (os quartos do palco do alojamento) e 1,8× (a abertura do restaurante);
+  - depois, até 1,26×.
+  - Em telemóveis e tablets de alta densidade, o máximo é 1,9× (paisagem em ecrã inteiro num tablet ao alto).
+- **Capturas a 1920 px**, lado a lado com a versão publicada antes desta revisão: o pormenor (variância do Laplaciano) subiu na abertura do restaurante (126 → 184), no palco das piscinas (30 → 42) e nas portas do quarto (18 → 20).
+- **Contraste e cor**: sem alterações (os ajustes de luz são os mesmos).
+- **Inteligência artificial**: não se usou nenhuma, nem para ampliar.

@@ -152,3 +152,6 @@ vite.config.ts.timestamp-*
 test-results/
 playwright-report/
 .venv-imagens/
+
+# Python
+__pycache__/
