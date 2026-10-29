@@ -1,6 +1,6 @@
 # Publicação no VPS da One Prompt Studio
 
-Endereço da demonstração: **https://mulotane.onepromptstudio.com**
+Endereço: **https://mulotane.onepromptstudio.com** (indexável pelos motores de busca desde 29/10/2026)
 
 ## Arquitectura
 
@@ -36,9 +36,21 @@ As imagens antigas (`sha-0650acf`, `sha-c9383d6`, `sha-eac3826`) ainda contêm a
    - Cópia de segurança do compose anterior: `deploy/backups/onepromptstudio-docker-compose.antes-mulotane.yml`.
    - O Caddyfile resultante foi validado antes (`caddy validate`) com um binário igual ao do servidor (Caddy 2.11.7 + `caddy-ratelimit` na mesma versão) e o bloco foi testado de ponta a ponta localmente (proxy, compressão, HSTS, `X-Robots-Tag`, redireccionamentos, POST bloqueado).
 
+## Alteração no servidor (29/10/2026): indexação
+
+A pedido do responsável, o site passou a ser indexável no endereço actual. Para isso, retirou-se do bloco do Mulotane no Caddy o cabeçalho `X-Robots-Tag: noindex, nofollow`, que impedia a indexação mesmo com o `robots.txt` aberto.
+
+- **O que mudou**: só o bloco `mulotane.onepromptstudio.com`, na variável `CADDYFILE` do compose do projecto `onepromptstudio` (a linha `X-Robots-Tag` e o comentário do bloco). Os outros blocos ficaram iguais, incluindo os `X-Robots-Tag` da pré-visualização e do Kuma. O resto do compose ficou byte a byte igual.
+- **Cópia de segurança** do compose anterior: `deploy/backups/onepromptstudio-docker-compose.antes-indexacao.yml`.
+- **Aplicação**: pelo Docker Manager (API da Hostinger, substituir o projecto com o compose novo). O contentor do Caddy foi recriado às 21:56 UTC: cerca de 10 segundos sem resposta em todos os sites do servidor, com autorização do responsável.
+  - A imagem não foi reconstruída ("Skipped").
+  - O Caddy arrancou sem erros, com os 8 domínios, e os certificados foram reaproveitados.
+  - Os outros projectos continuaram a correr, sem reinícios.
+- **Referência do bloco**: `deploy/caddy/mulotane.caddy` (já sem `X-Robots-Tag`).
+
 ### Importante: gerador do compose do Caddy
 
-O compose do projecto `onepromptstudio` diz "Gerado por scripts/gerar-compose.mjs (não editar à mão)". Esse gerador vive noutro repositório (`LeandroNhaca/onepromptstudio`), a que esta sessão não tem acesso. **É preciso acrescentar o mesmo bloco (`deploy/caddy/mulotane.caddy`) ao Caddyfile desse gerador**; caso contrário, a próxima vez que o compose do Caddy for gerado e publicado, o encaminhamento do Mulotane desaparece (o site deixa de responder em HTTPS, sem afectar os outros sites).
+O compose do projecto `onepromptstudio` diz "Gerado por scripts/gerar-compose.mjs (não editar à mão)". Esse gerador vive noutro repositório (`LeandroNhaca/onepromptstudio`), a que esta sessão não tem acesso. **É preciso acrescentar o mesmo bloco (`deploy/caddy/mulotane.caddy`, sem `X-Robots-Tag` desde 29/10/2026) ao Caddyfile desse gerador**; caso contrário, a próxima vez que o compose do Caddy for gerado e publicado, o encaminhamento do Mulotane desaparece (o site deixa de responder em HTTPS, sem afectar os outros sites).
 
 ## Actualizar a demonstração
 
@@ -58,12 +70,12 @@ O compose do projecto `onepromptstudio` diz "Gerado por scripts/gerar-compose.mj
 
 - `vps_docker_containers` do projecto `mulotane`: contentor `running` e `healthy`.
 - Logs do contentor `mulotane`: pedidos a chegar pelo Caddy.
-- `https://mulotane.onepromptstudio.com/` responde 200 com HSTS, `X-Robots-Tag: noindex, nofollow` e a CSP da página.
+- `https://mulotane.onepromptstudio.com/` responde 200 com HSTS e a CSP da página, sem `X-Robots-Tag` (indexável desde 29/10/2026); `robots.txt` com `Allow: /` e o sitemap.
 - Os outros sites (`onepromptstudio.com`, `preview`, `n8n`, `status`, `obrarent`, `lojanobolso`) continuam a responder.
 
 ## Passagem a produção (domínio próprio do lodge)
 
 1. Registo DNS do domínio do lodge para o IP do servidor que for usado.
-2. Bloco no reverse proxy para esse domínio (igual a `deploy/caddy/mulotane.caddy`, sem `X-Robots-Tag`).
-3. Em `src/config/lodge.ts`: `site.dominioFinal` e `demonstracao.activa: false`; publicar.
+2. Bloco no reverse proxy para esse domínio (igual a `deploy/caddy/mulotane.caddy`).
+3. Em `src/config/lodge.ts`: `site.dominioFinal` (a indexação já está ligada); publicar.
 4. HTTPS: o Caddy obtém o certificado automaticamente quando o DNS apontar para o servidor.
