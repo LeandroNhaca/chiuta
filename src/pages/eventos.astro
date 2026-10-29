@@ -1,26 +1,99 @@
 ---
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
 import FichaServico from '../components/FichaServico.astro';
+import Foto from '../components/Foto.astro';
 import FormularioEvento from '../components/FormularioEvento.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
+import { lodge } from '../config/lodge';
 import Base from '../layouts/Base.astro';
+
+const salas = lodge.detalhes.eventos.find((d) => d.rotulo === 'Salas de conferências');
+const exterior = lodge.detalhes.eventos.find((d) => d.rotulo === 'Eventos ao ar livre');
+// Capacidades tal como o lodge as publicou (src/config/lodge.ts → detalhes.eventos).
+const capacidades = salas?.valor.match(/\d+/g) ?? [];
+const capacidadeExterior = exterior?.valor.match(/\d+/)?.[0];
+const tipos = [
+  'Reuniões empresariais',
+  'Formações e workshops',
+  'Conferências',
+  'Encontros de grupo',
+  'Celebrações e eventos privados',
+];
 ---
 
 <Base
-  titulo="Eventos e conferências"
-  descricao="Reuniões, conferências, celebrações e encontros de grupo no Mulotane Lodge, em Boane. Peça um orçamento para o seu evento."
+  titulo="Salas de conferências e eventos em Boane"
+  descricao="Salas de conferências e espaços para eventos no Mulotana Lodge, em Boane: reuniões, formações, conferências e celebrações. Peça um orçamento para o seu evento."
 >
   <CabecalhoPagina
-    titulo="Eventos e conferências"
-    intro="Um espaço para reunir e celebrar: reuniões de trabalho, celebrações familiares e encontros de grupo."
-    foto="sala-conferencias"
+    titulo="Conferências e eventos"
+    intro="Salas de conferências e uma área ao ar livre junto à piscina para reuniões, formações, encontros de grupo e celebrações."
+    foto="sala-conferencias-palco"
   >
     <a slot="accoes" class="botao botao--principal" href="#pedido">
-      Pedir orçamento
+      Pedir orçamento para um evento
       <Icone nome="seta" tamanho={18} />
     </a>
   </CabecalhoPagina>
+
+  <section class="secao secao--clara" aria-labelledby="salas-titulo">
+    <div class="contentor">
+      <div class="bloco-titulo salas__topo">
+        <p class="etiqueta">As salas</p>
+        <h2 id="salas-titulo">
+          Um espaço à medida do <em>seu evento.</em>
+        </h2>
+        <div class="texto">
+          <p>
+            Da reunião de equipa à conferência com centenas de participantes. Diga-nos quantas pessoas espera
+            e como quer a sala montada: plateia, em U ou com mesa de honra.
+          </p>
+        </div>
+      </div>
+      {capacidades.length > 0 && (
+        <ul class="salas" aria-label="Capacidade dos espaços">
+          {capacidades.map((n) => (
+            <li class="sala">
+              <span class="sala__numero">{n}</span>
+              <span class="sala__texto">pessoas</span>
+              <span class="sala__tipo">Sala de conferências</span>
+            </li>
+          ))}
+          {capacidadeExterior && (
+            <li class="sala sala--exterior">
+              <span class="sala__numero">{capacidadeExterior}</span>
+              <span class="sala__texto">pessoas</span>
+              <span class="sala__tipo">Área junto à piscina</span>
+            </li>
+          )}
+        </ul>
+      )}
+      {salas?.aValidar && (
+        <p class="salas__nota">
+          <Icone nome="info" tamanho={16} />
+          <span>
+            Capacidades publicadas pelo lodge nas redes sociais ({salas.aValidar}). A equipa confirma a sala,
+            a montagem e a disponibilidade para a data do seu evento.
+          </span>
+        </p>
+      )}
+      <ul class="fotos" aria-label="Fotografias das salas">
+        <li class="fotos__a">
+          <Foto id="sala-conferencias-plateia" sizes="(min-width: 1240px) 1160px, 92vw" class="foto" />
+          <span class="legenda">Sala montada em plateia.</span>
+        </li>
+        <li>
+          <Foto id="sala-conferencias-u" sizes="(min-width: 900px) 600px, 46vw" class="foto" />
+          <span class="legenda">Montagem em U, com ecrã.</span>
+        </li>
+        <li>
+          <Foto id="buffet-evento" sizes="(min-width: 900px) 600px, 46vw" class="foto" />
+          <span class="legenda">Buffet montado para um evento.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
 
   <section id="pedido" class="secao secao--cinza pedido-evento" aria-labelledby="pedido-titulo">
     <div class="contentor grelha pedido-evento__grelha">
@@ -31,8 +104,8 @@ import Base from '../layouts/Base.astro';
         </h2>
         <div class="texto">
           <p>
-            Conte-nos o que está a planear. O orçamento é preparado pela equipa do Mulotane Lodge de acordo
-            com a disponibilidade do espaço na data pretendida.
+            Conte-nos o que está a planear. Não há orçamentos automáticos: a equipa do {lodge.nome} prepara-o
+            de acordo com a disponibilidade do espaço e o que pedir.
           </p>
         </div>
       </div>
@@ -40,12 +113,12 @@ import Base from '../layouts/Base.astro';
         <FormularioEvento />
       </div>
       <div class="pedido-evento__lista">
-        <p class="filete-titulo">Para preparar o seu pedido</p>
+        <p class="filete-titulo">Como funciona</p>
         <ol class="lista-numerada">
-          <li>A data pretendida e o horário aproximado</li>
-          <li>O número estimado de participantes</li>
-          <li>O tipo de evento e o formato da sala</li>
-          <li>Refeições, equipamento ou outras necessidades</li>
+          <li>Preencha o pedido com a data, o número de participantes e os serviços pretendidos.</li>
+          <li>Envie a mensagem preparada pelo WhatsApp ou por e-mail.</li>
+          <li>A equipa confirma a disponibilidade e envia o orçamento.</li>
+          <li>O evento fica garantido só depois de confirmado pelo lodge.</li>
         </ol>
       </div>
     </div>
@@ -56,27 +129,21 @@ import Base from '../layouts/Base.astro';
       <div class="bloco-titulo">
         <p class="etiqueta">Reunir e celebrar</p>
         <h2 id="reunir-titulo">
-          Um espaço para cada <em>ocasião.</em>
+          Eventos que pode <em>organizar.</em>
         </h2>
-        <div class="texto">
-          <p>
-            Está a planear uma reunião, uma celebração ou um encontro de grupo? Indique-nos o que precisa e a
-            equipa do lodge apresenta as opções disponíveis para a data.
-          </p>
-        </div>
         <ul class="lista-traco reunir__tipos">
-          <li>Reuniões, formações e conferências</li>
-          <li>Celebrações familiares e aniversários</li>
-          <li>Encontros de grupo e eventos de empresa</li>
+          {tipos.map((t) => (
+            <li>{t}</li>
+          ))}
         </ul>
         <div class="accoes">
-          <a class="botao botao--verde" href="#pedido">
+          <a class="botao botao--principal" href="#pedido">
             Pedir orçamento
             <Icone nome="seta" tamanho={18} />
           </a>
         </div>
       </div>
-      <FichaServico servico="eventos" titulo="As salas e o serviço" />
+      <FichaServico servico="eventos" titulo="Os eventos em resumo" tom="clara" />
     </div>
   </section>
 
@@ -92,10 +159,89 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
+  .salas__topo {
+    max-width: 46rem;
+    margin-bottom: clamp(28px, 4vw, 40px);
+  }
+  .salas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 900px) {
+    .salas {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .sala {
+    display: grid;
+    gap: 2px;
+    padding: 20px;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-l);
+    background: #fff;
+  }
+  .sala__numero {
+    font-size: clamp(2.2rem, 1.7rem + 2vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--dourado-texto);
+  }
+  .sala--exterior .sala__numero {
+    color: var(--verde);
+  }
+  .sala__texto {
+    font-weight: 700;
+  }
+  .sala__tipo {
+    margin-top: 8px;
+    font-size: var(--t-pequeno);
+    color: var(--texto-suave);
+  }
+  .salas__nota {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    font-size: var(--t-pequeno);
+    color: var(--texto-suave);
+  }
+  .salas__nota :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--dourado-texto);
+  }
+  .fotos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin: clamp(32px, 4vw, 48px) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .fotos li {
+    display: grid;
+    gap: 2px;
+    align-content: start;
+  }
+  .fotos__a {
+    grid-column: 1 / -1;
+  }
+  .fotos :global(.foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .fotos__a :global(.foto) {
+    aspect-ratio: 16 / 9;
+  }
+
   /* Telemóvel: título, formulário e só depois a lista de apoio. Computador: duas colunas. */
   .pedido-evento__grelha {
     align-items: start;
-    row-gap: 40px;
+    row-gap: 36px;
   }
   .pedido-evento__lista {
     display: grid;
@@ -105,7 +251,6 @@ import Base from '../layouts/Base.astro';
     .pedido-evento__grelha {
       grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
       grid-template-rows: auto 1fr;
-      row-gap: 40px;
     }
     .pedido-evento__intro {
       grid-column: 1;
@@ -124,10 +269,10 @@ import Base from '../layouts/Base.astro';
     align-items: start;
   }
   .reunir__tipos {
-    font-family: var(--serif);
-    font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.6rem);
+    font-size: 1.15rem;
+    font-weight: 700;
   }
   .explorar__titulo {
-    margin-bottom: clamp(36px, 5vw, 56px);
+    margin-bottom: clamp(32px, 4vw, 48px);
   }
 </style>

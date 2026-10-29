@@ -1,105 +1,100 @@
 ---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
 import CabecalhoPagina from '../components/CabecalhoPagina.astro';
 import FichaServico from '../components/FichaServico.astro';
 import Foto from '../components/Foto.astro';
 import Icone from '../components/Icone.astro';
 import IndiceServicos from '../components/IndiceServicos.astro';
+import { lodge } from '../config/lodge';
 import Base from '../layouts/Base.astro';
+
+const pergunta = `Olá, ${lodge.nome}! Gostaria de saber as condições de acesso à piscina (horários, regras e preço).`;
 ---
 
 <Base
-  titulo="Piscinas"
-  descricao="Piscinas e espaços exteriores do Mulotane Lodge, em Boane. Confirme as condições de utilização antes da sua visita."
+  titulo="Piscina e lazer em Boane"
+  descricao="Piscinas, jardins e esplanadas à sombra no Mulotana Lodge, em Boane. Pergunte à equipa as condições de acesso à piscina antes da sua visita."
 >
   <CabecalhoPagina
-    titulo="Piscinas"
-    intro="Desfrute de momentos de lazer ao ar livre, entre o relvado e o jardim."
+    titulo="Piscinas e jardins"
+    intro="Lazer ao ar livre, entre palmeiras, jardins cuidados e esplanadas à sombra das árvores."
+    foto="piscina-topiaria"
   >
-    <a slot="accoes" class="botao botao--principal" href="#condicoes">
-      Condições de utilização
+    <BotaoWhatsApp slot="accoes" texto="Perguntar sobre a piscina" variante="principal" mensagem={pergunta} />
+    <a slot="accoes" class="ligacao-seta" href="#condicoes">
+      <span>Condições de utilização</span>
       <Icone nome="seta" tamanho={18} />
     </a>
   </CabecalhoPagina>
 
-  <section class="destaque" aria-label="Fotografia da piscina">
+  <section class="secao secao--clara" aria-labelledby="fotografias-titulo">
     <div class="contentor">
-      <figure class="destaque__figura">
-        <Foto
-          id="piscina-espreguicadeiras"
-          sizes="(min-width: 1240px) 1160px, 94vw"
-          class="foto destaque__foto"
-        />
-        <figcaption class="legenda destaque__legenda">
-          <span>A piscina rectangular, com espreguiçadeiras e chapéus-de-sol.</span>
-          <a class="ligacao-seta" href="/galeria/">
-            <span>Ver a galeria</span>
-            <Icone nome="seta" tamanho={18} />
-          </a>
-        </figcaption>
-      </figure>
-    </div>
-  </section>
-
-  <section class="secao secao--clara" aria-labelledby="lazer-titulo">
-    <div class="contentor grelha grelha--metades lazer">
-      <div class="bloco-titulo">
-        <p class="etiqueta">Lazer</p>
-        <h2 id="lazer-titulo">
-          Desfrute de momentos de <em>lazer.</em>
+      <div class="bloco-titulo mosaico__topo">
+        <p class="etiqueta">A área de lazer</p>
+        <h2 id="fotografias-titulo">
+          Piscinas, jardins e <em>sombra.</em>
         </h2>
         <div class="texto">
-          <p>Um espaço para descontrair, aproveitar o ambiente exterior e partilhar bons momentos.</p>
           <p>
-            As fotografias mostram uma piscina rectangular, com deck, espreguiçadeiras e chapéus-de-sol entre
-            palmeiras, e uma piscina de forma irregular no meio do relvado, com uma esplanada à sombra.
-          </p>
-          <p>
-            Antes da visita, confirme os horários, as regras de utilização e o acesso de visitantes que não
-            estejam alojados.
+            Uma piscina rectangular junto ao edifício de colmo, outra de forma irregular entre os jardins,
+            decks com espreguiçadeiras e mesas à sombra das árvores.
           </p>
         </div>
-        <div class="accoes">
-          <a class="botao botao--verde" href="/#disponibilidade">
-            Consultar disponibilidade
-            <Icone nome="seta" tamanho={18} />
-          </a>
-        </div>
-      </div>
-      <div id="condicoes" class="condicoes">
-        <FichaServico servico="piscinas" titulo="Condições de utilização" />
-      </div>
-    </div>
-  </section>
-
-  <section class="secao secao--cinza" aria-labelledby="fotografias-titulo">
-    <div class="contentor">
-      <div class="mosaico__topo">
-        <h2 id="fotografias-titulo">
-          As piscinas em <em>fotografias.</em>
-        </h2>
-        <a class="ligacao-seta" href="/galeria/">
-          <span>Ver a galeria completa</span>
-          <Icone nome="seta" />
-        </a>
       </div>
       <ul class="mosaico">
         <li class="mosaico__a">
-          <Foto id="piscina-terraco" sizes="(min-width: 900px) 700px, 92vw" class="foto" />
-          <span class="legenda">Vista do terraço sobre a piscina.</span>
+          <Foto id="piscina-palmeiras" sizes="(min-width: 900px) 740px, 92vw" class="foto" />
+          <span class="legenda">A piscina e o edifício de colmo.</span>
         </li>
-        <li class="mosaico__b">
-          <Foto id="esplanada-piscina" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
-          <span class="legenda">Esplanada à sombra, junto à água.</span>
+        <li>
+          <Foto id="piscina-deck" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
+          <span class="legenda">Deck com espreguiçadeiras.</span>
         </li>
-        <li class="mosaico__c">
-          <Foto id="piscina-relvado" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
-          <span class="legenda">Piscina junto ao relvado.</span>
+        <li>
+          <Foto id="vista-piscina-esplanada" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
+          <span class="legenda">Vista sobre a piscina e o terraço.</span>
         </li>
-        <li class="mosaico__d">
-          <Foto id="piscina-jardim" sizes="(min-width: 900px) 700px, 92vw" class="foto" />
-          <span class="legenda">Piscina e jardim.</span>
+        <li>
+          <Foto id="piscina-cascata" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
+          <span class="legenda">Piscina com parede de água.</span>
+        </li>
+        <li>
+          <Foto id="esplanada-arvore" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
+          <span class="legenda">Esplanada junto à piscina.</span>
+        </li>
+        <li>
+          <Foto id="mesas-sombra" sizes="(min-width: 900px) 460px, 92vw" class="foto" />
+          <span class="legenda">Mesas à sombra das árvores.</span>
         </li>
       </ul>
+      <a class="ligacao-seta mosaico__galeria" href="/galeria/">
+        <span>Ver a galeria completa</span>
+        <Icone nome="seta" tamanho={18} />
+      </a>
+    </div>
+  </section>
+
+  <section id="condicoes" class="secao secao--cinza condicoes" aria-labelledby="condicoes-titulo">
+    <div class="contentor grelha grelha--metades">
+      <div class="bloco-titulo">
+        <p class="etiqueta">Antes da visita</p>
+        <h2 id="condicoes-titulo">
+          Condições de <em>utilização.</em>
+        </h2>
+        <div class="texto">
+          <p>
+            Os horários, as regras de utilização, o acesso de visitantes não alojados e o preço de entrada não
+            estão publicados. Pergunte à equipa antes da sua visita.
+          </p>
+        </div>
+        <div class="accoes">
+          <BotaoWhatsApp texto="Perguntar sobre a piscina" variante="principal" mensagem={pergunta} />
+          <a class="botao botao--contorno" href="/contactos/">
+            Outros contactos
+          </a>
+        </div>
+      </div>
+      <FichaServico servico="piscinas" titulo="A piscina em resumo" tom="clara" />
     </div>
   </section>
 
@@ -115,88 +110,62 @@ import Base from '../layouts/Base.astro';
 </Base>
 
 <style>
-  /* A fotografia sobe sobre o fim do cabeçalho verde, para lhe dar o destaque principal da página. */
-  .destaque {
-    position: relative;
-    background: linear-gradient(to bottom, var(--verde) 0, var(--verde) 34%, var(--branco) 34%);
-  }
-  .destaque__figura {
-    margin: 0;
-  }
-  .destaque :global(.destaque__foto) {
-    display: block;
-    aspect-ratio: 4 / 3;
-    max-height: 82vh;
-    width: 100%;
-  }
-  .destaque :global(.destaque__foto img) {
-    object-position: 45% 50%;
-  }
-  @media (min-width: 900px) {
-    .destaque :global(.destaque__foto) {
-      aspect-ratio: 16 / 10;
-    }
-  }
-  .destaque__legenda {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 24px;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .lazer {
-    align-items: start;
-  }
   .mosaico__topo {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px 32px;
-    align-items: end;
-    justify-content: space-between;
-    margin-bottom: clamp(32px, 4vw, 56px);
+    max-width: 46rem;
+    margin-bottom: clamp(28px, 4vw, 44px);
   }
   .mosaico {
     display: grid;
-    gap: clamp(20px, 2.4vw, 32px);
+    gap: 20px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
+  @media (min-width: 640px) {
+    .mosaico {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1000px) {
+    .mosaico {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .mosaico__a {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+  }
   .mosaico li {
     display: grid;
-    gap: 10px;
+    gap: 2px;
     align-content: start;
-  }
-  .mosaico li .legenda {
-    margin: 0;
   }
   .mosaico :global(.foto) {
     display: block;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 4 / 3;
   }
-  @media (min-width: 900px) {
-    .mosaico {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  /* A fotografia principal ocupa duas linhas e acompanha a altura das duas da direita. */
+  @media (min-width: 1000px) {
+    .mosaico .mosaico__a {
+      grid-template-rows: minmax(0, 1fr) auto;
+      align-content: stretch;
     }
-    .mosaico .mosaico__b :global(.foto),
-    .mosaico .mosaico__c :global(.foto) {
-      aspect-ratio: 4 / 3;
+    .mosaico__a :global(.foto) {
+      aspect-ratio: auto;
+      height: 100%;
+      min-height: 0;
     }
-    .mosaico__c {
-      grid-column: 1;
-      grid-row: 2;
-      justify-self: end;
-      width: 72%;
-    }
-    .mosaico__d {
-      grid-column: 2;
-      grid-row: 2;
-    }
+  }
+  .mosaico__galeria {
+    margin-top: 24px;
+  }
+  .condicoes .grelha {
+    align-items: start;
   }
   .condicoes {
-    scroll-margin-top: calc(var(--cabecalho) + 24px);
+    scroll-margin-top: var(--cabecalho);
   }
   .explorar__titulo {
-    margin-bottom: clamp(36px, 5vw, 56px);
+    margin-bottom: clamp(32px, 4vw, 48px);
   }
 </style>

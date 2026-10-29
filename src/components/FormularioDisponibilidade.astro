@@ -1,4 +1,5 @@
 ---
+import { lodge } from '../config/lodge';
 import { LIMITES } from '../lib/validacao';
 
 import Campo from './Campo.astro';
@@ -9,6 +10,11 @@ interface Props {
   prefixo?: string;
 }
 const { prefixo = 'disp' } = Astro.props;
+// Tipos de quarto publicados pelo lodge, com o id que os botões "Consultar disponibilidade" pré-escolhem.
+const quartos = lodge.quartos.map((q) => ({
+  valor: q.descricao ? `${q.nome} (${q.descricao})` : q.nome,
+  id: q.id,
+}));
 ---
 
 <Pedido
@@ -28,6 +34,16 @@ const { prefixo = 'disp' } = Astro.props;
       obrigatorio
       atributos={{ min: LIMITES.hospedes.min, max: LIMITES.hospedes.max, step: 1, inputmode: 'numeric' }}
     />
+    {quartos.length > 0 && (
+      <Campo
+        prefixo={prefixo}
+        nome="quarto"
+        rotulo="Tipo de quarto"
+        tipo="select"
+        vazio="Sem preferência"
+        opcoes={quartos}
+      />
+    )}
     <Campo
       prefixo={prefixo}
       nome="mensagem"
@@ -66,6 +82,6 @@ const { prefixo = 'disp' } = Astro.props;
   </GrupoCampos>
   <Fragment slot="aviso">
     Este pedido serve para consultar disponibilidade e não constitui uma reserva. A reserva só fica garantida
-    depois de confirmada pelo Mulotane Lodge.
+    depois de confirmada pela equipa do {lodge.nome}.
   </Fragment>
 </Pedido>

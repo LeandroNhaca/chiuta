@@ -5,6 +5,7 @@ import { canaisContacto, navegacao } from '../lib/site';
 
 import Assinatura from './Assinatura.astro';
 import Icone from './Icone.astro';
+import RedesSociais from './RedesSociais.astro';
 
 const ano = new Date().getFullYear();
 const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
@@ -13,12 +14,22 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
 <footer class="rodape">
   <div class="contentor rodape__grelha">
     <div class="rodape__marca">
-      <Assinatura />
-      <p>Um refúgio de tranquilidade, entre o lazer, a gastronomia e a natureza.</p>
+      <Assinatura sobreEscuro altura={64} />
+      <p>Alojamento, salas de conferências, restaurante e área de lazer com piscina, em Boane.</p>
       <p class="rodape__local">
         <Icone nome="pino" tamanho={18} />
-        {lodge.localizacao.localidade} · Província de {lodge.localizacao.provincia} · {lodge.localizacao.pais}
+        <span>
+          {lodge.localizacao.morada && (
+            <>
+              {lodge.localizacao.morada}
+              <br />
+            </>
+          )}
+          {lodge.localizacao.localidade} · Província de {lodge.localizacao.provincia} ·{' '}
+          {lodge.localizacao.pais}
+        </span>
       </p>
+      <RedesSociais claro />
     </div>
 
     <nav class="rodape__coluna" aria-label="Rodapé">
@@ -71,17 +82,6 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
           </li>
         ))}
       </ul>
-      {lodge.redesSociais.length > 0 && (
-        <ul class="rodape__redes">
-          {lodge.redesSociais.map((r) => (
-            <li>
-              <a href={r.url} rel="noopener" target="_blank">
-                {r.nome}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
       <a class="ligacao-seta" href="/contactos/">
         <span>Fale connosco</span>
         <Icone nome="seta" tamanho={18} />
@@ -111,7 +111,7 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
   .rodape {
     --foco: var(--dourado);
     padding-top: clamp(64px, 8vw, 112px);
-    background: #082820;
+    background: var(--verde-profundo);
     color: rgb(250 248 243 / 0.78);
     font-size: 0.95rem;
     border-top: 1px solid rgb(199 161 90 / 0.4);
@@ -154,8 +154,12 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
   .rodape__local {
     display: flex;
     gap: 10px;
-    align-items: center;
+    align-items: flex-start;
     font-size: var(--t-pequeno);
+  }
+  .rodape__local :global(svg) {
+    flex: none;
+    margin-top: 2px;
   }
   .rodape__local :global(svg) {
     color: var(--dourado);
@@ -169,8 +173,8 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
   .rodape h2 {
     font-family: var(--sans);
     font-size: var(--t-etiqueta);
-    font-weight: 700;
-    letter-spacing: 0.24em;
+    font-weight: 800;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--dourado);
   }

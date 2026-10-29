@@ -19,21 +19,39 @@ export const temContactosDirectos = Boolean(
 type Mapa = typeof lodge.mapa;
 
 /**
- * "Obter direcções" só com localização confirmada pela gerência: a ligação própria do lodge (HTTPS) ou,
- * na falta dela, direcções do Google Maps até às coordenadas confirmadas. Sem confirmação devolve '' e o
- * site assinala a localização exacta como "a confirmar": uma pesquisa pelo nome podia levar o visitante
- * ao sítio errado.
+ * "Abrir no Google Maps": a ficha do lodge no Google Maps (só HTTPS) ou, na falta dela, o ponto das
+ * coordenadas. Sem nenhum dos dois devolve '' e o site assinala a localização como "a confirmar".
  */
-export function urlDireccoes(mapa: Mapa = lodge.mapa): string {
+export function urlAbrirMapa(mapa: Mapa = lodge.mapa): string {
   if (/^https:\/\//.test(mapa.urlDireccoes)) return mapa.urlDireccoes;
   if (mapa.coordenadas) {
     const { lat, lng } = mapa.coordenadas;
-    return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+    return `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   }
   return '';
 }
 
-/** Mapa incorporado (OpenStreetMap) só quando o ponto exacto está confirmado. */
+/**
+ * "Obter direcções": do sítio onde o visitante está até às coordenadas do lodge. Sem coordenadas, a ficha
+ * do lodge no Google Maps (também tem o botão de direcções); sem nenhuma das duas, ''.
+ */
+export function urlDireccoes(mapa: Mapa = lodge.mapa): string {
+  if (mapa.coordenadas) {
+    const { lat, lng } = mapa.coordenadas;
+    return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  }
+  return /^https:\/\//.test(mapa.urlDireccoes) ? mapa.urlDireccoes : '';
+}
+
+/** Coordenadas em texto, como o lodge as publica (S/E, em graus decimais). */
+export function coordenadasTexto(mapa: Mapa = lodge.mapa): string {
+  if (!mapa.coordenadas) return '';
+  const { lat, lng } = mapa.coordenadas;
+  const fmt = (n: number) => Math.abs(n).toFixed(5).replace('.', ',');
+  return `${fmt(lat)}° ${lat < 0 ? 'S' : 'N'}, ${fmt(lng)}° ${lng < 0 ? 'O' : 'E'}`;
+}
+
+/** Mapa do OpenStreetMap à volta das coordenadas; só carrega quando o visitante o pede. */
 export function urlMapaIncorporado(mapa: Mapa = lodge.mapa): string | null {
   if (!mapa.coordenadas) return null;
   const { lat, lng } = mapa.coordenadas;

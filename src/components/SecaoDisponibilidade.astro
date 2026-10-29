@@ -14,14 +14,6 @@ const { prefixo = 'disp' } = Astro.props;
   class="secao secao--escura disponibilidade"
   aria-labelledby={`${prefixo}-secao-titulo`}
 >
-  <img
-    class="disponibilidade__folhagem"
-    src="/images/mulotane/conceptual/folhagem.svg"
-    alt=""
-    width="520"
-    height="600"
-    loading="lazy"
-  />
   <div class="contentor grelha disponibilidade__grelha">
     <div class="bloco-titulo disponibilidade__titulo">
       <p class="etiqueta">Reservas</p>
@@ -30,8 +22,8 @@ const { prefixo = 'disp' } = Astro.props;
       </h2>
       <div class="texto">
         <p>
-          Indique as datas da sua visita e o número de hóspedes. A equipa do Mulotane Lodge responde com a
-          disponibilidade e as condições da estadia.
+          Indique as datas da sua visita, o número de hóspedes e, se quiser, o tipo de quarto. A equipa do
+          Mulotana Lodge responde com a disponibilidade, o preço actual e as condições da estadia.
         </p>
       </div>
     </div>
@@ -55,25 +47,13 @@ const { prefixo = 'disp' } = Astro.props;
       </ul>
       <BotaoWhatsApp
         variante="contorno-claro"
-        mensagem="Olá, Mulotane Lodge! Gostaria de consultar a disponibilidade de alojamento."
+        mensagem="Olá, Mulotana Lodge! Gostaria de consultar a disponibilidade de alojamento."
       />
     </div>
   </div>
 </section>
 
 <style>
-  .disponibilidade {
-    overflow: hidden;
-  }
-  .disponibilidade__folhagem {
-    position: absolute;
-    left: -80px;
-    bottom: -40px;
-    width: clamp(260px, 34vw, 480px);
-    height: auto;
-    opacity: 0.09;
-    pointer-events: none;
-  }
   .disponibilidade__grelha {
     position: relative;
     align-items: start;

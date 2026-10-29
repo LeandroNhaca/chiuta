@@ -4,14 +4,14 @@ test.beforeEach(({}, info) => {
   test.skip(!['telemovel', 'portatil'].includes(info.project.name), 'galeria: telemóvel e portátil');
 });
 
-test('galeria mostra as 12 fotografias escolhidas, sem repetições e com créditos', async ({ page }) => {
+test('galeria mostra as 32 fotografias reais, sem repetições e com créditos', async ({ page }) => {
   await page.goto('/galeria/');
   const itens = page.locator('[data-galeria-item]');
-  await expect(itens).toHaveCount(12);
+  await expect(itens).toHaveCount(32);
   const ficheiros = await itens.evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).pathname));
-  expect(new Set(ficheiros).size).toBe(12);
-  // Nem o quarto por confirmar nem as capturas desactualizadas ou por identificar.
-  for (const f of ficheiros) expect(f).not.toMatch(/quarto-twin|vista-geral|edificio-exterior/);
+  expect(new Set(ficheiros).size).toBe(32);
+  // Nem a placa nem a faixa da entrada com outra marca.
+  for (const f of ficheiros) expect(f).not.toMatch(/placa-entrada|entrada-coberta/);
   const creditos = page.getByRole('complementary', { name: 'Créditos fotográficos' });
   await expect(creditos).toContainText('Ahmet Dinler');
   await expect(creditos).toContainText('Google Maps');
@@ -23,22 +23,21 @@ test('visualizador: abre, navega com teclado, fecha com Esc e devolve o foco', a
   await primeiro.click();
   const caixa = page.locator('[data-lightbox]');
   await expect(caixa).toBeVisible();
-  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('1 de 12');
-  await expect(caixa.locator('[data-lightbox-legenda]')).toHaveText('Piscina e espreguiçadeiras');
-  await expect(caixa.locator('[data-lightbox-credito]')).toHaveText(
-    'Fotografia: Ahmet Dinler, via Google Maps (Setembro de 2025)',
-  );
+  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('1 de 32');
+  await expect(caixa.locator('[data-lightbox-legenda]')).toHaveText('Piscina e edifício de colmo');
+  // Fotografia do próprio lodge: sem crédito de terceiros.
+  await expect(caixa.locator('[data-lightbox-credito]')).toHaveText('');
   const img = caixa.locator('[data-lightbox-img]');
   await expect(img).toHaveAttribute('alt', /Piscina rectangular/);
   await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.naturalWidth)).toBeGreaterThan(0);
 
   await page.keyboard.press('ArrowRight');
-  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('2 de 12');
+  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('2 de 32');
   await page.keyboard.press('ArrowLeft');
   await page.keyboard.press('ArrowLeft');
-  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('12 de 12');
+  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('32 de 32');
   await caixa.getByRole('button', { name: 'Fotografia seguinte' }).click();
-  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('1 de 12');
+  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('1 de 32');
 
   await page.keyboard.press('Escape');
   await expect(caixa).toBeHidden();
@@ -59,17 +58,17 @@ test('filtros por categoria: mostram só as fotografias escolhidas e o visualiza
   await expect(restaurante).toHaveAttribute('aria-pressed', 'true');
   await expect(todas).toHaveAttribute('aria-pressed', 'false');
   const visiveis = page.locator('[data-galeria-item]:visible');
-  await expect(visiveis).toHaveCount(3);
-  await expect(page.locator('[data-filtro-estado]')).toHaveText('3 fotografias: Restaurante');
+  await expect(visiveis).toHaveCount(5);
+  await expect(page.locator('[data-filtro-estado]')).toHaveText('5 fotografias: Restaurante');
 
   await visiveis.first().click();
   const caixa = page.locator('[data-lightbox]');
-  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('1 de 3');
+  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('1 de 5');
   await page.keyboard.press('ArrowRight');
-  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('2 de 3');
+  await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('2 de 5');
   await expect(caixa.locator('[data-lightbox-legenda]')).toHaveText(/Buffet/);
   await page.keyboard.press('Escape');
 
   await todas.click();
-  await expect(page.locator('[data-galeria-item]:visible')).toHaveCount(12);
+  await expect(page.locator('[data-galeria-item]:visible')).toHaveCount(32);
 });

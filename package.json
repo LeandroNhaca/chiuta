@@ -2,7 +2,7 @@
   "name": "mulotane-lodge",
   "version": "0.1.0",
   "private": true,
-  "description": "Website de demonstração do Mulotane Lodge (Boane, Moçambique), preparado pela One Prompt Studio.",
+  "description": "Website de demonstração do Mulotana Lodge (Boane, Moçambique), preparado pela One Prompt Studio.",
   "type": "module",
   "engines": {
     "node": ">=22.12.0"

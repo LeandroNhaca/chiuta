@@ -1,0 +1,67 @@
+---
+/** Ligações discretas para as contas oficiais do lodge (sem widgets nem conteúdos incorporados). */
+import { lodge } from '../config/lodge';
+
+import Icone from './Icone.astro';
+
+interface Props {
+  /** Sobre fundos escuros (rodapé). */
+  claro?: boolean;
+}
+const { claro = false } = Astro.props;
+const redes = lodge.redesSociais.filter((r) => /^https:\/\//.test(r.url));
+const icones = { Instagram: 'instagram', Facebook: 'facebook' } as const;
+---
+
+{redes.length > 0 && (
+  <ul class:list={['redes', { 'redes--claro': claro }]} aria-label="Redes sociais">
+    {redes.map((r) => (
+      <li>
+        <a href={r.url} target="_blank" rel="noopener">
+          <Icone nome={icones[r.nome as keyof typeof icones] ?? 'externa'} tamanho={20} />
+          <span>{r.nome}</span>
+          <span class="visualmente-oculto">(abre numa nova janela)</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+)}
+
+<style>
+  .redes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .redes a {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px 0 12px;
+    border: 1px solid var(--linha);
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--texto);
+    transition:
+      border-color var(--transicao),
+      color var(--transicao);
+  }
+  .redes a:hover {
+    border-color: var(--dourado-texto);
+    color: var(--dourado-texto);
+  }
+  .redes--claro a {
+    border-color: var(--linha-clara);
+    color: var(--branco);
+  }
+  .redes--claro a:hover {
+    border-color: var(--dourado);
+    color: var(--dourado);
+  }
+</style>

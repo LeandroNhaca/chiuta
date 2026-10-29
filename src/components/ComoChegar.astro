@@ -1,121 +1,175 @@
 ---
 /**
- * Como chegar. Com coordenadas confirmadas mostra o mapa incorporado; com a ligação do Google Maps do lodge,
- * a fotografia da placa da entrada e o botão de direcções; sem nenhuma das duas, só o que está confirmado
- * (Boane, província de Maputo) e o resto assinalado como pendente.
+ * Localização e contactos: morada, coordenadas e canais oficiais publicados pelo lodge, com botões para
+ * ligar, escrever, abrir o Google Maps e obter direcções. O mapa do OpenStreetMap só carrega quando o
+ * visitante o pede (privacidade e velocidade); sem JavaScript, a mesma ligação abre o mapa numa nova janela.
+ * Sem localização configurada, assinala o que falta como "a confirmar".
  */
 import { lodge } from '../config/lodge';
-import { localizacaoCompleta, urlDireccoes, urlMapaIncorporado } from '../lib/site';
+import {
+  canaisContacto,
+  coordenadasTexto,
+  localizacaoCompleta,
+  urlAbrirMapa,
+  urlDireccoes,
+  urlMapaIncorporado,
+} from '../lib/site';
 
 import Foto from './Foto.astro';
-import Icone from './Icone.astro';
+import Icone, { type NomeIcone } from './Icone.astro';
+import RedesSociais from './RedesSociais.astro';
 
 interface Props {
-  /** Na página de contactos o botão "Fale connosco" seria redundante. */
+  /** Na página de contactos os canais já estão na secção anterior. */
   semContacto?: boolean;
 }
 const { semContacto = false } = Astro.props;
 const mapa = urlMapaIncorporado();
+const abrirMapa = urlAbrirMapa();
 const direccoes = urlDireccoes();
-const { morada, localidade, provincia, pais } = lodge.localizacao;
+const coordenadas = coordenadasTexto();
+const { morada, localidade, provincia } = lodge.localizacao;
+const c = lodge.mapa.coordenadas;
+const mapaExterno = c
+  ? `https://www.openstreetmap.org/?mlat=${c.lat}&mlon=${c.lng}#map=16/${c.lat}/${c.lng}`
+  : '';
+const canais = canaisContacto.filter((k) => k.href);
+const iconeCanal: Record<string, NomeIcone> = { telefone: 'telefone', whatsapp: 'whatsapp', email: 'email' };
+const accaoCanal: Record<string, string> = {
+  telefone: 'Ligar',
+  whatsapp: 'WhatsApp',
+  email: 'E-mail',
+};
 ---
 
 <section id="como-chegar" class="secao secao--clara como-chegar" aria-labelledby="como-chegar-titulo">
   <div class="contentor grelha grelha--texto-foto">
     <div class="bloco-titulo">
-      <p class="etiqueta">Como chegar</p>
+      <p class="etiqueta">Localização e contactos</p>
       <h2 id="como-chegar-titulo">
-        Boane, <em>província de Maputo</em>.
-      </h2>
-      <div class="texto">
-        <p>O Mulotane Lodge fica em Boane, na província de Maputo, em Moçambique.</p>
-        {direccoes && (
-          <p>
-            Abra a localização no Google Maps para ver o percurso a partir de onde está. À chegada, procure a
-            placa do Mulotane Lodge no muro da entrada.
-          </p>
+        {morada ? (
+          <>
+            Bairro de Mulotana, <em>{localidade}.</em>
+          </>
+        ) : (
+          <>
+            {localidade}, <em>província de {provincia}</em>.
+          </>
         )}
-      </div>
+      </h2>
       <dl class="como-chegar__dados">
         <div>
           <dt>
-            <Icone nome="pino" tamanho={18} /> Localização
-          </dt>
-          <dd>{localizacaoCompleta}</dd>
-        </div>
-        <div>
-          <dt>
-            <Icone nome="info" tamanho={18} /> Morada e acessos
+            <Icone nome="pino" tamanho={18} /> Morada
           </dt>
           <dd>
             {morada ? (
-              morada
-            ) : direccoes ? (
-              <a class="como-chegar__mapa-ligacao" href={direccoes} target="_blank" rel="noopener">
-                Ver no Google Maps
-                <span class="visualmente-oculto">(abre numa nova janela)</span>
-              </a>
+              <>
+                {morada}
+                <br />
+                {localizacaoCompleta}
+              </>
             ) : (
-              <span class="pendente">A confirmar</span>
+              <>
+                {localizacaoCompleta} <span class="pendente">Morada a confirmar</span>
+              </>
             )}
           </dd>
         </div>
+        {coordenadas && (
+          <div>
+            <dt>
+              <Icone nome="mapa" tamanho={18} /> Coordenadas
+            </dt>
+            <dd>{coordenadas}</dd>
+          </div>
+        )}
+        {!semContacto &&
+          canais.map((k) => (
+            <div>
+              <dt>
+                <Icone nome={iconeCanal[k.id]} tamanho={18} /> {k.id === 'telefone' ? 'Reservas' : k.rotulo}
+              </dt>
+              <dd>
+                <a href={k.href} {...(k.externo ? { target: '_blank', rel: 'noopener' } : {})}>
+                  {k.valor}
+                  {k.externo && <span class="visualmente-oculto"> (abre numa nova janela)</span>}
+                </a>
+              </dd>
+            </div>
+          ))}
       </dl>
-      {(direccoes || !semContacto) && (
+      {!semContacto && canais.length > 0 && (
+        <div class="accoes como-chegar__canais">
+          {canais.map((k, i) => (
+            <a
+              class:list={['botao', i === 0 ? 'botao--principal' : 'botao--contorno']}
+              href={k.href}
+              {...(k.externo ? { target: '_blank', rel: 'noopener' } : {})}
+            >
+              <Icone nome={iconeCanal[k.id]} tamanho={18} />
+              {accaoCanal[k.id]}
+              {k.externo && <span class="visualmente-oculto">(abre numa nova janela)</span>}
+            </a>
+          ))}
+        </div>
+      )}
+      {(abrirMapa || direccoes) && (
         <div class="accoes">
-          {direccoes && (
-            <a class="botao botao--verde" href={direccoes} target="_blank" rel="noopener">
-              Obter direcções
+          {abrirMapa && (
+            <a class="botao botao--verde" href={abrirMapa} target="_blank" rel="noopener">
+              <Icone nome="pino" tamanho={18} />
+              Abrir no Google Maps
+              <span class="visualmente-oculto">(abre numa nova janela)</span>
+            </a>
+          )}
+          {direccoes && direccoes !== abrirMapa && (
+            <a class="ligacao-seta" href={direccoes} target="_blank" rel="noopener">
+              <span>Obter direcções</span>
               <Icone nome="externa" tamanho={18} />
               <span class="visualmente-oculto">(abre o Google Maps numa nova janela)</span>
             </a>
           )}
-          {!semContacto && (
-            <a class="botao botao--contorno" href="/contactos/">
-              Fale connosco
-            </a>
-          )}
         </div>
       )}
+      {!semContacto && <RedesSociais />}
     </div>
+
     <div class="como-chegar__figura">
+      <Foto id="edificio-colmo" sizes="(min-width: 900px) 640px, 92vw" class="foto como-chegar__foto" />
       {mapa ? (
-        <iframe
+        <div
           class="como-chegar__mapa"
-          src={mapa}
-          title={`Mapa da localização do ${lodge.nome}`}
-          loading="lazy"
-        />
-      ) : direccoes ? (
-        <figure class="como-chegar__placa">
-          <Foto id="placa-entrada" sizes="(min-width: 900px) 520px, 92vw" class="foto como-chegar__foto" />
-          <figcaption class="legenda">A placa do Mulotane Lodge, no muro da entrada.</figcaption>
-        </figure>
+          data-mapa
+          data-src={mapa}
+          data-titulo={`Mapa da localização do ${lodge.nome}`}
+        >
+          <Icone nome="mapa" tamanho={40} />
+          <p class="como-chegar__mapa-titulo">Mapa do lodge</p>
+          {coordenadas && <p class="como-chegar__mapa-coord">{coordenadas}</p>}
+          <a class="botao botao--verde" href={mapaExterno} target="_blank" rel="noopener" data-mostrar-mapa>
+            Mostrar o mapa
+            <span class="visualmente-oculto">(OpenStreetMap)</span>
+          </a>
+          <p class="como-chegar__mapa-nota">
+            O mapa vem do OpenStreetMap e só carrega quando o pedir. Coordenadas publicadas pelo lodge.
+          </p>
+        </div>
       ) : (
-        <div class="como-chegar__local">
-          <img
-            class="como-chegar__folhagem"
-            src="/images/mulotane/conceptual/folhagem.svg"
-            alt=""
-            width="520"
-            height="600"
-            loading="lazy"
-          />
-          <p class="como-chegar__pais">{pais}</p>
-          <p class="como-chegar__localidade">{localidade}</p>
-          <p class="como-chegar__provincia">Província de {provincia}</p>
-          <p class="como-chegar__mapa-pendente">
-            <span class="pendente pendente--claro">Localização exacta a confirmar</span>
-          </p>
-          <p class="como-chegar__explicacao">
-            O mapa e a ligação para obter direcções ficam disponíveis assim que o ponto exacto for confirmado
-            pelo Mulotane Lodge.
-          </p>
+        <div class="como-chegar__mapa">
+          <Icone nome="pino" tamanho={40} />
+          <p class="como-chegar__mapa-titulo">{localidade}</p>
+          <p class="como-chegar__mapa-coord">Província de {provincia}</p>
+          <span class="pendente">Localização exacta a confirmar</span>
         </div>
       )}
     </div>
   </div>
 </section>
+
+<script>
+  import '../scripts/mapa';
+</script>
 
 <style>
   .como-chegar__dados {
@@ -124,106 +178,90 @@ const { morada, localidade, provincia, pais } = lodge.localizacao;
     border-top: 1px solid var(--linha);
   }
   .como-chegar__dados > div {
-    padding: 16px 0;
+    display: grid;
+    gap: 4px 20px;
+    padding: 14px 0;
     border-bottom: 1px solid var(--linha);
+  }
+  @media (min-width: 560px) {
+    .como-chegar__dados > div {
+      grid-template-columns: 150px minmax(0, 1fr);
+      align-items: baseline;
+    }
   }
   .como-chegar__dados dt {
     display: flex;
     gap: 8px;
     align-items: center;
-    font-size: var(--t-etiqueta);
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
+    font-size: var(--t-pequeno);
+    font-weight: 800;
     color: var(--dourado-texto);
   }
   .como-chegar__dados dd {
-    margin: 6px 0 0;
-    font-family: var(--serif);
-    font-size: 1.5rem;
-    line-height: 1.2;
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.45;
   }
-  .como-chegar__dados dd .pendente {
-    font-family: var(--sans);
+  .como-chegar__dados a {
+    color: var(--verde);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .como-chegar__canais {
+    margin-top: 4px;
   }
   .como-chegar__figura {
-    justify-self: center;
-    width: 100%;
-    max-width: 520px;
-  }
-  .como-chegar__local {
-    position: relative;
     display: grid;
-    align-content: center;
-    justify-items: center;
-    gap: 10px;
-    aspect-ratio: 4 / 5;
-    max-height: 640px;
-    width: 100%;
-    padding: 40px 24px;
-    overflow: hidden;
-    border-radius: var(--raio-arco);
-    background: radial-gradient(circle at 50% 115%, rgb(199 161 90 / 0.25), transparent 55%), var(--verde);
-    color: var(--branco);
-    text-align: center;
+    gap: 14px;
+    align-self: start;
   }
-  .como-chegar__folhagem {
-    position: absolute;
-    left: 50%;
-    bottom: -60px;
-    width: 320px;
-    height: auto;
-    opacity: 0.16;
-    transform: translateX(-50%);
-    pointer-events: none;
-  }
-  .como-chegar__pais,
-  .como-chegar__provincia {
-    position: relative;
-    font-size: var(--t-etiqueta);
-    font-weight: 700;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--dourado);
-  }
-  .como-chegar__localidade {
-    position: relative;
-    font-family: var(--serif);
-    font-size: clamp(3.2rem, 2.4rem + 3vw, 5rem);
-    font-style: italic;
-    line-height: 1;
-  }
-  .como-chegar__mapa-pendente {
-    position: relative;
-    margin-top: 18px;
-  }
-  .como-chegar__explicacao {
-    position: relative;
-    max-width: 22rem;
-    font-size: var(--t-pequeno);
-    line-height: 1.55;
-    color: rgb(250 248 243 / 0.8);
-  }
-  .como-chegar__mapa-ligacao {
-    color: var(--verde);
-    text-underline-offset: 4px;
-    text-decoration-color: rgb(11 48 39 / 0.4);
-  }
-  .como-chegar__placa {
-    margin: 0;
-  }
-  .como-chegar :global(.como-chegar__foto) {
+  .como-chegar__figura :global(.como-chegar__foto) {
     display: block;
-    aspect-ratio: 4 / 5;
-    border-radius: var(--raio-arco);
-  }
-  .como-chegar :global(.como-chegar__foto img) {
-    object-position: 50% 40%;
+    aspect-ratio: 16 / 10;
   }
   .como-chegar__mapa {
+    display: grid;
+    gap: 8px;
+    place-content: center;
+    justify-items: center;
+    min-height: 280px;
+    padding: 28px 24px;
+    overflow: hidden;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-l);
+    background:
+      radial-gradient(circle at 30% 20%, rgb(11 48 39 / 0.16), transparent 55%),
+      radial-gradient(circle at 80% 85%, rgb(199 161 90 / 0.14), transparent 50%), var(--cinzento);
+    text-align: center;
+    color: var(--texto);
+  }
+  .como-chegar__mapa > :global(svg) {
+    color: var(--dourado-texto);
+  }
+  .como-chegar__mapa-titulo {
+    font-size: var(--t-h3);
+    font-weight: 800;
+  }
+  .como-chegar__mapa-coord {
+    font-weight: 600;
+    color: var(--texto-suave);
+  }
+  .como-chegar__mapa-nota {
+    max-width: 30em;
+    margin-top: 6px;
+    font-size: 0.8125rem;
+    color: var(--texto-suave);
+  }
+  /* Depois de carregado, o mapa ocupa a moldura toda. */
+  .como-chegar__mapa:global(.como-chegar__mapa--carregado) {
+    display: block;
+    padding: 0;
+  }
+  .como-chegar__mapa :global(iframe) {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    height: 100%;
+    min-height: 380px;
     border: 0;
-    border-radius: var(--raio);
   }
 </style>

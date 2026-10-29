@@ -15,14 +15,6 @@ const separadores = [
 ---
 
 <section id="pedidos" class="secao secao--escura pedidos" aria-labelledby="pedidos-titulo">
-  <img
-    class="pedidos__folhagem"
-    src="/images/mulotane/conceptual/folhagem.svg"
-    alt=""
-    width="520"
-    height="600"
-    loading="lazy"
-  />
   <div class="contentor pedidos__grelha">
     <div class="bloco-titulo pedidos__titulo">
       <p class="etiqueta">Pedidos</p>
@@ -35,8 +27,8 @@ const separadores = [
           conferências, celebrações e encontros de grupo.
         </p>
         <p>
-          Um pedido não é uma reserva. A estadia ou o evento só ficam garantidos depois de confirmados pelo
-          Mulotane Lodge.
+          No fim, a mensagem fica pronta para enviar pelo WhatsApp ou por e-mail. Um pedido não é uma reserva:
+          a estadia ou o evento só ficam garantidos depois de confirmados pela equipa do lodge.
         </p>
       </div>
     </div>
@@ -79,18 +71,6 @@ const separadores = [
 </script>
 
 <style>
-  .pedidos {
-    overflow: hidden;
-  }
-  .pedidos__folhagem {
-    position: absolute;
-    left: -90px;
-    bottom: -40px;
-    width: clamp(260px, 34vw, 480px);
-    height: auto;
-    opacity: 0.09;
-    pointer-events: none;
-  }
   .pedidos__grelha {
     position: relative;
     display: grid;
@@ -138,12 +118,10 @@ const separadores = [
     min-height: 58px;
     padding: 0 16px;
     border: 0;
-    border-radius: var(--raio-m) var(--raio-m) 0 0;
-    background: rgb(250 248 243 / 0.08);
-    color: rgb(250 248 243 / 0.82);
-    font: 700 0.8125rem/1.2 var(--sans);
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    border-radius: var(--raio-l) var(--raio-l) 0 0;
+    background: rgb(250 248 243 / 0.1);
+    color: rgb(250 248 243 / 0.86);
+    font: 750 1rem/1.2 var(--sans);
     cursor: pointer;
     transition:
       background-color var(--transicao),
@@ -154,13 +132,17 @@ const separadores = [
     color: var(--branco);
   }
   .pedidos__separador[aria-selected='true'] {
-    background: var(--branco);
-    color: var(--verde);
+    background: #fff;
+    color: var(--texto);
   }
   .pedidos__separador[aria-selected='true'] :global(svg) {
     color: var(--dourado-texto);
   }
   .pedidos__separador:focus-visible {
     outline-offset: -4px;
+  }
+  /* O formulário colado ao separador activo não leva a borda do cartão por cima. */
+  .pedidos__formularios:global(.separadores--activos) .pedidos__painel :global(.pedido) {
+    border-top: 0;
   }
 </style>

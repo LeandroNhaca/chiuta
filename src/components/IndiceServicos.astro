@@ -1,8 +1,7 @@
 ---
 /**
- * Os quatro pilares do lodge, com o mesmo peso: alojamento, restaurante, piscinas e eventos.
- * Nos cartões, um espaço sem fotografia autorizada mostra um painel tipográfico (nunca uma imagem
- * que não seja do lodge).
+ * Os quatro espaços do lodge, com o mesmo peso: alojamento, restaurante, piscinas e eventos. Cada cartão
+ * abre com uma fotografia real do espaço.
  */
 import type { IdFotografia } from '../data/fotografias';
 
@@ -12,6 +11,7 @@ import Icone, { type NomeIcone } from './Icone.astro';
 type Id = 'alojamento' | 'restaurante' | 'piscinas' | 'eventos';
 
 interface Props {
+  /** Quatro colunas (página inicial) ou três (no fim das páginas interiores, sem a página actual). */
   variante?: 'pilares' | 'cartoes';
   excluir?: Id;
 }
@@ -24,7 +24,7 @@ const itens: {
   titulo: string;
   texto: string;
   href: string;
-  foto?: IdFotografia;
+  foto: IdFotografia;
 }[] = [
   {
     id: 'alojamento',
@@ -32,60 +32,59 @@ const itens: {
     titulo: 'Alojamento',
     texto: 'Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração.',
     href: '/alojamento/',
+    foto: 'quarto-cadeirao',
+  },
+  {
+    id: 'eventos',
+    icone: 'pessoas',
+    titulo: 'Conferências e eventos',
+    texto: 'Salas de conferências e espaços ao ar livre para reunir e celebrar.',
+    href: '/eventos/',
+    foto: 'sala-conferencias-u',
+  },
+  {
+    id: 'piscinas',
+    icone: 'ondas',
+    titulo: 'Piscinas e jardins',
+    texto: 'Lazer ao ar livre, entre palmeiras, árvores de sombra e jardins cuidados.',
+    href: '/piscinas/',
+    foto: 'piscina-topiaria',
   },
   {
     id: 'restaurante',
     icone: 'talheres',
     titulo: 'Restaurante',
-    texto: 'Refeições numa sala ampla, com janelas largas sobre a vegetação.',
+    texto: 'Refeições numa sala ampla, com janelas largas sobre o jardim.',
     href: '/restaurante/',
     foto: 'sala-refeicoes-bar',
   },
-  {
-    id: 'piscinas',
-    icone: 'ondas',
-    titulo: 'Piscinas',
-    texto: 'Lazer ao ar livre, entre as palmeiras, o relvado e o jardim.',
-    href: '/piscinas/',
-    foto: 'piscina-terraco',
-  },
-  {
-    id: 'eventos',
-    icone: 'pessoas',
-    titulo: 'Eventos e conferências',
-    texto: 'Um espaço para reunir equipas, famílias e amigos.',
-    href: '/eventos/',
-    foto: 'sala-conferencias',
-  },
 ];
-const lista = itens
-  .map((item, i) => ({ ...item, numero: String(i + 1).padStart(2, '0') }))
-  .filter((i) => i.id !== excluir);
+const lista = itens.filter((i) => i.id !== excluir);
 ---
 
 <ul class:list={['indice', `indice--${variante}`]}>
   {lista.map((i) => (
     <li>
       <a class="indice__item" href={i.href}>
-        {variante === 'cartoes' &&
-          (i.foto ? (
-            <Foto id={i.foto} sizes="(min-width: 900px) 400px, 92vw" class="indice__foto" alt="" />
-          ) : (
-            <span class="indice__foto indice__foto--tipografica" aria-hidden="true">
-              <Icone nome={i.icone} tamanho={40} />
-              <span>{i.titulo}</span>
-            </span>
-          ))}
-        {variante === 'pilares' && (
-          <span class="indice__cabeca" aria-hidden="true">
-            <span class="indice__numero">{i.numero}</span>
-            <Icone nome={i.icone} tamanho={26} class="indice__icone" />
+        <Foto
+          id={i.foto}
+          sizes={
+            variante === 'pilares'
+              ? '(min-width: 1100px) 300px, (min-width: 640px) 46vw, 92vw'
+              : '(min-width: 760px) 400px, 92vw'
+          }
+          class="indice__foto"
+          alt=""
+        />
+        <span class="indice__corpo">
+          <span class="indice__titulo">
+            <Icone nome={i.icone} tamanho={22} class="indice__icone" />
+            {i.titulo}
           </span>
-        )}
-        <span class="indice__titulo">{i.titulo}</span>
-        <span class="indice__texto">{i.texto}</span>
-        <span class="indice__seta">
-          Saber mais <Icone nome="seta" tamanho={18} />
+          <span class="indice__texto">{i.texto}</span>
+          <span class="indice__seta">
+            Saber mais <Icone nome="seta" tamanho={18} />
+          </span>
         </span>
       </a>
     </li>
@@ -95,16 +94,13 @@ const lista = itens
 <style>
   .indice {
     display: grid;
-    gap: 0;
+    gap: 20px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  .indice--pilares {
-    border-top: 1px solid var(--linha);
-  }
   @media (min-width: 640px) {
-    .indice--pilares {
+    .indice {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
@@ -113,105 +109,74 @@ const lista = itens
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
-  .indice--cartoes {
-    gap: 32px;
-  }
-  @media (min-width: 760px) {
+  @media (min-width: 900px) {
     .indice--cartoes {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
-  .indice__item {
-    display: grid;
-    gap: 12px;
-    align-content: start;
-    height: 100%;
-    padding: 30px 28px 34px 0;
-    text-decoration: none;
-    color: inherit;
-    transition: background-color var(--transicao);
-  }
-  .indice--pilares li {
-    border-bottom: 1px solid var(--linha);
-  }
-  @media (min-width: 640px) and (max-width: 1099px) {
-    .indice--pilares li:nth-child(even) .indice__item {
-      padding-left: 28px;
-      border-left: 1px solid var(--linha);
-    }
-  }
-  @media (min-width: 1100px) {
-    .indice--pilares li + li .indice__item {
-      padding-left: 28px;
-      border-left: 1px solid var(--linha);
-    }
-  }
-  .indice--cartoes .indice__item {
-    padding: 0;
-  }
-  .indice__cabeca {
+  .indice li {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
   }
-  .indice__numero {
-    font-family: var(--serif);
-    font-size: 2.6rem;
-    font-style: italic;
-    line-height: 1;
-    color: var(--dourado-texto);
+  .indice__item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-l);
+    background: #fff;
+    color: var(--texto);
+    text-decoration: none;
+    transition:
+      box-shadow var(--transicao),
+      transform var(--transicao);
   }
-  .indice :global(.indice__icone) {
-    color: var(--dourado-texto);
+  .indice__item:hover {
+    box-shadow: var(--sombra);
+    transform: translateY(-2px);
   }
   .indice :global(.indice__foto) {
     display: block;
     aspect-ratio: 4 / 3;
     overflow: hidden;
-    border-radius: var(--raio);
-    margin-bottom: 10px;
-    background: var(--cinzento);
+    background: var(--cinzento-2);
   }
   .indice :global(.indice__foto img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
-  .indice__item:hover :global(.indice__foto img) {
-    transform: scale(1.04);
-  }
-  .indice .indice__foto--tipografica {
+  .indice__corpo {
     display: grid;
-    place-content: center;
-    justify-items: center;
-    gap: 14px;
-    background: radial-gradient(circle at 70% 120%, rgb(199 161 90 / 0.22), transparent 60%), var(--verde);
-    color: var(--dourado);
-    font-family: var(--serif);
-    font-size: 1.7rem;
-    font-style: italic;
+    flex: 1;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    padding: 20px 22px 18px;
   }
   .indice__titulo {
-    font-family: var(--serif);
-    font-size: var(--t-h3);
-    font-weight: 500;
-    line-height: 1.1;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  .indice__titulo :global(.indice__icone) {
+    flex: none;
+    color: var(--dourado-texto);
   }
   .indice__texto {
-    color: var(--texto-suave);
     font-size: 0.97rem;
+    line-height: 1.55;
+    color: var(--texto-suave);
   }
   .indice__seta {
     display: inline-flex;
+    gap: 6px;
     align-items: center;
-    gap: 8px;
-    margin-top: 6px;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    min-height: 40px;
+    font-weight: 750;
     color: var(--verde);
   }
   .indice__seta :global(svg) {
@@ -219,41 +184,5 @@ const lista = itens
   }
   .indice__item:hover .indice__seta :global(svg) {
     transform: translateX(4px);
-  }
-  /* Telemóvel: cada espaço numa linha compacta (número, título e texto, seta). */
-  @media (max-width: 639px) {
-    .indice--pilares .indice__item {
-      grid-template-columns: auto minmax(0, 1fr) auto;
-      column-gap: 18px;
-      row-gap: 4px;
-      align-items: baseline;
-      padding: 22px 0;
-    }
-    .indice--pilares .indice__cabeca {
-      grid-row: span 2;
-      margin: 0;
-    }
-    .indice--pilares .indice__numero {
-      font-size: 1.9rem;
-    }
-    .indice--pilares :global(.indice__icone) {
-      display: none;
-    }
-    .indice--pilares .indice__titulo {
-      grid-column: 2;
-    }
-    .indice--pilares .indice__texto {
-      grid-column: 2;
-    }
-    .indice--pilares .indice__seta {
-      grid-column: 3;
-      grid-row: 1 / span 2;
-      align-self: center;
-      margin: 0;
-      font-size: 0;
-    }
-  }
-  .indice__item:hover .indice__titulo {
-    color: var(--verde-3);
   }
 </style>

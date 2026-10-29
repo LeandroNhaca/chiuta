@@ -13,12 +13,12 @@ for (const caminho of PAGINAS) {
     const resposta = await page.goto(caminho);
     expect(resposta?.status()).toBe(200);
     await expect(page.locator('h1')).toHaveCount(1);
-    await expect(page).toHaveTitle(/Mulotane Lodge/);
+    await expect(page).toHaveTitle(/Mulotana Lodge/);
     await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.{60,}/);
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
       'content',
-      /\/og\/mulotane-lodge\.jpg$/,
+      /\/og\/mulotana-lodge\.jpg$/,
     );
     await expect(page.locator('html')).toHaveAttribute('lang', 'pt-MZ');
 
@@ -26,7 +26,8 @@ for (const caminho of PAGINAS) {
     const excesso = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(excesso, 'scroll horizontal').toBeLessThanOrEqual(0);
     expect(erros, 'erros na consola').toEqual([]);
-    // Sem fontes, estatísticas ou outros pedidos a terceiros ao carregar a página.
+    // Sem fontes, estatísticas, mapas ou outros pedidos a terceiros ao carregar a página (o mapa só carrega
+    // quando o visitante o pede).
     expect(externos, 'pedidos externos').toEqual([]);
   });
 }
