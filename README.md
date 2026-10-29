@@ -15,7 +15,7 @@ Website de demonstração comercial para o **Mulotana Lodge** (Bairro de Mulotan
 
 | Página | Conteúdo |
 | --- | --- |
-| `/` | Hero "Mulotana Lodge · O seu espaço para descansar, celebrar e reunir" com a piscina real e três acções; os quatro espaços; conferências e eventos (capacidades publicadas); quartos com preço publicado; piscinas e jardins; restaurante; **pedidos em separadores (estadia / evento)**; localização e contactos |
+| `/` | Narrativa em 7 cenas: **palco de abertura** (nome do lodge em grande sobre a piscina, a fotografia recolhe para uma moldura com camadas e os números publicados, e duas folhas fecham-se sobre um quarto); quartos em **carrossel** e tipos de quarto com preço publicado; **palco das piscinas** (janela que abre e cortina); conferências e eventos (capacidades publicadas); mosaico da galeria; **pedidos em separadores (estadia / evento)**; localização e contactos |
 | `/alojamento/` | Tipos de quarto (Standard e Executivo) com "Consultar disponibilidade" que pré-escolhe o quarto, fotografias dos quartos, ficha do alojamento, formulário de disponibilidade |
 | `/eventos/` | Capacidade das salas, fotografias, **formulário de orçamento** (tipo, data, participantes, serviços pretendidos, observações), tipos de evento, ficha |
 | `/piscinas/` | Mosaico das piscinas e jardins, "Perguntar sobre a piscina" (WhatsApp), condições "a confirmar" |
@@ -57,7 +57,7 @@ A confirmar com o proprietário: a marca (Mulotana ou Mulotane), os preços, as 
 - CSS próprio com tokens: verde-floresta `#0B3027` (identidade), dourado `#C7A15A` (acções principais e acentos), branco quente `#FAF8F3`. Cores mantidas a pedido do responsável (29/10/2026); o logótipo oficial, colorido, aparece sobre o cabeçalho claro.
 - Títulos em Cormorant Garamond e texto em Manrope, servidos pelo próprio site (licenças OFL em `public/fonts/`).
 - Movimento só com CSS (`src/styles/cinema.css` e `src/components/Cenas.astro`): scroll-driven animations, palco de cenas preso ao ecrã e View Transitions entre páginas. Sem bibliotecas, com movimento reduzido respeitado e conteúdo visível sem JavaScript (ver `docs/MOVIMENTO.md`).
-- JavaScript mínimo e só onde é preciso (cabeçalho, formulários, separadores de pedidos, barra móvel, galeria, mapa a pedido).
+- JavaScript mínimo e só onde é preciso (cabeçalho, formulários, separadores de pedidos, barra móvel, galeria, mapa a pedido, carrossel e o motor dos palcos cinematográficos da página inicial, `src/scripts/cinema.ts`). Sem JavaScript, tudo continua visível e utilizável.
 - Imagens AVIF + WebP em várias larguras, com `width`/`height` explícitos e `loading="lazy"` fora do primeiro ecrã.
 - Content-Security-Policy estrita (sem `unsafe-inline`), sem cookies, sem estatísticas, sem pedidos a terceiros ao carregar (o mapa só carrega a pedido).
 - Servidor: nginx sem privilégios em contentor só de leitura; HTTPS no Caddy da One Prompt Studio.
@@ -93,7 +93,7 @@ Todos os dados do estabelecimento estão num único ficheiro: [`src/config/lodge
 | `redesSociais` | Ligações no rodapé e nos contactos (`{ nome: 'Instagram', url: 'https://…' }`) |
 | `localizacao.morada` | Morada na secção de localização e nos dados estruturados |
 | `mapa.coordenadas` | Mapa do OpenStreetMap a pedido, "Obter direcções" e coordenadas; a CSP é ajustada sozinha |
-| `mapa.urlDireccoes` | "Abrir no Google Maps" (ficha do lodge no Google Maps) |
+| `mapa.urlDireccoes` | "Abrir no Google Maps" (hoje, o ponto das coordenadas indicado pelo responsável) |
 | `pedidos.endpoint` | Os formulários passam a enviar os pedidos (POST JSON) para esse endereço (ver `docs/ENVIO-PEDIDOS.md`) |
 | `site.dominioFinal` | Canonical e URLs absolutos no domínio definitivo |
 | `demonstracao.activa` | `false` com `dominioFinal` preenchido: o site passa a ser indexável (robots.txt e meta robots) |

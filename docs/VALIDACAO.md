@@ -14,9 +14,9 @@ O que vem das publicações e pode estar desactualizado leva `aValidar` em `src/
 | --- | --- | --- | --- |
 | Nome | **Mulotana Lodge** | Decisão do responsável (29/10/2026); Instagram e publicações 2024–2025 | **Sim, prioritário.** A placa nova da entrada (Set. 2026) e a faixa da entrada (Set. 2025, Google Maps) dizem **"Mulotane Lodge · Boutique Lodge"**, com outro logótipo, e o nome no Instagram também passou a "Mulotane lodge". Confirmar qual é a marca actual. |
 | Logótipo | Logótipo colorido do perfil do Instagram | Recorte da fotografia de perfil (cerca de 580 px) | Pedir o ficheiro vectorial (SVG, PDF ou AI). |
-| Morada | Bairro de Mulotana, Casa n.º 172, Quarteirão 12, Boane | Publicações de Março de 2024 e cartaz de reservas | Uma publicação de 2025 escreve "Bairro de Mulotane". Confirmar a grafia. |
+| Morada | Bairro de Mulotana, Casa n.º 172, Quarteirão 12, Boane (o pedido escreve "Q.12": é a mesma morada, com a abreviatura por extenso) | Publicações de Março de 2024 e cartaz de reservas | Uma publicação de 2025 escreve "Bairro de Mulotane". Confirmar a grafia. |
 | Coordenadas | -25,87061, 32,41132 | "S25.87061° E32.41132°", na biografia do Instagram e nas publicações | **Confirmar num mapa**: esta sessão não conseguiu abrir o Google Maps nem o OpenStreetMap para as comparar com a ficha do lodge. |
-| Ficha do Google Maps | https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6 | Indicada pelo responsável (28/10/2026) | Usada no botão "Abrir no Google Maps". |
+| Ligação do Google Maps | https://www.google.com/maps?q=-25.87061,32.41132 | Indicada no pedido de 29/10/2026 ("Reconstrução cinematográfica") | Usada no botão "Abrir no Google Maps" e nos dados estruturados (`hasMap`). Substitui a ficha https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6 (28/10/2026), que abre a ficha com o nome "Mulotane". Se a ficha for corrigida para "Mulotana", pode voltar a ser usada. |
 | Telefone de reservas | **+258 84 888 5556** | Biografia do Instagram, publicações, placa da entrada | Confirmado. |
 | WhatsApp | +258 84 888 5556 | Responsável (29/10/2026): tem WhatsApp | Confirmado. |
 | E-mail | mulotanalodge@gmail.com | Publicações de 2024 e cartaz de reservas | Confirmar que é lido com regularidade: os pedidos por e-mail vão para lá. |

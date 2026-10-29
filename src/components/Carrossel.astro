@@ -1,0 +1,228 @@
+---
+/**
+ * Carrossel de fotografias reais (até 15 cartões), reutilizável.
+ *
+ * - A faixa é um scroll horizontal nativo com paragem em cada cartão: arrastar com o dedo, o trackpad ou a
+ *   roda funciona sem JavaScript, e a faixa recebe o foco (as setas do teclado deslocam-na).
+ * - Com JavaScript (src/scripts/carrossel.ts): botões "anterior" e "seguinte" que avançam um cartão e
+ *   ficam inactivos nas pontas; Início e Fim levam ao primeiro e ao último.
+ * - Sem passagem automática, sem ciclo infinito e sem cartões duplicados.
+ * - Só fotografias do catálogo (src/data/fotografias.ts), com a legenda e o texto alternativo de lá.
+ */
+import { fotografia, type IdFotografia } from '../data/fotografias';
+
+import Foto from './Foto.astro';
+import Icone from './Icone.astro';
+
+export interface Cartao {
+  foto: IdFotografia;
+  /** Por omissão, a legenda do catálogo. */
+  titulo?: string;
+  href?: string;
+}
+
+interface Props {
+  id: string;
+  /** Nome do carrossel para leitores de ecrã (ex.: "Fotografias dos quartos"). */
+  rotulo: string;
+  cartoes: Cartao[];
+}
+
+const MAXIMO = 15;
+const { id, rotulo, cartoes } = Astro.props;
+const lista = cartoes.slice(0, MAXIMO);
+const total = lista.length;
+---
+
+{total > 0 && (
+  <section class="carrossel" aria-roledescription="carrossel" aria-label={rotulo} data-carrossel>
+    <ul
+      class="carrossel__pista"
+      id={`${id}-pista`}
+      tabindex="0"
+      aria-label={`${rotulo}: ${total} fotografias`}
+    >
+      {lista.map((c, i) => {
+        const f = fotografia(c.foto);
+        const titulo = c.titulo ?? f.legenda;
+        return (
+          <li class="carrossel__cartao">
+            <figure>
+              <Foto id={c.foto} sizes="(min-width: 760px) 340px, 76vw" class="foto carrossel__foto" />
+              <figcaption>
+                <span class="carrossel__numero" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                {c.href ? <a href={c.href}>{titulo}</a> : titulo}
+              </figcaption>
+            </figure>
+          </li>
+        );
+      })}
+    </ul>
+    <div class="carrossel__rodape">
+      <div class="carrossel__progresso" aria-hidden="true" />
+      <div class="carrossel__botoes" data-carrossel-botoes hidden>
+        <button
+          type="button"
+          class="carrossel__botao"
+          aria-controls={`${id}-pista`}
+          aria-label="Fotografia anterior"
+          data-carrossel-anterior
+        >
+          <Icone nome="seta-esquerda" tamanho={20} />
+        </button>
+        <button
+          type="button"
+          class="carrossel__botao"
+          aria-controls={`${id}-pista`}
+          aria-label="Fotografia seguinte"
+          data-carrossel-seguinte
+        >
+          <Icone nome="seta" tamanho={20} />
+        </button>
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  import '../scripts/carrossel';
+</script>
+
+<style>
+  .carrossel {
+    display: grid;
+    gap: 18px;
+    timeline-scope: --carrossel;
+  }
+  .carrossel__pista {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: clamp(232px, 76vw, 340px);
+    gap: 16px;
+    margin: 0;
+    padding: 4px 2px 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    scrollbar-width: none;
+    list-style: none;
+    scroll-timeline: --carrossel inline;
+  }
+  .carrossel__pista::-webkit-scrollbar {
+    display: none;
+  }
+  .carrossel__pista:focus-visible {
+    outline: 3px solid var(--foco);
+    outline-offset: 4px;
+    border-radius: var(--raio-l);
+  }
+  .carrossel__cartao {
+    scroll-snap-align: start;
+  }
+  .carrossel figure {
+    display: grid;
+    gap: 12px;
+    margin: 0;
+  }
+  .carrossel :global(.carrossel__foto) {
+    display: block;
+    aspect-ratio: 4 / 5;
+  }
+  .carrossel :global(.carrossel__foto img) {
+    transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .carrossel__cartao:hover :global(.carrossel__foto img) {
+    transform: scale(1.04);
+  }
+  .carrossel figcaption {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+  .carrossel__numero {
+    font-family: var(--serif);
+    font-size: 1.05rem;
+    color: var(--dourado-texto);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .carrossel__rodape {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .carrossel__progresso {
+    display: none;
+    position: relative;
+    flex: 1;
+    max-width: 320px;
+    height: 2px;
+    overflow: hidden;
+    background: var(--linha);
+  }
+  .carrossel__progresso::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--verde);
+    transform-origin: 0 50%;
+  }
+  /* Barra de progresso da faixa (decorativa), só onde o browser liga animações ao scroll. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .carrossel__progresso {
+        display: block;
+      }
+      .carrossel__progresso::after {
+        animation: carrossel-progresso linear both;
+        animation-timeline: --carrossel;
+      }
+    }
+  }
+  @keyframes carrossel-progresso {
+    from {
+      transform: scaleX(0.12);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .carrossel__botoes {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+  }
+  .carrossel__botao {
+    display: inline-grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 1px solid var(--verde);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--verde);
+    cursor: pointer;
+    transition:
+      background-color var(--transicao),
+      color var(--transicao),
+      opacity var(--transicao);
+  }
+  .carrossel__botao:hover {
+    background: var(--verde);
+    color: var(--branco);
+  }
+  .carrossel__botao[aria-disabled='true'] {
+    opacity: 0.35;
+    cursor: default;
+    background: transparent;
+    color: var(--verde);
+  }
+</style>

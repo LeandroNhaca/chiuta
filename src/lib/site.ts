@@ -19,8 +19,8 @@ export const temContactosDirectos = Boolean(
 type Mapa = typeof lodge.mapa;
 
 /**
- * "Abrir no Google Maps": a ficha do lodge no Google Maps (só HTTPS) ou, na falta dela, o ponto das
- * coordenadas. Sem nenhum dos dois devolve '' e o site assinala a localização como "a confirmar".
+ * "Abrir no Google Maps": a ligação configurada (só HTTPS; hoje, o ponto das coordenadas indicado pelo
+ * responsável) ou, na falta dela, o ponto das coordenadas. Sem nenhum dos dois devolve '' e o site assinala a localização como "a confirmar".
  */
 export function urlAbrirMapa(mapa: Mapa = lodge.mapa): string {
   if (/^https:\/\//.test(mapa.urlDireccoes)) return mapa.urlDireccoes;

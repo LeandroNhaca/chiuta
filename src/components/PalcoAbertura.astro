@@ -1,0 +1,724 @@
+---
+/**
+ * Abertura da página inicial: palco cinematográfico em três cenas (entrada, descoberta e alojamento).
+ *
+ * Com o palco activo (src/scripts/cinema.ts: computador ou tablet, sem movimento reduzido) a secção fica
+ * alta e o palco preso ao ecrã. O progresso do scroll (--p) conduz a coreografia:
+ *  1. Entrada: a piscina em ecrã inteiro e o nome do lodge em grande; ao descer, o texto sai e o título
+ *     sobe e encolhe.
+ *  2. Descoberta: a fotografia recolhe para uma moldura à direita (muda o enquadramento, não a imagem),
+ *     duas fotografias sobem à frente a velocidades diferentes (camadas) e entra o texto com os números
+ *     publicados pelo lodge.
+ *  3. Alojamento: duas folhas com as metades de uma fotografia de um quarto fecham-se sobre o palco e
+ *     entra o cartão com o pedido de disponibilidade.
+ *
+ * Sem palco (telemóvel, movimento reduzido, sem JavaScript) as mesmas cenas são uma sequência normal de
+ * blocos, com todo o conteúdo visível. Só se animam transform e opacity.
+ */
+import { lodge } from '../config/lodge';
+
+import Foto from './Foto.astro';
+import Icone from './Icone.astro';
+
+const quartos = lodge.detalhes.alojamento.find((d) => d.rotulo === 'Quartos');
+const salas = lodge.detalhes.eventos.find((d) => d.rotulo === 'Salas de conferências');
+// Números tal como o lodge os publicou (src/config/lodge.ts → detalhes); sem eles, não aparecem.
+const numeroQuartos = quartos?.valor.match(/\d+/)?.[0];
+const capacidades = (salas?.valor.match(/\d+/g) ?? []).map(Number);
+const factos = [
+  numeroQuartos && { valor: numeroQuartos, rotulo: 'quartos' },
+  capacidades.length > 0 && { valor: String(capacidades.length), rotulo: 'salas de conferências' },
+  capacidades.length > 0 && { valor: String(Math.max(...capacidades)), rotulo: 'pessoas na sala maior' },
+].filter((f): f is { valor: string; rotulo: string } => Boolean(f));
+
+const espacos = [
+  { href: '/alojamento/', texto: 'Alojamento' },
+  { href: '/eventos/', texto: 'Conferências e eventos' },
+  { href: '/piscinas/', texto: 'Piscinas e jardins' },
+  { href: '/restaurante/', texto: 'Restaurante' },
+];
+---
+
+<section class="abertura cinema" data-cinema aria-label={`Apresentação do ${lodge.nome}`}>
+  <div class="cinema__palco" data-cinema-palco>
+    <!-- 1. Entrada -->
+    <div class="abertura__janela">
+      <div class="abertura__imagem">
+        <Foto id="piscina-palmeiras" prioridade sizes="100vw" class="abertura__foto" />
+      </div>
+    </div>
+    <div class="abertura__entrada" data-cinema-em="0" tabindex="-1">
+      <div class="abertura__titulo">
+        <p class="etiqueta etiqueta--clara abertura__chegar">Boane · Província de Maputo</p>
+        <h1 class="abertura__chegar">{lodge.nome}</h1>
+      </div>
+      <div class="abertura__corpo">
+        <p class="abertura__subtitulo abertura__chegar">
+          O seu espaço para descansar, <em>celebrar e reunir.</em>
+        </p>
+        <p class="abertura__apoio abertura__chegar">
+          Alojamento, salas de conferências, restaurante e piscinas em Boane. Consulte a disponibilidade e
+          fale directamente com a nossa equipa.
+        </p>
+        <div class="accoes abertura__accoes abertura__chegar">
+          <a class="botao botao--principal" href="#disponibilidade">
+            Consultar disponibilidade
+            <Icone nome="seta" tamanho={18} />
+          </a>
+          <a class="botao botao--contorno-claro" href="#orcamento">
+            Pedir orçamento para um evento
+          </a>
+          <a class="ligacao-seta abertura__explorar" href="#o-lodge">
+            <span>Explorar o lodge</span>
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Descoberta -->
+    <div class="abertura__flutuante abertura__flutuante--a">
+      <Foto id="edificio-colmo" sizes="(min-width: 760px) 260px, 46vw" class="foto abertura__foto-camada" />
+    </div>
+    <div class="abertura__flutuante abertura__flutuante--b">
+      <Foto id="passadico-colmo" sizes="(min-width: 760px) 220px, 46vw" class="foto abertura__foto-camada" />
+    </div>
+    <div
+      class="abertura__descoberta"
+      id="o-lodge"
+      data-cinema-em="0.47"
+      tabindex="-1"
+      role="group"
+      aria-labelledby="o-lodge-titulo"
+    >
+      <p class="etiqueta etiqueta--clara c-revelar">O lodge</p>
+      <h2 id="o-lodge-titulo" class="c-titulo">
+        Alojamento, conferências e lazer <em>em Boane.</em>
+      </h2>
+      <p class="abertura__texto c-revelar">
+        Entre a localidade de Mulotana e as margens do rio Matola, o {lodge.nome} reúne quartos para
+        descansar, salas de conferências, um restaurante e uma área de lazer com piscinas e jardins.
+      </p>
+      {factos.length > 0 && (
+        <>
+          <dl class="abertura__factos c-cartoes">
+            {factos.map((f) => (
+              <div>
+                <dt>{f.rotulo}</dt>
+                <dd>{f.valor}</dd>
+              </div>
+            ))}
+          </dl>
+          <p class="abertura__fonte">Números publicados pelo lodge nas redes sociais.</p>
+        </>
+      )}
+      <ul class="abertura__espacos c-revelar" aria-label="Espaços do lodge">
+        {espacos.map((e) => (
+          <li>
+            <a class="ligacao-seta" href={e.href}>
+              <span>{e.texto}</span>
+              <Icone nome="seta" tamanho={16} />
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- 3. Alojamento: as duas metades da mesma fotografia fecham-se como portas. -->
+    <div class="abertura__portas">
+      <div class="abertura__porta abertura__porta--esq">
+        <Foto id="quarto-cama-redonda" sizes="100vw" class="abertura__foto-porta" />
+      </div>
+      <div class="abertura__porta abertura__porta--dir" aria-hidden="true">
+        <Foto id="quarto-cama-redonda" sizes="100vw" alt="" class="abertura__foto-porta" />
+      </div>
+    </div>
+    <div
+      class="abertura__quartos"
+      id="quartos-intro"
+      data-cinema-em="0.95"
+      tabindex="-1"
+      role="group"
+      aria-labelledby="quartos-intro-titulo"
+    >
+      <p class="etiqueta">Alojamento</p>
+      <h2 id="quartos-intro-titulo">
+        Quartos para <em>descansar.</em>
+      </h2>
+      <p>
+        Para uma noite, um fim de semana ou um grupo inteiro. Escolha o tipo de quarto e consulte a
+        disponibilidade: a equipa confirma o preço actual e as condições da estadia.
+      </p>
+      {lodge.quartos.length > 0 && (
+        <ul class="abertura__tipos" aria-label="Tipos de quarto">
+          {lodge.quartos.map((q) => (
+            <li>{q.nome}</li>
+          ))}
+        </ul>
+      )}
+      <div class="accoes">
+        <a class="botao botao--verde" href="#disponibilidade">
+          Consultar disponibilidade
+          <Icone nome="seta" tamanho={18} />
+        </a>
+        <a class="ligacao-seta" href="#quartos">
+          <span>Ver os quartos</span>
+          <Icone nome="seta" tamanho={18} />
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import '../scripts/cinema';
+</script>
+
+<style>
+  /* ================= Sem palco: blocos em sequência (telemóvel, movimento reduzido, sem JS) ========= */
+  .abertura {
+    --foco: var(--dourado);
+    --borda: max(var(--margem), calc((100vw - var(--contentor)) / 2));
+    background: var(--verde);
+    color: var(--branco);
+  }
+  .cinema__palco {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'entrada entrada'
+      'descoberta descoberta'
+      'fa fb'
+      'quartos quartos';
+    overflow: clip;
+  }
+
+  .abertura__janela {
+    grid-area: entrada;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: var(--verde-profundo);
+  }
+  .abertura__imagem,
+  .abertura :global(.abertura__foto) {
+    position: absolute;
+    inset: 0;
+  }
+  .abertura :global(.abertura__foto img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 62%;
+  }
+  /* Véu: escurece onde está o texto (a base no telemóvel, o centro no ecrã largo). */
+  .abertura__janela::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to top, rgb(5 22 18 / 0.88) 0%, rgb(5 22 18 / 0.5) 45%, rgb(5 22 18 / 0.12) 80%),
+      linear-gradient(to right, rgb(5 22 18 / 0.5), rgb(5 22 18 / 0) 70%);
+  }
+
+  .abertura__entrada {
+    grid-area: entrada;
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 16px;
+    min-height: calc(100svh - var(--cabecalho));
+    padding: clamp(96px, 16vh, 180px) var(--borda) clamp(48px, 8vh, 88px);
+  }
+  .abertura__titulo,
+  .abertura__corpo {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+  }
+  .abertura__titulo .etiqueta {
+    margin-bottom: 0;
+  }
+  .abertura h1 {
+    font-size: clamp(3.1rem, 0.6rem + 9vw, 10.5rem);
+    line-height: 0.92;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .abertura__subtitulo {
+    max-width: 18em;
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.5rem);
+    font-weight: 500;
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+  .abertura__subtitulo em {
+    color: var(--dourado-claro);
+  }
+  .abertura__apoio {
+    max-width: 36em;
+    font-size: var(--t-lead);
+    line-height: 1.6;
+    color: rgb(250 248 243 / 0.88);
+  }
+  .abertura__accoes {
+    margin-top: 10px;
+  }
+  .abertura__explorar {
+    color: var(--branco);
+  }
+  @media (max-width: 559px) {
+    .abertura__accoes .botao {
+      width: 100%;
+    }
+  }
+
+  /* Ecrã largo: composição centrada, com o nome do lodge em grande. */
+  @media (min-width: 760px) {
+    .abertura__entrada {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding-block: 40px;
+    }
+    .abertura__titulo,
+    .abertura__corpo {
+      justify-items: center;
+    }
+    .abertura__accoes {
+      justify-content: center;
+    }
+    .abertura__janela::after {
+      background:
+        radial-gradient(ellipse 70% 62% at 50% 52%, rgb(5 22 18 / 0.62), rgb(5 22 18 / 0.28) 70%),
+        linear-gradient(to top, rgb(5 22 18 / 0.5), rgb(5 22 18 / 0) 40%);
+    }
+  }
+  /* Ecrãs baixos: o texto de apoio repete a descoberta; sai para o primeiro ecrã respirar. */
+  @media (min-width: 760px) and (max-height: 719px) {
+    .abertura__apoio {
+      display: none;
+    }
+  }
+
+  /* Descoberta */
+  .abertura__descoberta {
+    grid-area: descoberta;
+    position: relative;
+    z-index: 5;
+    display: grid;
+    gap: 20px;
+    align-content: start;
+    justify-items: start;
+    padding: var(--espaco-secao) var(--borda) clamp(28px, 4vw, 40px);
+  }
+  .abertura__descoberta .etiqueta {
+    margin-bottom: 0;
+  }
+  .abertura__descoberta h2 em {
+    color: var(--dourado);
+  }
+  .abertura__texto {
+    max-width: 34em;
+    color: rgb(250 248 243 / 0.86);
+  }
+  .abertura__factos {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    width: min(100%, 30rem);
+    margin: 4px 0 0;
+  }
+  .abertura__factos div {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 14px 14px 12px;
+    border: 1px solid var(--linha-clara);
+    border-radius: var(--raio-m);
+  }
+  .abertura__factos dd {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: clamp(2rem, 1.6rem + 1.4vw, 2.9rem);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--dourado-claro);
+  }
+  .abertura__factos dt {
+    font-size: 0.8rem;
+    line-height: 1.35;
+    color: rgb(250 248 243 / 0.8);
+  }
+  .abertura__fonte {
+    margin-top: -8px;
+    font-size: 0.78rem;
+    color: rgb(250 248 243 / 0.7);
+  }
+  .abertura__espacos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .abertura__espacos .ligacao-seta {
+    color: var(--branco);
+  }
+
+  .abertura__flutuante {
+    position: relative;
+    z-index: 4;
+    margin-bottom: var(--espaco-secao);
+  }
+  .abertura__flutuante--a {
+    grid-area: fa;
+    margin-left: var(--borda);
+    margin-right: 7px;
+  }
+  .abertura__flutuante--b {
+    grid-area: fb;
+    margin-right: var(--borda);
+    margin-left: 7px;
+  }
+  .abertura :global(.abertura__foto-camada) {
+    display: block;
+    aspect-ratio: 4 / 5;
+    box-shadow: 0 24px 48px rgb(3 16 13 / 0.35);
+  }
+
+  /* Alojamento */
+  .abertura__portas {
+    grid-area: quartos;
+    position: relative;
+    z-index: 6;
+    min-height: min(92svh, 780px);
+  }
+  .abertura__porta {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+  .abertura__porta--dir {
+    display: none;
+  }
+  .abertura :global(.abertura__foto-porta) {
+    position: absolute;
+    inset: 0;
+  }
+  .abertura :global(.abertura__foto-porta img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 32%;
+  }
+  .abertura__quartos {
+    grid-area: quartos;
+    align-self: end;
+    position: relative;
+    z-index: 7;
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+    max-width: 32rem;
+    margin: var(--margem) var(--borda);
+    padding: clamp(22px, 3.4vw, 40px);
+    border-radius: var(--raio-l);
+    background: rgb(250 248 243 / 0.97);
+    color: var(--texto);
+    box-shadow: 0 30px 60px rgb(5 22 18 / 0.3);
+    --foco: var(--verde);
+  }
+  .abertura__quartos .etiqueta {
+    margin-bottom: 0;
+  }
+  .abertura__quartos p:not(.etiqueta) {
+    color: var(--texto-suave);
+  }
+  .abertura__tipos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .abertura__tipos li {
+    padding: 4px 12px;
+    border: 1px solid var(--linha);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--verde);
+  }
+
+  @media (min-width: 900px) {
+    .cinema__palco {
+      grid-template-columns: minmax(0, 6fr) repeat(2, minmax(0, 3fr));
+      grid-template-areas:
+        'entrada entrada entrada'
+        'descoberta fa fb'
+        'quartos quartos quartos';
+    }
+    .abertura__descoberta {
+      padding-bottom: var(--espaco-secao);
+    }
+    .abertura__flutuante {
+      align-self: center;
+      margin-block: var(--espaco-secao);
+    }
+    .abertura__flutuante--a {
+      margin-left: 0;
+      margin-top: calc(var(--espaco-secao) * 1.6);
+    }
+  }
+
+  /* Chegada (uma vez, por tempo): a fotografia afasta-se devagar e o texto sobe em sequência. A imagem só
+     muda de escala, nunca de opacidade, para não atrasar a pintura principal (LCP). */
+  @media (prefers-reduced-motion: no-preference) {
+    .abertura :global(.abertura__foto) {
+      animation: abertura-afastar 2.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .abertura__chegar {
+      animation: abertura-chegar 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .abertura__titulo .abertura__chegar:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+    .abertura__corpo .abertura__chegar:nth-child(1) {
+      animation-delay: 0.22s;
+    }
+    .abertura__corpo .abertura__chegar:nth-child(2) {
+      animation-delay: 0.34s;
+    }
+    .abertura__corpo .abertura__chegar:nth-child(3) {
+      animation-delay: 0.46s;
+    }
+  }
+  @keyframes abertura-afastar {
+    from {
+      transform: scale(1.08);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes abertura-chegar {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ================= Palco activo ================= */
+  .abertura[data-cinema='activo'] {
+    --percurso: 300svh;
+    /* Segmentos do percurso (0 → 1), todos a partir de --p. */
+    --sair: clamp(0, (var(--p) - 0.02) / 0.14, 1);
+    --titulo: clamp(0, var(--p) / 0.26, 1);
+    --titulo-fora: clamp(0, (var(--p) - 0.15) / 0.11, 1);
+    --j0: clamp(0, (var(--p) - 0.03) / 0.24, 1);
+    --j: calc(var(--j0) * var(--j0) * (3 - 2 * var(--j0)));
+    --d-entra: clamp(0, (var(--p) - 0.26) / 0.12, 1);
+    --d-sai: clamp(0, (var(--p) - 0.58) / 0.1, 1);
+    --f: clamp(0, (var(--p) - 0.12) / 0.62, 1);
+    --portas0: clamp(0, (var(--p) - 0.6) / 0.18, 1);
+    --portas: calc(var(--portas0) * var(--portas0) * (3 - 2 * var(--portas0)));
+    --q: clamp(0, (var(--p) - 0.77) / 0.11, 1);
+    --zoom: clamp(0, (var(--p) - 0.7) / 0.3, 1);
+    /* Moldura da descoberta: deslocação e escala final (horizontal e vertical). */
+    --j-x: 19vw;
+    --j-sx: 0.44;
+    --j-sy: 0.66;
+    --j-ex: calc(1 - (1 - var(--j-sx)) * var(--j));
+    --j-ey: calc(1 - (1 - var(--j-sy)) * var(--j));
+    /* Escala da imagem dentro da moldura: compensa o eixo que encolhe mais, para nunca deformar nem deixar
+       margens (moldura larga: compensa o horizontal; moldura alta, nos tablets ao alto: o vertical). */
+    --j-ix: calc(var(--j-ey) / var(--j-ex));
+    --j-iy: 1;
+  }
+  .abertura[data-cinema='activo'] .cinema__palco {
+    display: block;
+  }
+  .abertura[data-cinema='activo'] :is(.c-revelar, .c-titulo, .c-cartoes > *) {
+    animation: none;
+  }
+
+  .abertura[data-cinema='activo'] .abertura__janela {
+    transform: translate(calc(var(--j) * var(--j-x) + var(--mx) * -6px), calc(var(--my) * -6px))
+      scale(var(--j-ex), var(--j-ey));
+    /* Cantos de 22 px no ecrã, qualquer que seja a escala (raios elípticos que a compensam). */
+    border-radius: calc(var(--j) * 22px / var(--j-ex)) / calc(var(--j) * 22px / var(--j-ey));
+  }
+  /* A imagem compensa a escala horizontal da moldura: muda o enquadramento, nunca deforma. */
+  .abertura[data-cinema='activo'] .abertura__imagem {
+    transform: scale(var(--j-ix), var(--j-iy));
+  }
+  .abertura[data-cinema='activo'] .abertura__janela::after {
+    opacity: calc(1 - var(--j));
+  }
+
+  .abertura[data-cinema='activo'] .abertura__entrada {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+  }
+  .abertura[data-cinema='activo'] .abertura__titulo {
+    transform: translateY(calc(var(--titulo) * -16vh + var(--my) * 4px)) scale(calc(1 - 0.14 * var(--titulo)));
+    opacity: calc(1 - var(--titulo-fora));
+  }
+  .abertura[data-cinema='activo'] .abertura__corpo {
+    transform: translateY(calc(var(--sair) * -6vh));
+    opacity: calc(1 - var(--sair));
+  }
+
+  .abertura[data-cinema='activo'] .abertura__flutuante {
+    position: absolute;
+    margin: 0;
+  }
+  .abertura[data-cinema='activo'] .abertura__flutuante--a {
+    top: 54%;
+    left: 41vw;
+    width: clamp(170px, 16vw, 270px);
+    transform: translate(calc(var(--mx) * 10px), calc(70vh - var(--f) * 110vh));
+  }
+  .abertura[data-cinema='activo'] .abertura__flutuante--b {
+    top: 7%;
+    right: 4vw;
+    width: clamp(140px, 12vw, 220px);
+    transform: translate(calc(var(--mx) * 18px), calc(110vh - var(--f) * 180vh));
+  }
+  .abertura[data-cinema='activo'] .abertura__flutuante--a :global(.abertura__foto-camada) {
+    aspect-ratio: 1 / 1;
+  }
+
+  .abertura[data-cinema='activo'] .abertura__descoberta {
+    position: absolute;
+    inset: 0 auto 0 var(--borda);
+    width: min(32rem, 36vw);
+    padding: 0;
+    align-content: center;
+    opacity: calc(var(--d-entra) * (1 - var(--d-sai)));
+    transform: translateY(calc((1 - var(--d-entra)) * 48px - var(--d-sai) * 48px));
+  }
+  .abertura[data-cinema='activo'] .abertura__descoberta h2 {
+    font-size: clamp(2rem, 1.2rem + 2.2vw, 3.4rem);
+  }
+
+  .abertura[data-cinema='activo'] .abertura__portas {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    pointer-events: none;
+  }
+  /* Cada folha tem metade (e um pouco) do palco; a fotografia dentro dela tem a largura do palco, por isso
+     as duas metades encaixam sem costura quando se fecham. */
+  .abertura[data-cinema='activo'] .abertura__porta {
+    display: block;
+    inset: 0 auto;
+    width: 50.2%;
+  }
+  .abertura[data-cinema='activo'] .abertura__porta :global(.abertura__foto-porta) {
+    inset: 0 auto;
+    width: calc(100% / 0.502);
+    max-width: none;
+  }
+  .abertura[data-cinema='activo'] .abertura__porta--esq {
+    left: 0;
+    transform-origin: 100% 50%;
+    transform: translateX(calc((1 - var(--portas)) * -101%)) scale(calc(1 + 0.06 * var(--zoom)));
+  }
+  .abertura[data-cinema='activo'] .abertura__porta--dir {
+    right: 0;
+    transform-origin: 0 50%;
+    transform: translateX(calc((1 - var(--portas)) * 101%)) scale(calc(1 + 0.06 * var(--zoom)));
+  }
+  .abertura[data-cinema='activo'] .abertura__porta--esq :global(.abertura__foto-porta) {
+    left: 0;
+    transform: translateX(calc((1 - var(--portas)) * 16%));
+  }
+  .abertura[data-cinema='activo'] .abertura__porta--dir :global(.abertura__foto-porta) {
+    right: 0;
+    transform: translateX(calc((1 - var(--portas)) * -16%));
+  }
+  /* Sombra no bordo de cada folha enquanto desliza; desaparece quando fecham. */
+  .abertura[data-cinema='activo'] .abertura__porta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: calc(1 - var(--portas));
+  }
+  .abertura[data-cinema='activo'] .abertura__porta--esq::after {
+    background: linear-gradient(to left, rgb(3 16 13 / 0.5), rgb(3 16 13 / 0) 28%);
+  }
+  .abertura[data-cinema='activo'] .abertura__porta--dir::after {
+    background: linear-gradient(to right, rgb(3 16 13 / 0.5), rgb(3 16 13 / 0) 28%);
+  }
+
+  .abertura[data-cinema='activo'] .abertura__quartos {
+    position: absolute;
+    left: var(--borda);
+    bottom: clamp(24px, 7vh, 72px);
+    width: min(32rem, calc(100% - 2 * var(--margem)));
+    margin: 0;
+    opacity: var(--q);
+    transform: translateY(calc((1 - var(--q)) * 40px));
+  }
+
+  /* Tablets e portáteis estreitos: moldura mais à direita e texto mais largo. */
+  @media (max-width: 1099px) {
+    .abertura[data-cinema='activo'] {
+      --j-x: 24vw;
+      --j-sx: 0.4;
+      --j-sy: 0.6;
+    }
+    .abertura[data-cinema='activo'] .abertura__descoberta {
+      width: 46vw;
+    }
+    .abertura[data-cinema='activo'] .abertura__flutuante--a {
+      top: 64%;
+      left: 50vw;
+    }
+    .abertura[data-cinema='activo'] .abertura__flutuante--b {
+      top: 5%;
+      right: 3vw;
+    }
+  }
+  /* Tablets ao alto: a moldura sobe e o texto fica por baixo dela. */
+  @media (max-width: 1099px) and (max-aspect-ratio: 4 / 5) {
+    .abertura[data-cinema='activo'] {
+      --j-x: 0vw;
+      --j-sx: 0.84;
+      --j-sy: 0.36;
+      --j-ix: 1;
+      --j-iy: calc(var(--j-ex) / var(--j-ey));
+    }
+    .abertura[data-cinema='activo'] .abertura__janela {
+      transform: translate(calc(var(--mx) * -6px), calc(var(--j) * -26vh)) scale(var(--j-ex), var(--j-ey));
+    }
+    .abertura[data-cinema='activo'] .abertura__descoberta {
+      inset: auto var(--borda) 5vh;
+      width: auto;
+    }
+    .abertura[data-cinema='activo'] .abertura__flutuante--a {
+      top: 22%;
+      left: 4vw;
+      width: 22vw;
+    }
+    .abertura[data-cinema='activo'] .abertura__flutuante--b {
+      top: 4%;
+      width: 18vw;
+    }
+  }
+</style>

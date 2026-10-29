@@ -14,10 +14,10 @@ Só estão aqui verificações que foram de facto executadas.
 | Tipos | `npm run check` (astro check, TypeScript 6 estrito) | 0 erros, 0 avisos |
 | Unitários | `npm test` (Vitest, com a API de contentor do Astro) | 46/46 |
 | Build de produção | `npm run build` | 9 páginas + robots.txt + sitemap.xml |
-| End-to-end | `npm run test:e2e` (Playwright, 5 tamanhos de ecrã) | 140 passaram, 125 ignorados de propósito, 0 falhas |
+| End-to-end | `npm run test:e2e` (Playwright, 5 tamanhos de ecrã) | 144 passaram, 136 ignorados de propósito, 0 falhas |
 | Servidor web | contentor `nginx-unprivileged` só de leitura com o `dist/` e a configuração de `deploy/nginx/` | ✓ (ver abaixo) |
 
-Os 125 testes "ignorados" são intencionais. Os pesados (formulários, galeria, axe, imagens e ligações) e os específicos do telemóvel ou do computador só correm nos tamanhos de ecrã relevantes.
+Os 136 testes "ignorados" são intencionais. Os pesados (formulários, galeria, axe, imagens e ligações) e os específicos do telemóvel ou do computador só correm nos tamanhos de ecrã relevantes.
 
 O `docker build` completo não correu nesta sessão: o `npm ci` dentro do Docker não chega ao registo npm através do proxy da sessão. A imagem completa é construída e testada no GitHub Actions.
 
@@ -110,18 +110,22 @@ Tamanhos: telemóvel pequeno (360×740), telemóvel (Pixel 7), tablet (820×1180
   - dados estruturados com a morada, as coordenadas, o telefone, o e-mail, o logótipo e as redes.
 - **Acessibilidade**: axe-core WCAG 2.0/2.1 A e AA + boas práticas, em todas as páginas, no telemóvel e no portátil: **0 violações**.
 
-## Desempenho (medido localmente, sem limitação de rede, depois da experiência cinematográfica)
+## Desempenho (medido localmente, sem limitação de rede, depois da reconstrução cinematográfica)
 
 | Página | Ecrã | Transferido no carregamento | LCP (local) | CLS |
 | --- | --- | --- | --- | --- |
-| `/` | 390×844 @3x | 339 KB | 196 ms | 0,000 |
-| `/` | 1440×900 | 588 KB | 216 ms | 0,000 |
-| `/eventos/` | 390×844 @3x | 248 KB | 152 ms | 0,000 |
-| `/eventos/` | 1440×900 | 280 KB | 160 ms | 0,000 |
-| `/galeria/` | 390×844 @3x | 322 KB | 96 ms | 0,000 |
-| `/galeria/` | 1440×900 | 386 KB | 128 ms | 0,000 |
+| `/` | 390×844 @3x | 452 KB | 316 ms | 0,000 |
+| `/` | 1440×900 | 419 KB | 324 ms | 0,000 |
+| `/eventos/` | 390×844 @3x | 249 KB | 192 ms | 0,000 |
+| `/eventos/` | 1440×900 | 280 KB | 216 ms | 0,000 |
+| `/galeria/` | 390×844 @3x | 322 KB | 180 ms | 0,000 |
+| `/galeria/` | 1440×900 | 386 KB | 176 ms | 0,000 |
 
-A página inicial pesa mais no computador. A abertura em ecrã inteiro usa a versão de 1600 px da fotografia (104 KB em AVIF), e as fotografias do palco carregam quando o palco se aproxima. As fontes serifadas dos títulos voltaram.
+Na página inicial:
+
+- **Primeiro ecrã**: a fotografia da piscina (prioridade alta).
+- **Fotografias dos palcos** (molduras, camadas e portas): no computador, carregam quando o palco se aproxima, com prioridade normal. No telemóvel, onde os palcos são blocos normais, carregam ao descer (`loading="lazy"`).
+- **JavaScript**: o motor dos palcos (3,5 KB) e o carrossel (1 KB) acrescentam cerca de 4,5 KB sem compressão.
 
 O LCP local não inclui a latência da rede móvel.
 
@@ -159,22 +163,37 @@ Nenhum erro nos registos do nginx. A CSP gerada permite iframes só do OpenStree
 - **Mapa e Google Maps reais**: esta sessão não consegue abrir o OpenStreetMap nem o Google Maps. O teste verifica o endereço do iframe, mas o conteúdo foi simulado.
 - **Coordenadas**: não foram comparadas com a ficha do lodge num mapa.
 
-## Experiência cinematográfica (testes novos, `tests/e2e/movimento.spec.ts`)
+## Palcos cinematográficos e carrossel (`tests/e2e/movimento.spec.ts`)
 
-- **Computador**:
-  - o palco da página inicial fica preso ao ecrã (`position: sticky`);
-  - o índice leva a cada cena: na cena 3, o texto da cena 3 está visível e o da cena 1 não;
-  - a última cena não sai, e a página continua depois do palco.
-- **Teclado**: uma ligação de cena com foco fica sempre visível.
-- **Telemóvel**: o palco é uma lista normal e os quatro textos estão visíveis.
-- **Movimento reduzido**:
-  - em cinco páginas, todo o conteúdo animável está visível (opacidade 1) sem descer;
-  - o palco não fica preso ao ecrã;
-  - não há barra de progresso;
-  - o título está visível de imediato.
+- **Computador e tablet** (portátil, monitor e tablet ao alto):
+  - o palco de abertura fica activo e preso ao ecrã;
+  - na entrada, o nome e os botões estão visíveis e a descoberta ainda não;
+  - a meio do percurso, a descoberta está visível e o texto da entrada não;
+  - no fim, o cartão do alojamento está visível;
+  - depois do palco, a página continua até ao rodapé.
+- **Piscinas**: a janela abre-se e os dois textos aparecem, cada um na sua altura; o botão "Perguntar sobre a piscina" está visível.
+- **Âncoras e histórico**:
+  - "Explorar o lodge" leva à descoberta (`#o-lodge`);
+  - ir ao restaurante a partir da cena e voltar pelo histórico deixa a cena no ecrã;
+  - o endereço `/#o-lodge` abre directamente na cena.
+- **Teclado**:
+  - o foco numa ligação de uma cena que não está no ecrã traz essa cena;
+  - o Tab da entrada para a descoberta mostra a descoberta.
+- **Telemóvel**: os palcos não ficam activos nem presos ao ecrã, e todos os textos das cenas têm opacidade 1.
+- **Carrossel**:
+  - 7 fotografias;
+  - "anterior" inactivo no início;
+  - "seguinte" avança;
+  - Fim leva ao último cartão ("seguinte" fica inactivo) e Início volta ao primeiro.
+- **Movimento reduzido**: em cinco páginas, todo o conteúdo animável está visível sem descer, nenhum palco fica preso ao ecrã e não há barra de progresso.
 - **Sem JavaScript**: na página inicial, no alojamento e nos eventos, cada bloco animado fica visível ao chegar a ele.
-- **Contactos e privacidade**: movimento mínimo, sem barra de progresso e sem animações de entrada.
-- **Barra de progresso**: acompanha a leitura (de 0 a 1).
 - **Acessibilidade (axe)**:
-  - avaliada no estado final do conteúdo (movimento reduzido), em todas as páginas;
-  - o palco animado é avaliado à parte, a meio de uma cena.
+  - em todas as páginas, no estado final do conteúdo;
+  - nos palcos animados, com cada cena no ecrã (descoberta, alojamento, piscinas): 0 violações.
+
+### Problemas encontrados e corrigidos nesta fase
+
+1. **Fotografia das portas com a largura de uma folha.** A regra global `max-width: 100%` das imagens limitava a fotografia de cada folha a metade do palco, e as metades não encaixavam. A regra é anulada só nas portas.
+2. **Moldura com margens no tablet ao alto.** A imagem compensava o eixo errado. Passou a compensar o eixo que encolhe mais.
+3. **Teclado durante uma transição.** O motor decidia pela opacidade do momento, que pode estar a meio de uma transição suavizada. Passou a decidir pela posição de scroll.
+4. **Última fotografia do carrossel.** Ficava por carregar até se deslizar a faixa. As fotografias da faixa passam a carregar quando o carrossel se aproxima do ecrã.

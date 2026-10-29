@@ -144,8 +144,9 @@ export const lodge: ConfiguracaoLodge = {
     // convertido para graus decimais. Confirmar num mapa antes do domínio definitivo: esta sessão não
     // conseguiu abrir o Google Maps nem o OpenStreetMap para o comparar com a ficha do lodge.
     coordenadas: { lat: -25.87061, lng: 32.41132 },
-    // Ficha do Mulotana Lodge no Google Maps, indicada pelo responsável a 28/10/2026.
-    urlDireccoes: 'https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6',
+    // "Abrir no Google Maps": a ligação indicada no pedido de 29/10/2026 (o ponto das coordenadas). Substitui
+    // a ficha https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6 (28/10/2026), que mostra o nome "Mulotane".
+    urlDireccoes: 'https://www.google.com/maps?q=-25.87061,32.41132',
   },
   pedidos: {
     endpoint: '',

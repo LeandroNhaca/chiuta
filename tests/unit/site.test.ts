@@ -66,7 +66,7 @@ describe('mapa e direcções', () => {
   });
 
   it('no site: ficha do Google Maps, direcções até às coordenadas e mapa do OpenStreetMap', () => {
-    expect(urlAbrirMapa()).toBe('https://maps.app.goo.gl/AEdJEc4nqiBQ49vA6');
+    expect(urlAbrirMapa()).toBe('https://www.google.com/maps?q=-25.87061,32.41132');
     expect(urlDireccoes()).toBe('https://www.google.com/maps/dir/?api=1&destination=-25.87061,32.41132');
     const mapa = urlMapaIncorporado();
     expect(mapa).toMatch(/^https:\/\/www\.openstreetmap\.org\/export\/embed\.html\?bbox=/);

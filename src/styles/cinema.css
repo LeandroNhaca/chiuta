@@ -1,7 +1,8 @@
 /* Mulotana Lodge · movimento
-   Sistema único de animação do site, só com CSS (scroll-driven animations e View Transitions): não há
-   JavaScript a correr durante o scroll, nem ciclos de animação activos fora do ecrã, e nada bloqueia ou
-   força o scroll. Só se animam `transform` e `opacity`.
+   Sistema único de animação do site. As entradas, o parallax e as transições entre páginas são só CSS
+   (scroll-driven animations e View Transitions). Os palcos cinematográficos da página inicial
+   ([data-cinema]) usam um motor mínimo (src/scripts/cinema.ts) que só escreve uma variável (--p) enquanto o
+   palco está à vista; nada bloqueia nem força o scroll. Só se animam `transform` e `opacity`.
 
    Regras de segurança:
    - Todo o movimento está dentro de `prefers-reduced-motion: no-preference` e de
@@ -42,6 +43,36 @@
     --c-paralaxe: 0%;
     --c-flutuar: 0px;
   }
+}
+
+/* ---------- Palcos cinematográficos ([data-cinema], src/scripts/cinema.ts) ----------
+   O script só marca o palco como "activo" com espaço e sem movimento reduzido; aqui fica a estrutura comum
+   (secção alta + palco preso ao ecrã). A coreografia de cada palco está no seu componente e usa --p (0 → 1),
+   --mx e --my (-1 → 1). Sem o atributo "activo", as cenas são blocos normais. */
+
+.cinema[data-cinema='activo'] {
+  --p: 0;
+  --mx: 0;
+  --my: 0;
+  position: relative;
+  height: calc(100svh - var(--cabecalho) + var(--percurso, 240svh));
+}
+.cinema[data-cinema='activo'] .cinema__palco {
+  position: sticky;
+  top: var(--cabecalho);
+  height: calc(100svh - var(--cabecalho));
+  overflow: hidden;
+  isolation: isolate;
+}
+.cinema[data-cinema='activo'] .cinema__palco > * {
+  will-change: transform, opacity;
+}
+/* Só a cena à vista recebe cliques; as outras estão transparentes por cima dela. */
+.cinema[data-cinema='activo'] [data-cinema-em]:not([data-actual]) {
+  pointer-events: none;
+}
+.cinema [data-cinema-em]:focus {
+  outline: none;
 }
 
 /* ---------- Transição entre páginas (View Transitions entre documentos) ---------- */
