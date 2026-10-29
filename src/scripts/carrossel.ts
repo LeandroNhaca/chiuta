@@ -4,7 +4,23 @@ export {};
 
 const suave = () => (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth');
 
+// As fotografias fora da faixa visível só carregariam ao deslizar (lazy dentro de um scroll horizontal) e
+// apareceriam vazias por um instante: quando o carrossel se aproxima do ecrã, carregam todas.
+const aproximar = new IntersectionObserver(
+  (entradas) => {
+    for (const e of entradas) {
+      if (!e.isIntersecting) continue;
+      e.target
+        .querySelectorAll<HTMLImageElement>('img[loading="lazy"]')
+        .forEach((i) => (i.loading = 'eager'));
+      aproximar.unobserve(e.target);
+    }
+  },
+  { rootMargin: '50% 0px' },
+);
+
 document.querySelectorAll<HTMLElement>('[data-carrossel]').forEach((carrossel) => {
+  aproximar.observe(carrossel);
   const pista = carrossel.querySelector<HTMLElement>('.carrossel__pista');
   const botoes = carrossel.querySelector<HTMLElement>('[data-carrossel-botoes]');
   const anterior = carrossel.querySelector<HTMLButtonElement>('[data-carrossel-anterior]');

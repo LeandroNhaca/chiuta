@@ -17,8 +17,11 @@ test.describe('imagens, ligações e SEO', () => {
           (imgs as HTMLImageElement[]).map((i) => ({
             src: i.currentSrc || i.src,
             alt: i.getAttribute('alt'),
-            // Alt vazio só é aceitável numa imagem decorativa dentro de uma ligação que já tem texto.
-            ligacaoComTexto: (i.closest('a')?.textContent?.trim().length ?? 0) > 3,
+            // Alt vazio só é aceitável numa imagem decorativa: dentro de uma ligação que já tem texto, ou
+            // escondida dos leitores de ecrã (a segunda metade da fotografia das portas da abertura).
+            decorativa:
+              (i.closest('a')?.textContent?.trim().length ?? 0) > 3 ||
+              Boolean(i.closest('[aria-hidden="true"]')),
             w: i.getAttribute('width'),
             h: i.getAttribute('height'),
             carregada: i.complete && i.naturalWidth > 0,
@@ -29,7 +32,7 @@ test.describe('imagens, ligações e SEO', () => {
         expect(i.carregada, `${caminho} ${i.src}`).toBe(true);
         expect(i.alt, `${caminho} ${i.src} sem alt`).not.toBeNull();
         expect(i.w && i.h, `${caminho} ${i.src} sem dimensões`).toBeTruthy();
-        if (i.src.includes('/real/') && !i.ligacaoComTexto)
+        if (i.src.includes('/real/') && !i.decorativa)
           expect(i.alt!.length, `${caminho} ${i.src} alt vazio`).toBeGreaterThan(10);
       }
     }
