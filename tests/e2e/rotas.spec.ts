@@ -1,14 +1,18 @@
 import { expect, test } from '@playwright/test';
 
-import { PAGINAS, percorrer } from './ajuda';
+import { TODAS, percorrer } from './ajuda';
 
-for (const caminho of PAGINAS) {
+for (const caminho of TODAS) {
   test(`${caminho} carrega sem erros, sem scroll horizontal e com metadados`, async ({ page, baseURL }) => {
     const erros: string[] = [];
     const externos: string[] = [];
     page.on('console', (m) => m.type() === 'error' && erros.push(m.text()));
     page.on('pageerror', (e) => erros.push(String(e)));
     page.on('request', (r) => !r.url().startsWith(baseURL!) && externos.push(r.url()));
+    // O mapa do OpenStreetMap (iframe com carregamento diferido) é o único conteúdo de terceiros.
+    await page.route('https://www.openstreetmap.org/**', (r) =>
+      r.fulfill({ body: '<p>mapa</p>', contentType: 'text/html' }),
+    );
 
     const resposta = await page.goto(caminho);
     expect(resposta?.status()).toBe(200);
@@ -21,15 +25,18 @@ for (const caminho of PAGINAS) {
       'content',
       /\/og\/mulotana-lodge\.jpg$/,
     );
-    await expect(page.locator('html')).toHaveAttribute('lang', 'pt-MZ');
+    await expect(page.locator('html')).toHaveAttribute('lang', caminho.startsWith('/en/') ? 'en' : 'pt-MZ');
 
     await percorrer(page);
     const excesso = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(excesso, 'scroll horizontal').toBeLessThanOrEqual(0);
     expect(erros, 'erros na consola').toEqual([]);
-    // Sem fontes, estatísticas, mapas ou outros pedidos a terceiros ao carregar a página (o mapa só carrega
-    // quando o visitante o pede).
-    expect(externos, 'pedidos externos').toEqual([]);
+    // Sem fontes, estatísticas ou outros pedidos a terceiros, além do mapa do OpenStreetMap.
+    const mapa = /^https:\/\/www\.openstreetmap\.org\/export\/embed\.html\?/;
+    expect(
+      externos.filter((u) => !mapa.test(u)),
+      'pedidos externos',
+    ).toEqual([]);
   });
 }
 

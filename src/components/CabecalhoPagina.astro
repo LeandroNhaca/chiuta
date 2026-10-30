@@ -5,6 +5,7 @@
  * contactos, privacidade): uma faixa clara e rápida, sem animação de chegada.
  */
 import type { IdFotografia } from '../data/fotografias';
+import { linguaDe, rota } from '../i18n/linguas';
 
 import Foto from './Foto.astro';
 
@@ -18,6 +19,7 @@ interface Props {
 
 const { titulo, intro, foto, enquadramento = 'centro' } = Astro.props;
 const temAccoes = Astro.slots.has('accoes');
+const l = linguaDe(Astro.url);
 ---
 
 <section class:list={['topo', { 'topo--foto': foto }]} aria-labelledby="topo-titulo">
@@ -27,8 +29,8 @@ const temAccoes = Astro.slots.has('accoes');
     </div>
   )}
   <div class="contentor topo__texto">
-    <nav class="topo__caminho topo__entrar" aria-label="Caminho">
-      <a href="/">Início</a>
+    <nav class="topo__caminho topo__entrar" aria-label={l === 'en' ? 'Breadcrumb' : 'Caminho'}>
+      <a href={rota(l, '/')}>{l === 'en' ? 'Home' : 'Início'}</a>
       <span aria-hidden="true">/</span>
       <span aria-current="page">{titulo}</span>
     </nav>

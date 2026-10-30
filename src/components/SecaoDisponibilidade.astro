@@ -1,5 +1,9 @@
 ---
+import { lodge } from '../config/lodge';
+import { linguaDe, traducoes } from '../i18n/linguas';
+
 import BotaoWhatsApp from './BotaoWhatsApp.astro';
+import Enfase from './Enfase.astro';
 import FormularioDisponibilidade from './FormularioDisponibilidade.astro';
 import Icone from './Icone.astro';
 
@@ -7,6 +11,32 @@ interface Props {
   prefixo?: string;
 }
 const { prefixo = 'disp' } = Astro.props;
+const l = linguaDe(Astro.url);
+const t = traducoes(
+  {
+    etiqueta: 'Reservas',
+    titulo: 'Consultar *disponibilidade*',
+    texto: `Indique as datas da sua visita, o número de hóspedes e, se quiser, o tipo de quarto. A equipa do ${lodge.nome} responde com a disponibilidade, o preço actual e as condições da estadia.`,
+    passos: [
+      'Escolha as datas de entrada e de saída.',
+      'Indique quantas pessoas vão ficar.',
+      'A equipa do lodge confirma a disponibilidade e as condições.',
+    ],
+    whatsapp: `Olá, ${lodge.nome}! Gostaria de consultar a disponibilidade de alojamento.`,
+  },
+  {
+    etiqueta: 'Bookings',
+    titulo: 'Check *availability*',
+    texto: `Tell us the dates of your visit, the number of guests and, if you wish, the room type. The ${lodge.nome} team will reply with availability, the current price and the conditions of your stay.`,
+    passos: [
+      'Choose your check-in and check-out dates.',
+      'Tell us how many people will be staying.',
+      'The lodge team confirms availability and conditions.',
+    ],
+    whatsapp: `Hello, ${lodge.nome}! I would like to check availability for a stay.`,
+  },
+)[l];
+const icones = ['calendario', 'pessoas', 'visto'] as const;
 ---
 
 <section
@@ -16,15 +46,12 @@ const { prefixo = 'disp' } = Astro.props;
 >
   <div class="contentor grelha disponibilidade__grelha">
     <div class="bloco-titulo disponibilidade__titulo">
-      <p class="etiqueta c-revelar">Reservas</p>
+      <p class="etiqueta c-revelar">{t.etiqueta}</p>
       <h2 id={`${prefixo}-secao-titulo`} class="c-titulo">
-        Consultar <em>disponibilidade</em>
+        <Enfase texto={t.titulo} />
       </h2>
       <div class="texto">
-        <p>
-          Indique as datas da sua visita, o número de hóspedes e, se quiser, o tipo de quarto. A equipa do
-          Mulotana Lodge responde com a disponibilidade, o preço actual e as condições da estadia.
-        </p>
+        <p>{t.texto}</p>
       </div>
     </div>
     <div class="disponibilidade__form">
@@ -32,23 +59,14 @@ const { prefixo = 'disp' } = Astro.props;
     </div>
     <div class="disponibilidade__extra">
       <ul class="disponibilidade__passos">
-        <li>
-          <Icone nome="calendario" tamanho={20} />
-          <span>Escolha as datas de entrada e de saída.</span>
-        </li>
-        <li>
-          <Icone nome="pessoas" tamanho={20} />
-          <span>Indique quantas pessoas vão ficar.</span>
-        </li>
-        <li>
-          <Icone nome="visto" tamanho={20} />
-          <span>A equipa do lodge confirma a disponibilidade e as condições.</span>
-        </li>
+        {t.passos.map((passo, i) => (
+          <li>
+            <Icone nome={icones[i]} tamanho={20} />
+            <span>{passo}</span>
+          </li>
+        ))}
       </ul>
-      <BotaoWhatsApp
-        variante="contorno-claro"
-        mensagem="Olá, Mulotana Lodge! Gostaria de consultar a disponibilidade de alojamento."
-      />
+      <BotaoWhatsApp variante="contorno-claro" mensagem={t.whatsapp} />
     </div>
   </div>
 </section>

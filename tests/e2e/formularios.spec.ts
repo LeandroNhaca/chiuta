@@ -207,11 +207,10 @@ test('evento a partir da página inicial: separador próprio e confirmação hon
   expect(envios).toEqual([]);
 });
 
-test('contactos: telefone, WhatsApp e e-mail oficiais, morada, mapa a pedido e redes sociais', async ({
-  page,
-}) => {
-  const terceiros: string[] = [];
-  page.on('request', (r) => !r.url().startsWith('http://127.0.0.1') && terceiros.push(r.url()));
+test('contactos: telefone, WhatsApp e e-mail oficiais, morada, mapa e redes sociais', async ({ page }) => {
+  await page.route('https://www.openstreetmap.org/**', (r) =>
+    r.fulfill({ body: '<p>mapa</p>', contentType: 'text/html' }),
+  );
   await page.goto('/contactos/');
   const lista = page.locator('.contactos__lista');
   await expect(lista.getByRole('link', { name: '+258 84 888 5556' }).first()).toHaveAttribute(
@@ -245,19 +244,22 @@ test('contactos: telefone, WhatsApp e e-mail oficiais, morada, mapa a pedido e r
   );
   await expect(direccoes).toHaveAttribute('target', '_blank');
 
-  // O mapa só é criado quando o visitante o pede: até lá, nenhum pedido a terceiros.
-  await expect(local.locator('iframe')).toHaveCount(0);
-  expect(terceiros).toEqual([]);
-  await page.route('https://www.openstreetmap.org/**', (r) =>
-    r.fulfill({ body: '<p>mapa</p>', contentType: 'text/html' }),
-  );
-  await page.getByRole('link', { name: /Mostrar o mapa/ }).click();
+  // O mapa aparece logo (sem clique), com carregamento diferido e sem enviar a página de origem.
   const mapa = local.locator('iframe');
   await expect(mapa).toHaveAttribute(
     'src',
     /^https:\/\/www\.openstreetmap\.org\/export\/embed\.html\?bbox=.*marker=-25\.87061%2C32\.41132/,
   );
   await expect(mapa).toHaveAttribute('title', 'Mapa da localização do Mulotana Lodge');
+  await expect(mapa).toHaveAttribute('loading', 'lazy');
+  await expect(mapa).toHaveAttribute('referrerpolicy', 'no-referrer');
+  await mapa.scrollIntoViewIfNeeded();
+  await expect(mapa).toBeVisible();
+  expect((await mapa.boundingBox())!.height).toBeGreaterThanOrEqual(300);
+  await expect(local.getByRole('link', { name: /Ver mapa maior/ })).toHaveAttribute(
+    'href',
+    /^https:\/\/www\.openstreetmap\.org\/\?mlat=-25\.87061&mlon=32\.41132/,
+  );
 
   // Redes oficiais, discretas, na página e no rodapé.
   for (const zona of [page.locator('main'), page.locator('footer')]) {

@@ -101,7 +101,8 @@ As fotografias de 2016 e 2020 podem não mostrar o estado actual. Confirmar sobr
 ## 4. Pedidos e textos
 
 - **Pedidos**: os formulários preparam a mensagem e o visitante envia-a pelo WhatsApp (+258 84 888 5556) ou pelo seu e-mail (para mulotanalodge@gmail.com). O site não envia nem guarda dados. Para o envio directo por um servidor, ver `docs/ENVIO-PEDIDOS.md`.
-- **Política de privacidade** (`/privacidade/`): descreve isto, o mapa a pedido e as ligações às redes. Rever com o proprietário antes de activar um envio por servidor (responsável pelo tratamento e prazo de conservação).
+- **Política de privacidade** (`/privacidade/`): descreve isto, o mapa (que carrega quando o visitante chega à secção de localização) e as ligações às redes. Rever com o proprietário antes de activar um envio por servidor (responsável pelo tratamento e prazo de conservação).
+- **Versão inglesa** (`/en/`, 30/10/2026): tradução feita pela One Prompt Studio a partir dos textos portugueses, sem acrescentar informação. Pedir à gerência (ou a alguém da equipa que responda em inglês) que a reveja, sobretudo os nomes dos quartos ("Standard Room", "Executive Room") e os preços em "MZN 6,000" / "MZN 8,000". Os pedidos feitos em inglês chegam ao WhatsApp e ao e-mail do lodge em inglês.
 - Não há avaliações, prémios, classificações nem testemunhos no site.
 
 ## 5. Antes de passar a produção

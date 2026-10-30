@@ -1,14 +1,14 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-import { PAGINAS, percorrer } from './ajuda';
+import { TODAS, percorrer } from './ajuda';
 
 test.describe('imagens, ligações e SEO', () => {
   test.beforeEach(({}, info) => test.skip(info.project.name !== 'portatil', 'verificação única (portátil)'));
 
   test('todas as imagens carregam, têm alt e dimensões explícitas', async ({ page }) => {
-    test.setTimeout(120_000);
-    for (const caminho of PAGINAS) {
+    test.setTimeout(240_000);
+    for (const caminho of TODAS) {
       await page.goto(caminho);
       await percorrer(page);
       const imagens = await page
@@ -43,10 +43,10 @@ test.describe('imagens, ligações e SEO', () => {
     request,
     baseURL,
   }) => {
-    test.setTimeout(120_000);
+    test.setTimeout(240_000);
     const internas = new Set<string>();
     const externas = new Set<string>();
-    for (const caminho of PAGINAS) {
+    for (const caminho of TODAS) {
       await page.goto(caminho);
       const hrefs = await page.locator('a[href]').evaluateAll((as) =>
         as.map((a) => ({
@@ -93,8 +93,14 @@ test.describe('imagens, ligações e SEO', () => {
       'User-agent: *\nAllow: /\n\nSitemap: https://mulotane.onepromptstudio.com/sitemap.xml\n',
     );
     const sitemap = await (await request.get('/sitemap.xml')).text();
-    expect(sitemap.match(/<loc>/g)).toHaveLength(8);
-    expect(sitemap).toContain('https://mulotane.onepromptstudio.com/eventos/');
+    // As oito páginas nas duas línguas, cada uma com as alternativas (hreflang) e o português por omissão.
+    expect(sitemap.match(/<loc>/g)).toHaveLength(16);
+    expect(sitemap).toContain('<loc>https://mulotane.onepromptstudio.com/eventos/</loc>');
+    expect(sitemap).toContain('<loc>https://mulotane.onepromptstudio.com/en/events/</loc>');
+    expect(
+      sitemap.match(/hreflang="en" href="https:\/\/mulotane\.onepromptstudio\.com\/en\/events\/"/g),
+    ).toHaveLength(2);
+    expect(sitemap.match(/hreflang="x-default"/g)).toHaveLength(16);
     const og = await request.get('/og/mulotana-lodge.jpg');
     expect(og.status()).toBe(200);
     expect(og.headers()['content-type']).toContain('image/jpeg');
@@ -148,7 +154,7 @@ test('hierarquia de títulos sem saltos, um h1 por página e descrições com ta
   page,
 }, info) => {
   test.skip(info.project.name !== 'portatil', 'verificação única (portátil)');
-  for (const caminho of [...PAGINAS, '/nao-existe/']) {
+  for (const caminho of [...TODAS, '/nao-existe/']) {
     await page.goto(caminho);
     const niveis = await page
       .locator('h1, h2, h3, h4, h5, h6')
@@ -177,13 +183,15 @@ test.describe('acessibilidade (axe, WCAG 2.1 AA)', () => {
 
   // O contraste avalia-se no estado final do conteúdo: com movimento reduzido não há elementos a meio de
   // uma entrada (semitransparentes no limite do ecrã). O palco animado tem o seu próprio teste abaixo.
-  for (const caminho of PAGINAS) {
+  for (const caminho of TODAS) {
     test(`${caminho} sem violações`, async ({ page }) => {
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto(caminho);
       await percorrer(page);
+      // O conteúdo do mapa é do OpenStreetMap (outro site): avalia-se a página, não o que vem no iframe.
       const { violations } = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'])
+        .exclude('.como-chegar__mapa iframe')
         .analyze();
       const resumo = violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`);
       expect(resumo).toEqual([]);

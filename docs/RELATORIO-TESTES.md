@@ -58,13 +58,18 @@ O `docker build` completo não correu nesta sessão: o `npm ci` dentro do Docker
 
 Tamanhos: telemóvel pequeno (360×740), telemóvel (Pixel 7), tablet (820×1180), portátil (1366×768), monitor (1920×1080). Idioma pt-PT, fuso Africa/Maputo.
 
-- **Rotas** (5 tamanhos × 8 páginas):
+- **Rotas** (5 tamanhos × 16 páginas: as 8 em português e as 8 em inglês):
   - resposta 200, um `h1`, título com "Mulotana Lodge" e descrição;
-  - indexável (sem meta robots), Open Graph (`/og/mulotana-lodge.jpg`) e `lang`;
+  - indexável (sem meta robots), Open Graph (`/og/mulotana-lodge.jpg`) e `lang` (`pt-MZ` ou `en`);
   - sem scroll horizontal e sem erros na consola;
-  - **nenhum pedido a terceiros ao carregar** (o mapa só carrega a pedido);
+  - **nenhum pedido a terceiros** além do mapa do OpenStreetMap (simulado nos testes);
   - 404 própria.
-- **Hierarquia de títulos**, nas 8 páginas e na 404:
+- **Versão inglesa** (`tests/e2e/linguas.spec.ts`):
+  - cada página portuguesa tem `hreflang` para si, para a inglesa e `x-default`; o selector do cabeçalho leva à mesma página em inglês e de volta;
+  - na página inglesa: `lang="en"`, `og:locale` `en_GB`, canonical próprio, nenhuma palavra portuguesa da lista de controlo e todas as ligações internas em `/en/`;
+  - pedido de disponibilidade em inglês: erros, resumo e mensagem do WhatsApp em inglês;
+  - galeria em inglês: filtros ("7 photos: Rooms"), legendas e contador ("1 of 7").
+- **Hierarquia de títulos**, nas 16 páginas e na 404:
   - um único `h1`, que é o primeiro título;
   - nenhum salto de nível;
   - título até 70 caracteres e descrição entre 70 e 170.
@@ -95,7 +100,7 @@ Tamanhos: telemóvel pequeno (360×740), telemóvel (Pixel 7), tablet (820×1180
   - telefone, WhatsApp e e-mail com ligações reais;
   - morada e coordenadas;
   - "Abrir no Google Maps" (ficha do lodge) e "Obter direcções" (até às coordenadas), em nova janela;
-  - **o iframe do mapa só existe depois de carregar em "Mostrar o mapa"**, sem nenhum pedido a terceiros antes;
+  - **o mapa do OpenStreetMap aparece logo** (iframe com `loading="lazy"` e `referrerpolicy="no-referrer"`, pelo menos 300 px de altura) e "Ver mapa maior" abre o OpenStreetMap; nos testes, o OpenStreetMap é simulado e é o único pedido a terceiros aceite;
   - Instagram e Facebook na página e no rodapé; nenhum "A confirmar" no rodapé.
 - **Galeria**:
   - 32 fotografias, sem repetições, com créditos para as do Google Maps;

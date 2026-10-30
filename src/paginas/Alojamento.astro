@@ -1,0 +1,274 @@
+---
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Cenas, { type Cena } from '../components/Cenas.astro';
+import Enfase from '../components/Enfase.astro';
+import FichaServico from '../components/FichaServico.astro';
+import Foto from '../components/Foto.astro';
+import Icone from '../components/Icone.astro';
+import IndiceServicos from '../components/IndiceServicos.astro';
+import QuartosLista from '../components/QuartosLista.astro';
+import SecaoDisponibilidade from '../components/SecaoDisponibilidade.astro';
+import { lodge } from '../config/lodge';
+import { fotografias, textosFoto } from '../data/fotografias';
+import { linguaDe, rota, traducoes } from '../i18n/linguas';
+import Base from '../layouts/Base.astro';
+
+const l = linguaDe(Astro.url);
+const t = traducoes(
+  {
+    tituloPagina: 'Alojamento e quartos em Boane',
+    descricao:
+      'Quartos no Mulotana Lodge, em Boane: Quarto Standard e Quarto Executivo. Veja as fotografias e consulte a disponibilidade para as datas da sua visita.',
+    titulo: 'Alojamento',
+    intro:
+      'Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração, a sós, em família ou em grupo.',
+    disponibilidade: 'Consultar disponibilidade',
+    cenas: [
+      {
+        etiqueta: 'Quarto',
+        titulo: 'Cabeceira alta e base redonda',
+        texto: 'Cama de casal sobre uma base redonda de madeira escura, com dois candeeiros de cabeceira.',
+      },
+      {
+        etiqueta: 'Quarto',
+        titulo: 'Duas camas',
+        texto: 'Duas camas individuais de cabeceira estofada e chão de mármore claro.',
+      },
+      {
+        etiqueta: 'Quarto',
+        titulo: 'Zona de estar',
+        texto: 'Duas poltronas e uma mesa redonda, televisor e secretária com chaleira.',
+      },
+    ],
+    tiposEtiqueta: 'Tipos de quarto',
+    tiposTitulo: 'Escolha o seu *quarto.*',
+    tiposTexto:
+      'Os tipos de quarto e os preços abaixo foram publicados pelo lodge nas redes sociais. Ao consultar a disponibilidade, a equipa confirma o preço actual, a capacidade e o que está incluído.',
+    fotosEtiqueta: 'Os quartos em fotografias',
+    fotosTitulo: 'Conforto nos *detalhes.*',
+    fotosTexto:
+      'Fotografias de vários quartos do lodge, publicadas nas suas redes. O tipo de quarto de cada uma é indicado pela equipa, a pedido.',
+    fotosRotulo: 'Fotografias de quartos',
+    mais: 'Mais fotografias de quartos',
+    galeria: 'Ver a galeria completa',
+    saberEtiqueta: 'Antes de reservar',
+    saberTitulo: 'O que pode *saber.*',
+    saberTexto:
+      'O lodge anuncia quartos para estadias curtas e para grupos, e decoração do quarto para ocasiões especiais. O que ainda não está publicado, como as comodidades e os horários de entrada e saída, é indicado pela equipa no seu pedido.',
+    decoracao: 'Um quarto decorado para uma ocasião especial.',
+    resumo: 'O alojamento em resumo',
+    explorarEtiqueta: 'Continue a explorar',
+    explorarTitulo: 'Mais para descobrir no lodge.',
+  },
+  {
+    tituloPagina: 'Rooms and accommodation in Boane',
+    descricao:
+      'Rooms at Mulotana Lodge, in Boane: Standard Room and Executive Room. See the photos and check availability for the dates of your visit.',
+    titulo: 'Rooms',
+    intro:
+      'Rooms to rest in after a day of leisure, work or celebration, on your own, with your family or in a group.',
+    disponibilidade: 'Check availability',
+    cenas: [
+      {
+        etiqueta: 'Room',
+        titulo: 'Tall headboard and round base',
+        texto: 'A double bed on a round dark wooden base, with two bedside lamps.',
+      },
+      {
+        etiqueta: 'Room',
+        titulo: 'Two beds',
+        texto: 'Two single beds with upholstered headboards and a light marble floor.',
+      },
+      {
+        etiqueta: 'Room',
+        titulo: 'Seating area',
+        texto: 'Two armchairs and a round table, a television and a desk with a kettle.',
+      },
+    ],
+    tiposEtiqueta: 'Room types',
+    tiposTitulo: 'Choose your *room.*',
+    tiposTexto:
+      'The room types and prices below were published by the lodge on social media. When you check availability, the team confirms the current price, the capacity and what is included.',
+    fotosEtiqueta: 'The rooms in photos',
+    fotosTitulo: 'Comfort in the *details.*',
+    fotosTexto:
+      'Photos of several of the lodge’s rooms, published on its social media. The team can tell you the room type of each one on request.',
+    fotosRotulo: 'Room photos',
+    mais: 'More room photos',
+    galeria: 'See the full gallery',
+    saberEtiqueta: 'Before you book',
+    saberTitulo: 'Good to *know.*',
+    saberTexto:
+      'The lodge advertises rooms for short stays and for groups, and room decoration for special occasions. What has not been published yet, such as amenities and check-in and check-out times, is given by the team when you enquire.',
+    decoracao: 'A room decorated for a special occasion.',
+    resumo: 'Accommodation at a glance',
+    explorarEtiqueta: 'Keep exploring',
+    explorarTitulo: 'More to discover at the lodge.',
+  },
+)[l];
+
+// Transição entre quartos (palco compacto): só a descrição do que se vê em cada fotografia, sem atribuir
+// tipos de quarto (as fotografias das redes não dizem a que tipo pertencem).
+const cenas: Cena[] = (
+  [
+    { id: 'cama-redonda', foto: 'quarto-cama-redonda' },
+    { id: 'duas-camas', foto: 'quarto-duas-camas' },
+    { id: 'zona-de-estar', foto: 'quarto-poltronas' },
+  ] as const
+).map((c, i) => ({ ...c, ...t.cenas[i] }));
+const naCena = new Set(['quarto-cadeirao', ...cenas.map((c) => c.foto)]);
+const quartos = fotografias.filter((f) => f.categoria === 'quartos' && !naCena.has(f.id));
+---
+
+<Base titulo={t.tituloPagina} descricao={t.descricao}>
+  <CabecalhoPagina titulo={t.titulo} intro={t.intro} foto="quarto-cadeirao">
+    <a slot="accoes" class="botao botao--principal" href="#disponibilidade">
+      {t.disponibilidade}
+      <Icone nome="seta" tamanho={18} />
+    </a>
+  </CabecalhoPagina>
+
+  {lodge.quartos.length > 0 && (
+    <section class="secao secao--clara" aria-labelledby="tipos-titulo">
+      <div class="contentor">
+        <div class="bloco-titulo tipos__topo">
+          <p class="etiqueta c-revelar">{t.tiposEtiqueta}</p>
+          <h2 id="tipos-titulo" class="c-titulo">
+            <Enfase texto={t.tiposTitulo} />
+          </h2>
+          <div class="texto">
+            <p>{t.tiposTexto}</p>
+          </div>
+        </div>
+        <QuartosLista />
+      </div>
+    </section>
+  )}
+
+  <section class="secao secao--escura quartos-cenas" aria-labelledby="fotos-titulo">
+    <div class="contentor">
+      <div class="bloco-titulo fotos__topo">
+        <p class="etiqueta c-revelar">{t.fotosEtiqueta}</p>
+        <h2 id="fotos-titulo" class="c-titulo">
+          <Enfase texto={t.fotosTitulo} />
+        </h2>
+        <div class="texto c-revelar">
+          <p>{t.fotosTexto}</p>
+        </div>
+      </div>
+    </div>
+    <Cenas id="quarto" cenas={cenas} variante="compacta" rotulo={t.fotosRotulo} />
+  </section>
+
+  <section class="secao secao--cinza" aria-labelledby="mais-titulo">
+    <div class="contentor">
+      <h2 id="mais-titulo" class="visualmente-oculto">
+        {t.mais}
+      </h2>
+      <ul class="fotos">
+        {quartos.map((f) => (
+          <li class="c-cortina">
+            <Foto id={f.id} sizes="(min-width: 1100px) 380px, (min-width: 640px) 46vw, 92vw" class="foto" />
+            <span class="legenda">{textosFoto(f, l).legenda}</span>
+          </li>
+        ))}
+      </ul>
+      <a class="ligacao-seta fotos__galeria" href={rota(l, '/galeria/')}>
+        <span>{t.galeria}</span>
+        <Icone nome="seta" tamanho={18} />
+      </a>
+    </div>
+  </section>
+
+  <section class="secao secao--clara" aria-labelledby="saber-titulo">
+    <div class="contentor grelha grelha--metades detalhe">
+      <div class="bloco-titulo">
+        <p class="etiqueta c-revelar">{t.saberEtiqueta}</p>
+        <h2 id="saber-titulo" class="c-titulo">
+          <Enfase texto={t.saberTitulo} />
+        </h2>
+        <div class="texto">
+          <p>{t.saberTexto}</p>
+        </div>
+        <figure class="decoracao c-cortina">
+          <Foto id="decoracao-quarto" sizes="(min-width: 900px) 600px, 92vw" class="foto decoracao__foto" />
+          <figcaption class="legenda">{t.decoracao}</figcaption>
+        </figure>
+      </div>
+      <FichaServico servico="alojamento" titulo={t.resumo} tom="clara" />
+    </div>
+  </section>
+
+  <SecaoDisponibilidade prefixo="aloj" />
+
+  <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
+    <div class="contentor">
+      <p class="etiqueta c-revelar">{t.explorarEtiqueta}</p>
+      <h2 id="explorar-titulo" class="explorar__titulo c-titulo">
+        {t.explorarTitulo}
+      </h2>
+      <IndiceServicos variante="cartoes" excluir="alojamento" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .tipos__topo,
+  .fotos__topo {
+    max-width: 46rem;
+    margin-bottom: clamp(28px, 4vw, 44px);
+  }
+  .fotos {
+    display: grid;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .fotos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1100px) {
+    .fotos {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .fotos li {
+    --c-cortina: var(--cinzento);
+    display: grid;
+    gap: 2px;
+    align-content: start;
+    border-radius: var(--raio-l);
+  }
+  .quartos-cenas {
+    padding-bottom: 0;
+  }
+  @media (max-width: 899px) {
+    .quartos-cenas {
+      padding-bottom: var(--espaco-secao);
+    }
+  }
+  .fotos :global(.foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .fotos__galeria {
+    margin-top: 24px;
+  }
+  .detalhe {
+    align-items: start;
+  }
+  .decoracao {
+    margin: 8px 0 0;
+    border-radius: var(--raio-l);
+  }
+  .decoracao :global(.decoracao__foto) {
+    display: block;
+    aspect-ratio: 16 / 10;
+  }
+  .explorar__titulo {
+    margin-bottom: clamp(32px, 4vw, 48px);
+  }
+</style>

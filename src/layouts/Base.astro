@@ -6,6 +6,7 @@ import Cabecalho from '../components/Cabecalho.astro';
 import AccoesRapidas from '../components/AccoesRapidas.astro';
 import Rodape from '../components/Rodape.astro';
 import { lodge } from '../config/lodge';
+import { LINGUAS, equivalente, linguaDe, traducoes, type Lingua } from '../i18n/linguas';
 import { politicaSeguranca } from '../lib/site';
 
 interface Props {
@@ -29,10 +30,28 @@ const indexavel = !lodge.demonstracao.activa;
 const canonical = new URL(Astro.url.pathname, lodge.site.dominioFinal || Astro.site).href;
 const urlPagina = new URL(Astro.url.pathname, Astro.site).href;
 const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
+const l = linguaDe(Astro.url);
+// Versões da página nas duas línguas (hreflang); o português é também a versão por omissão.
+const base = lodge.site.dominioFinal || Astro.site;
+const versoes = (Object.keys(LINGUAS) as Lingua[]).flatMap((x) => {
+  const c = equivalente(Astro.url.pathname, x);
+  return c ? [{ lingua: x, href: new URL(c, base).href }] : [];
+});
+const versaoPt = versoes.find((v) => v.lingua === 'pt');
+const t = traducoes(
+  {
+    saltar: 'Saltar para o conteúdo',
+    imagemAlt: 'Piscina do Mulotana Lodge, com palmeiras e um edifício de telhado de colmo, em Boane.',
+  },
+  {
+    saltar: 'Skip to content',
+    imagemAlt: 'Pool at Mulotana Lodge, with palm trees and a thatched-roof building, in Boane.',
+  },
+)[l];
 ---
 
 <!doctype html>
-<html lang="pt-MZ">
+<html lang={LINGUAS[l].html}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -40,6 +59,9 @@ const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
     <title>{tituloCompleto}</title>
     <meta name="description" content={descricao} />
     <link rel="canonical" href={canonical} />
+    {versoes.length > 1 &&
+      versoes.map((v) => <link rel="alternate" hreflang={LINGUAS[v.lingua].html} href={v.href} />)}
+    {versoes.length > 1 && versaoPt && <link rel="alternate" hreflang="x-default" href={versaoPt.href} />}
     {!indexavel && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#faf8f3" />
     <meta name="format-detection" content="telephone=no" />
@@ -64,17 +86,19 @@ const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={lodge.nome} />
-    <meta property="og:locale" content="pt_PT" />
+    <meta property="og:locale" content={LINGUAS[l].og} />
+    {(Object.keys(LINGUAS) as Lingua[])
+      .filter((x) => x !== l && versoes.some((v) => v.lingua === x))
+      .map((x) => (
+        <meta property="og:locale:alternate" content={LINGUAS[x].og} />
+      ))}
     <meta property="og:title" content={tituloCompleto} />
     <meta property="og:description" content={descricao} />
     <meta property="og:url" content={urlPagina} />
     <meta property="og:image" content={imagemPartilha} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta
-      property="og:image:alt"
-      content="Piscina do Mulotana Lodge, com palmeiras e um edifício de telhado de colmo, em Boane."
-    />
+    <meta property="og:image:alt" content={t.imagemAlt} />
     <meta name="twitter:card" content="summary_large_image" />
 
     {dadosEstruturados && (
@@ -84,7 +108,7 @@ const imagemPartilha = new URL('/og/mulotana-lodge.jpg', Astro.site).href;
   <body data-movimento={movimento}>
     {movimento !== 'minimo' && <div class="c-progresso" aria-hidden="true" />}
     <a class="saltar" href="#conteudo">
-      Saltar para o conteúdo
+      {t.saltar}
     </a>
     <Cabecalho />
     <main id="conteudo" tabindex="-1">

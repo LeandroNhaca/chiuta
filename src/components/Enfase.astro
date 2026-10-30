@@ -1,0 +1,9 @@
+---
+/** Texto com ênfase: as partes entre asteriscos ficam em <em> ("Conheça os *quartos.*"). */
+interface Props {
+  texto: string;
+}
+const partes = Astro.props.texto.split('*');
+---
+
+{partes.map((p, i) => (i % 2 ? <em>{p}</em> : p))}

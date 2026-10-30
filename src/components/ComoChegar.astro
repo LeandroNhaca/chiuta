@@ -1,20 +1,22 @@
 ---
 /**
  * Localização e contactos: morada, coordenadas e canais oficiais publicados pelo lodge, com botões para
- * ligar, escrever, abrir o Google Maps e obter direcções. O mapa do OpenStreetMap só carrega quando o
- * visitante o pede (privacidade e velocidade); sem JavaScript, a mesma ligação abre o mapa numa nova janela.
+ * ligar, escrever, abrir o Google Maps e obter direcções. O mapa do OpenStreetMap aparece logo na página, num
+ * iframe com carregamento diferido (só carrega quando o visitante se aproxima dele; funciona sem JavaScript).
  * Sem localização configurada, assinala o que falta como "a confirmar".
  */
 import { lodge } from '../config/lodge';
+import { linguaDe, traducoes } from '../i18n/linguas';
 import {
-  canaisContacto,
+  canaisContactoEm,
   coordenadasTexto,
-  localizacaoCompleta,
+  localizacaoCompletaEm,
   urlAbrirMapa,
   urlDireccoes,
   urlMapaIncorporado,
 } from '../lib/site';
 
+import Enfase from './Enfase.astro';
 import Foto from './Foto.astro';
 import Icone, { type NomeIcone } from './Icone.astro';
 import RedesSociais from './RedesSociais.astro';
@@ -24,43 +26,74 @@ interface Props {
   semContacto?: boolean;
 }
 const { semContacto = false } = Astro.props;
+const l = linguaDe(Astro.url);
 const mapa = urlMapaIncorporado();
 const abrirMapa = urlAbrirMapa();
 const direccoes = urlDireccoes();
-const coordenadas = coordenadasTexto();
+const coordenadas = coordenadasTexto(lodge.mapa, l);
+const localizacaoCompleta = localizacaoCompletaEm(l);
 const { morada, localidade, provincia } = lodge.localizacao;
 const c = lodge.mapa.coordenadas;
 const mapaExterno = c
   ? `https://www.openstreetmap.org/?mlat=${c.lat}&mlon=${c.lng}#map=16/${c.lat}/${c.lng}`
   : '';
-const canais = canaisContacto.filter((k) => k.href);
+const canais = canaisContactoEm(l).filter((k) => k.href);
 const iconeCanal: Record<string, NomeIcone> = { telefone: 'telefone', whatsapp: 'whatsapp', email: 'email' };
-const accaoCanal: Record<string, string> = {
-  telefone: 'Ligar',
-  whatsapp: 'WhatsApp',
-  email: 'E-mail',
-};
+const t = traducoes(
+  {
+    etiqueta: 'Localização e contactos',
+    titulo: `Bairro de Mulotana, *${localidade}.*`,
+    tituloSemMorada: `${localidade}, *província de ${provincia}*.`,
+    morada: 'Morada',
+    moradaPendente: 'Morada a confirmar',
+    coordenadas: 'Coordenadas',
+    reservas: 'Reservas',
+    novaJanela: '(abre numa nova janela)',
+    accao: { telefone: 'Ligar', whatsapp: 'WhatsApp', email: 'E-mail' } as Record<string, string>,
+    abrirGoogle: 'Abrir no Google Maps',
+    direccoes: 'Obter direcções',
+    direccoesNovaJanela: '(abre o Google Maps numa nova janela)',
+    mapaTitulo: `Mapa da localização do ${lodge.nome}`,
+    mapaLegenda: 'Mapa do OpenStreetMap',
+    mapaMaior: 'Ver mapa maior',
+    mapaNovaJanela: '(abre o OpenStreetMap numa nova janela)',
+    provincia: `Província de ${provincia}`,
+    localPendente: 'Localização exacta a confirmar',
+  },
+  {
+    etiqueta: 'Location and contact',
+    titulo: `Bairro de Mulotana, *${localidade}.*`,
+    tituloSemMorada: `${localidade}, *${provincia} Province*.`,
+    morada: 'Address',
+    moradaPendente: 'Address to be confirmed',
+    coordenadas: 'Coordinates',
+    reservas: 'Bookings',
+    novaJanela: '(opens in a new window)',
+    accao: { telefone: 'Call', whatsapp: 'WhatsApp', email: 'Email' } as Record<string, string>,
+    abrirGoogle: 'Open in Google Maps',
+    direccoes: 'Get directions',
+    direccoesNovaJanela: '(opens Google Maps in a new window)',
+    mapaTitulo: `Map showing the location of ${lodge.nome}`,
+    mapaLegenda: 'OpenStreetMap map',
+    mapaMaior: 'View larger map',
+    mapaNovaJanela: '(opens OpenStreetMap in a new window)',
+    provincia: `${provincia} Province`,
+    localPendente: 'Exact location to be confirmed',
+  },
+)[l];
 ---
 
 <section id="como-chegar" class="secao secao--clara como-chegar" aria-labelledby="como-chegar-titulo">
   <div class="contentor grelha grelha--texto-foto">
     <div class="bloco-titulo">
-      <p class="etiqueta c-revelar">Localização e contactos</p>
+      <p class="etiqueta c-revelar">{t.etiqueta}</p>
       <h2 id="como-chegar-titulo" class="c-titulo">
-        {morada ? (
-          <>
-            Bairro de Mulotana, <em>{localidade}.</em>
-          </>
-        ) : (
-          <>
-            {localidade}, <em>província de {provincia}</em>.
-          </>
-        )}
+        <Enfase texto={morada ? t.titulo : t.tituloSemMorada} />
       </h2>
       <dl class="como-chegar__dados">
         <div>
           <dt>
-            <Icone nome="pino" tamanho={18} /> Morada
+            <Icone nome="pino" tamanho={18} /> {t.morada}
           </dt>
           <dd>
             {morada ? (
@@ -71,7 +104,7 @@ const accaoCanal: Record<string, string> = {
               </>
             ) : (
               <>
-                {localizacaoCompleta} <span class="pendente">Morada a confirmar</span>
+                {localizacaoCompleta} <span class="pendente">{t.moradaPendente}</span>
               </>
             )}
           </dd>
@@ -79,7 +112,7 @@ const accaoCanal: Record<string, string> = {
         {coordenadas && (
           <div>
             <dt>
-              <Icone nome="mapa" tamanho={18} /> Coordenadas
+              <Icone nome="mapa" tamanho={18} /> {t.coordenadas}
             </dt>
             <dd>{coordenadas}</dd>
           </div>
@@ -88,12 +121,12 @@ const accaoCanal: Record<string, string> = {
           canais.map((k) => (
             <div>
               <dt>
-                <Icone nome={iconeCanal[k.id]} tamanho={18} /> {k.id === 'telefone' ? 'Reservas' : k.rotulo}
+                <Icone nome={iconeCanal[k.id]} tamanho={18} /> {k.id === 'telefone' ? t.reservas : k.rotulo}
               </dt>
               <dd>
                 <a href={k.href} {...(k.externo ? { target: '_blank', rel: 'noopener' } : {})}>
                   {k.valor}
-                  {k.externo && <span class="visualmente-oculto"> (abre numa nova janela)</span>}
+                  {k.externo && <span class="visualmente-oculto"> {t.novaJanela}</span>}
                 </a>
               </dd>
             </div>
@@ -108,8 +141,8 @@ const accaoCanal: Record<string, string> = {
               {...(k.externo ? { target: '_blank', rel: 'noopener' } : {})}
             >
               <Icone nome={iconeCanal[k.id]} tamanho={18} />
-              {accaoCanal[k.id]}
-              {k.externo && <span class="visualmente-oculto">(abre numa nova janela)</span>}
+              {t.accao[k.id]}
+              {k.externo && <span class="visualmente-oculto">{t.novaJanela}</span>}
             </a>
           ))}
         </div>
@@ -119,15 +152,15 @@ const accaoCanal: Record<string, string> = {
           {abrirMapa && (
             <a class="botao botao--verde" href={abrirMapa} target="_blank" rel="noopener">
               <Icone nome="pino" tamanho={18} />
-              Abrir no Google Maps
-              <span class="visualmente-oculto">(abre numa nova janela)</span>
+              {t.abrirGoogle}
+              <span class="visualmente-oculto">{t.novaJanela}</span>
             </a>
           )}
           {direccoes && direccoes !== abrirMapa && (
             <a class="ligacao-seta" href={direccoes} target="_blank" rel="noopener">
-              <span>Obter direcções</span>
+              <span>{t.direccoes}</span>
               <Icone nome="externa" tamanho={18} />
-              <span class="visualmente-oculto">(abre o Google Maps numa nova janela)</span>
+              <span class="visualmente-oculto">{t.direccoesNovaJanela}</span>
             </a>
           )}
         </div>
@@ -138,38 +171,30 @@ const accaoCanal: Record<string, string> = {
     <div class="como-chegar__figura">
       <Foto id="edificio-colmo" sizes="(min-width: 900px) 700px, 92vw" class="foto como-chegar__foto" />
       {mapa ? (
-        <div
-          class="como-chegar__mapa"
-          data-mapa
-          data-src={mapa}
-          data-titulo={`Mapa da localização do ${lodge.nome}`}
-        >
-          <Icone nome="mapa" tamanho={40} />
-          <p class="como-chegar__mapa-titulo">Mapa do lodge</p>
-          {coordenadas && <p class="como-chegar__mapa-coord">{coordenadas}</p>}
-          <a class="botao botao--verde" href={mapaExterno} target="_blank" rel="noopener" data-mostrar-mapa>
-            Mostrar o mapa
-            <span class="visualmente-oculto">(OpenStreetMap)</span>
-          </a>
-          <p class="como-chegar__mapa-nota">
-            O mapa vem do OpenStreetMap e só carrega quando o pedir. Coordenadas publicadas pelo lodge.
-          </p>
-        </div>
+        <figure class="como-chegar__mapa como-chegar__mapa--iframe">
+          <iframe src={mapa} title={t.mapaTitulo} loading="lazy" referrerpolicy="no-referrer"></iframe>
+          <figcaption class="como-chegar__mapa-legenda">
+            <span>
+              {t.mapaLegenda}
+              {coordenadas && ` · ${coordenadas}`}
+            </span>
+            <a href={mapaExterno} target="_blank" rel="noopener">
+              {t.mapaMaior}
+              <span class="visualmente-oculto">{t.mapaNovaJanela}</span>
+            </a>
+          </figcaption>
+        </figure>
       ) : (
         <div class="como-chegar__mapa">
           <Icone nome="pino" tamanho={40} />
           <p class="como-chegar__mapa-titulo">{localidade}</p>
-          <p class="como-chegar__mapa-coord">Província de {provincia}</p>
-          <span class="pendente">Localização exacta a confirmar</span>
+          <p class="como-chegar__mapa-coord">{t.provincia}</p>
+          <span class="pendente">{t.localPendente}</span>
         </div>
       )}
     </div>
   </div>
 </section>
-
-<script>
-  import '../scripts/mapa';
-</script>
 
 <style>
   .como-chegar__dados {
@@ -247,21 +272,39 @@ const accaoCanal: Record<string, string> = {
     font-weight: 600;
     color: var(--texto-suave);
   }
-  .como-chegar__mapa-nota {
-    max-width: 30em;
-    margin-top: 6px;
+  /* Mapa: o iframe ocupa a moldura; o fundo fica à vista enquanto carrega. */
+  .como-chegar__mapa--iframe {
+    display: grid;
+    grid-template-rows: minmax(340px, 1fr) auto;
+    place-content: stretch;
+    justify-items: stretch;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    text-align: start;
+  }
+  .como-chegar__mapa iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 340px;
+    border: 0;
+  }
+  .como-chegar__mapa-legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 10px 16px;
+    border-top: 1px solid var(--linha);
+    background: var(--branco);
     font-size: 0.8125rem;
     color: var(--texto-suave);
   }
-  /* Depois de carregado, o mapa ocupa a moldura toda. */
-  .como-chegar__mapa:global(.como-chegar__mapa--carregado) {
-    display: block;
-    padding: 0;
-  }
-  .como-chegar__mapa :global(iframe) {
-    width: 100%;
-    height: 100%;
-    min-height: 380px;
-    border: 0;
+  .como-chegar__mapa-legenda a {
+    font-weight: 700;
+    color: var(--verde);
+    text-underline-offset: 3px;
   }
 </style>

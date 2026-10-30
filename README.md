@@ -21,8 +21,10 @@ Website de demonstração comercial para o **Mulotana Lodge** (Bairro de Mulotan
 | `/piscinas/` | Mosaico das piscinas e jardins, "Perguntar sobre a piscina" (WhatsApp), condições "a confirmar" |
 | `/restaurante/` | Fotografias da sala e do buffet, "Perguntar pelo menu", ficha "a confirmar" |
 | `/galeria/` | 32 fotografias reais por categorias (Quartos, Piscinas e jardins, Conferências e eventos, Restaurante, Experiências e lazer, Espaços do lodge), visualizador acessível |
-| `/contactos/` | Telefone de reservas, WhatsApp, e-mail, redes sociais, morada, coordenadas, Google Maps e mapa a pedido |
+| `/contactos/` | Telefone de reservas, WhatsApp, e-mail, redes sociais, morada, coordenadas, Google Maps e mapa do OpenStreetMap |
 | `/privacidade/` | Política de privacidade (o que os formulários, o mapa e as ligações fazem) |
+
+**Versão inglesa** (30/10/2026): todas as páginas existem em inglês em `/en/` (`/en/rooms/`, `/en/restaurant/`, `/en/pools/`, `/en/events/`, `/en/gallery/`, `/en/contact/`, `/en/privacy/`), com o selector **PT | EN** no cabeçalho (e no menu do telemóvel) que leva à mesma página na outra língua. O português continua a ser a língua principal (endereços sem prefixo). Ver "Línguas" abaixo.
 
 No telemóvel, uma barra fixa com "Disponibilidade" e "Orçamento" aparece depois do primeiro ecrã e esconde-se sobre os formulários e o rodapé.
 
@@ -38,7 +40,7 @@ A funcionar e testado:
 - **Contactos e localização**:
   - telefone (`tel:`), WhatsApp, e-mail (`mailto:`), morada e coordenadas publicadas pelo lodge;
   - "Abrir no Google Maps" (ficha do lodge) e "Obter direcções" (até às coordenadas);
-  - o mapa do OpenStreetMap só carrega quando o visitante o pede.
+  - o mapa do OpenStreetMap aparece logo na secção (iframe com carregamento diferido: só carrega quando o visitante se aproxima dele).
 - **Dados publicados pelo lodge**: preços dos quartos, capacidades das salas e número de quartos, mostrados como "publicados pelo lodge" e com a data.
 - **Redes sociais**: Instagram e Facebook no rodapé e nos contactos, sem widgets.
 - **Identidade**: logótipo oficial, ícones gerados a partir dele e 32 fotografias reais; cores do site (verde-floresta e dourado) mantidas.
@@ -57,9 +59,9 @@ A confirmar com o proprietário: a marca (Mulotana ou Mulotane), os preços, as 
 - CSS próprio com tokens: verde-floresta `#0B3027` (identidade), dourado `#C7A15A` (acções principais e acentos), branco quente `#FAF8F3`. Cores mantidas a pedido do responsável (29/10/2026); o logótipo oficial, colorido, aparece sobre o cabeçalho claro.
 - Títulos em Cormorant Garamond e texto em Manrope, servidos pelo próprio site (licenças OFL em `public/fonts/`).
 - Movimento só com CSS (`src/styles/cinema.css` e `src/components/Cenas.astro`): scroll-driven animations, palco de cenas preso ao ecrã e View Transitions entre páginas. Sem bibliotecas, com movimento reduzido respeitado e conteúdo visível sem JavaScript (ver `docs/MOVIMENTO.md`).
-- JavaScript mínimo e só onde é preciso (cabeçalho, formulários, separadores de pedidos, barra móvel, galeria, mapa a pedido, carrossel e o motor dos palcos cinematográficos da página inicial, `src/scripts/cinema.ts`). Sem JavaScript, tudo continua visível e utilizável.
+- JavaScript mínimo e só onde é preciso (cabeçalho, formulários, separadores de pedidos, barra móvel, galeria, carrossel e o motor dos palcos cinematográficos da página inicial, `src/scripts/cinema.ts`). Sem JavaScript, tudo continua visível e utilizável.
 - Imagens AVIF + WebP em várias larguras, com `width`/`height` explícitos e `loading="lazy"` fora do primeiro ecrã.
-- Content-Security-Policy estrita (sem `unsafe-inline`), sem cookies, sem estatísticas, sem pedidos a terceiros ao carregar (o mapa só carrega a pedido).
+- Content-Security-Policy estrita (sem `unsafe-inline`), sem cookies, sem estatísticas; o único conteúdo de terceiros é o mapa do OpenStreetMap, que só carrega quando o visitante chega à secção de localização (a política de privacidade explica-o).
 - Servidor: nginx sem privilégios em contentor só de leitura; HTTPS no Caddy da One Prompt Studio.
 
 Requer Node.js ≥ 22.12.
@@ -115,6 +117,15 @@ POST <endpoint>
 
 O serviço que recebe deve: validar de novo no servidor com as mesmas regras (`src/lib/validacao.ts` pode ser reutilizado), descartar pedidos com `website` preenchido (armadilha anti-spam), limitar pedidos por IP (responder `429`), aceitar CORS só da origem do site, e responder `2xx` quando guardar/encaminhar o pedido. Credenciais desse serviço ficam sempre em variáveis de ambiente do servidor, nunca no site nem no repositório.
 
+## Línguas
+
+- Português (principal, sem prefixo) e inglês (`/en/`, endereços em inglês). A tabela de endereços está em `src/i18n/linguas.ts` (`PAGINAS_EN`).
+- Cada página tem um só modelo em `src/paginas/` (estrutura e estilos) com os textos nas duas línguas (`traducoes(pt, en)`: o TypeScript obriga o inglês a ter as mesmas chaves). `src/pages/<página>.astro` e `src/pages/en/<page>.astro` só servem esse modelo. Os componentes escolhem a língua pelo endereço (`linguaDe(Astro.url)`); os scripts do browser, pelo `lang` do `<html>`.
+- A configuração do lodge (`src/config/lodge.ts`) continua escrita só em português; `src/i18n/lodge.ts` traduz cada texto publicado. Um texto novo sem tradução faz falhar o build.
+- Texto alternativo e legendas das fotografias em inglês: `src/data/fotografias-en.ts`.
+- SEO: `lang`, `og:locale`, `hreflang` (pt-MZ, en e x-default → português) em cada página e no `sitemap.xml` (16 endereços).
+- Os pedidos feitos na versão inglesa chegam ao lodge em inglês (mensagem do WhatsApp e e-mail), como o visitante os escreveu.
+
 ## Fotografias
 
 - `assets-originais/mulotane/real/`: originais, nunca alterados (fora da área pública). Ver `assets-originais/mulotane/LEIA-ME.md`.
@@ -132,7 +143,7 @@ python3 -m venv .venv-imagens
 .venv-imagens/bin/python scripts/imagens/tratar_fotografias.py
 ```
 
-O script faz o acabamento técnico (níveis, luz, contraste global e local, vibração moderada, ruído, nitidez e optimização para a web), sem alterar o conteúdo e sem IA generativa. As fotografias de grande formato têm uma versão de 1600 px.
+O script faz o acabamento técnico (níveis, luz, contraste global e local, vibração moderada, ruído, nitidez e optimização para a web), sem alterar o conteúdo e sem IA generativa. As fotografias de grande formato têm uma versão de 1600 px; as de **fundo em ecrã inteiro** (aberturas, palcos e cenas) têm uma de 2000 px, sem redução de ruído (que as deixava com aspecto pintado) e ampliada com super-resolução **EDSR** quando o modelo está disponível (`MODELO_EDSR=/caminho/EDSR_x3.pb`, ver o início do script). O EDSR é uma rede de reconstrução treinada para fidelidade ao original: não inventa objectos nem texturas, só reconstrói contornos com mais limpeza do que a interpolação. Sem o modelo, o script usa Lanczos com nitidez.
 
 Vídeos: quando houver ficheiros originais do lodge, `scripts/videos/tratar_video.sh <original> <nome> [início] [duração]` estabiliza, limpa, corrige a cor e exporta MP4 + WebM + capa para `public/videos/mulotane/`. Para acrescentar uma fotografia: colocar o original em `assets-originais/mulotane/real/`, acrescentar uma entrada em `FOTOGRAFIAS` no script e em `metadados` em `src/data/fotografias.ts`.
 
@@ -159,7 +170,9 @@ src/config/lodge.ts        dados do lodge (fonte única)
 src/data/fotografias.ts    catálogo das fotografias reais
 src/lib/                   validação, WhatsApp, envio de pedidos, utilidades (testadas)
 src/components/            componentes Astro
-src/pages/                 páginas, robots.txt e sitemap.xml
+src/paginas/               modelo de cada página, com os textos em português e em inglês
+src/pages/, src/pages/en/  rotas (servem os modelos), robots.txt e sitemap.xml
+src/i18n/                  línguas, endereços e tradução dos textos da configuração
 src/scripts/               JavaScript do browser
 src/styles/global.css      tokens e estilos base
 scripts/imagens/           tratamento reprodutível das fotografias e dos ícones (Python)

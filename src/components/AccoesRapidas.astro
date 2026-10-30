@@ -3,21 +3,27 @@
  * Barra de pedidos no telemóvel: aparece depois do primeiro ecrã e esconde-se quando um formulário ou o
  * rodapé estão à vista, para nunca tapar o que o visitante está a preencher.
  */
+import { linguaDe, traducoes } from '../i18n/linguas';
 import { ligacoesPedido } from '../lib/site';
 
 import Icone from './Icone.astro';
 
-const pedidos = ligacoesPedido(Astro.url.pathname);
+const l = linguaDe(Astro.url);
+const pedidos = ligacoesPedido(Astro.url.pathname, l);
+const t = traducoes(
+  { pedidos: 'Pedidos', disponibilidade: 'Disponibilidade', orcamento: 'Orçamento' },
+  { pedidos: 'Requests', disponibilidade: 'Availability', orcamento: 'Event quote' },
+)[l];
 ---
 
-<nav class="rapidas" aria-label="Pedidos" data-accoes-rapidas inert>
+<nav class="rapidas" aria-label={t.pedidos} data-accoes-rapidas inert>
   <a class="rapidas__accao rapidas__accao--principal" href={pedidos.disponibilidade}>
     <Icone nome="calendario" tamanho={18} />
-    Disponibilidade
+    {t.disponibilidade}
   </a>
   <a class="rapidas__accao" href={pedidos.evento}>
     <Icone nome="pessoas" tamanho={18} />
-    Orçamento
+    {t.orcamento}
   </a>
 </nav>
 

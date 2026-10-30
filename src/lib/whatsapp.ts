@@ -1,3 +1,5 @@
+import type { Lingua } from '../i18n/linguas';
+
 import { formatarData } from './validacao';
 
 export type TipoPedido = 'alojamento' | 'evento';
@@ -22,22 +24,75 @@ function linhas(pares: [string, string | undefined][]): string {
     .join('\n');
 }
 
+const ROTULOS = {
+  pt: {
+    telefone: 'Telefone',
+    email: 'E-mail',
+    nome: 'Nome',
+    entrada: 'Entrada',
+    saida: 'Saída',
+    hospedes: 'Hóspedes',
+    quarto: 'Tipo de quarto',
+    mensagem: 'Mensagem',
+    empresa: 'Empresa',
+    tipo: 'Tipo de evento',
+    data: 'Data pretendida',
+    participantes: 'Participantes (estimativa)',
+    servicos: 'Serviços pretendidos',
+    observacoes: 'Observações',
+    olaAlojamento: (lodge: string) => `Olá, ${lodge}! Gostaria de consultar a disponibilidade de alojamento.`,
+    olaEvento: (lodge: string) => `Olá, ${lodge}! Gostaria de pedir um orçamento para um evento.`,
+    assuntoAlojamento: (datas: [string, string] | null) =>
+      `Pedido de disponibilidade${datas ? ` de ${datas[0]} a ${datas[1]}` : ''}`,
+    assuntoEvento: (tipo: string, data: string) =>
+      `Pedido de orçamento: ${tipo || 'evento'}${data ? ` (${data})` : ''}`,
+  },
+  en: {
+    telefone: 'Phone',
+    email: 'Email',
+    nome: 'Name',
+    entrada: 'Check-in',
+    saida: 'Check-out',
+    hospedes: 'Guests',
+    quarto: 'Room type',
+    mensagem: 'Message',
+    empresa: 'Company',
+    tipo: 'Type of event',
+    data: 'Preferred date',
+    participantes: 'Participants (estimate)',
+    servicos: 'Services requested',
+    observacoes: 'Notes',
+    olaAlojamento: (lodge: string) => `Hello, ${lodge}! I would like to check availability for a stay.`,
+    olaEvento: (lodge: string) => `Hello, ${lodge}! I would like to request a quote for an event.`,
+    assuntoAlojamento: (datas: [string, string] | null) =>
+      `Availability request${datas ? ` from ${datas[0]} to ${datas[1]}` : ''}`,
+    assuntoEvento: (tipo: string, data: string) =>
+      `Quote request: ${tipo || 'event'}${data ? ` (${data})` : ''}`,
+  },
+} satisfies Record<Lingua, unknown>;
+
 /** Texto do pedido, igual no WhatsApp e no e-mail: o que o visitante escreveu e mais nada. */
-export function mensagemPedido(tipo: TipoPedido, d: Record<string, string>, nomeLodge: string): string {
+export function mensagemPedido(
+  tipo: TipoPedido,
+  d: Record<string, string>,
+  nomeLodge: string,
+  lingua: Lingua = 'pt',
+): string {
+  const r = ROTULOS[lingua];
   const contactos = linhas([
-    ['Telefone', d.telefone],
-    ['E-mail', d.email],
+    [r.telefone, d.telefone],
+    [r.email, d.email],
   ]);
   if (tipo === 'alojamento') {
     return [
-      `Olá, ${nomeLodge}! Gostaria de consultar a disponibilidade de alojamento.`,
+      r.olaAlojamento(nomeLodge),
       linhas([
-        ['Nome', d.nome],
-        ['Entrada', d.entrada && formatarData(d.entrada)],
-        ['Saída', d.saida && formatarData(d.saida)],
-        ['Hóspedes', d.hospedes],
-        ['Tipo de quarto', d.quarto],
-        ['Mensagem', d.mensagem],
+        [r.nome, d.nome],
+        [r.entrada, d.entrada && formatarData(d.entrada)],
+        [r.saida, d.saida && formatarData(d.saida)],
+        [r.hospedes, d.hospedes],
+        [r.quarto, d.quarto],
+        [r.mensagem, d.mensagem],
       ]),
       contactos,
     ]
@@ -45,15 +100,15 @@ export function mensagemPedido(tipo: TipoPedido, d: Record<string, string>, nome
       .join('\n\n');
   }
   return [
-    `Olá, ${nomeLodge}! Gostaria de pedir um orçamento para um evento.`,
+    r.olaEvento(nomeLodge),
     linhas([
-      ['Nome', d.nome],
-      ['Empresa', d.empresa],
-      ['Tipo de evento', d.tipo],
-      ['Data pretendida', d.data && formatarData(d.data)],
-      ['Participantes (estimativa)', d.participantes],
-      ['Serviços pretendidos', d.servicos],
-      ['Observações', d.mensagem],
+      [r.nome, d.nome],
+      [r.empresa, d.empresa],
+      [r.tipo, d.tipo],
+      [r.data, d.data && formatarData(d.data)],
+      [r.participantes, d.participantes],
+      [r.servicos, d.servicos],
+      [r.observacoes, d.mensagem],
     ]),
     contactos,
   ]
@@ -62,12 +117,14 @@ export function mensagemPedido(tipo: TipoPedido, d: Record<string, string>, nome
 }
 
 /** Assunto do e-mail do pedido. */
-export function assuntoPedido(tipo: TipoPedido, d: Record<string, string>): string {
+export function assuntoPedido(tipo: TipoPedido, d: Record<string, string>, lingua: Lingua = 'pt'): string {
+  const r = ROTULOS[lingua];
   if (tipo === 'alojamento') {
-    const datas = d.entrada && d.saida ? ` de ${formatarData(d.entrada)} a ${formatarData(d.saida)}` : '';
-    return `Pedido de disponibilidade${datas}`;
+    return r.assuntoAlojamento(
+      d.entrada && d.saida ? [formatarData(d.entrada), formatarData(d.saida)] : null,
+    );
   }
-  return `Pedido de orçamento: ${d.tipo || 'evento'}${d.data ? ` (${formatarData(d.data)})` : ''}`;
+  return r.assuntoEvento(d.tipo, d.data ? formatarData(d.data) : '');
 }
 
 /** Ligação mailto: com assunto e corpo, ou null sem um e-mail válido. Abre a aplicação de e-mail do visitante. */

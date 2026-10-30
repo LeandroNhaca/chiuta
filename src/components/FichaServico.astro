@@ -5,6 +5,8 @@
  * Nada é inventado.
  */
 import { lodge } from '../config/lodge';
+import { detalhes as detalhesEm } from '../i18n/lodge';
+import { linguaDe, traducoes } from '../i18n/linguas';
 
 interface Props {
   servico: keyof typeof lodge.detalhes;
@@ -14,7 +16,25 @@ interface Props {
 }
 
 const { servico, titulo, tom = 'verde' } = Astro.props;
-const detalhes = lodge.detalhes[servico];
+const l = linguaDe(Astro.url);
+const detalhes = detalhesEm(l)[servico];
+const t = traducoes(
+  {
+    publicado: (origem: string) => `Publicado pelo lodge (${origem})`,
+    aConfirmar: 'A confirmar',
+    mudaram: 'Os valores publicados pelo lodge nas redes sociais podem ter mudado: confirme-os no pedido. ',
+    todos: 'Estes dados são indicados pela equipa do lodge, a pedido.',
+    alguns: 'Os dados "a confirmar" são indicados pela equipa do lodge, a pedido.',
+  },
+  {
+    publicado: (origem: string) => `Published by the lodge (${origem})`,
+    aConfirmar: 'To be confirmed',
+    mudaram:
+      'Values published by the lodge on social media may have changed: please confirm them in your request. ',
+    todos: 'The lodge team provides these details on request.',
+    alguns: 'Details marked "to be confirmed" are provided by the lodge team on request.',
+  },
+)[l];
 const pendentes = detalhes.filter((d) => !d.valor).length;
 const publicados = detalhes.some((d) => d.valor && d.aValidar);
 ---
@@ -29,10 +49,10 @@ const publicados = detalhes.some((d) => d.valor && d.aValidar);
           {d.valor ? (
             <>
               <span class="ficha__valor">{d.valor}</span>
-              {d.aValidar && <span class="ficha__origem">Publicado pelo lodge ({d.aValidar})</span>}
+              {d.aValidar && <span class="ficha__origem">{t.publicado(d.aValidar)}</span>}
             </>
           ) : (
-            <span class:list={['pendente', { 'pendente--claro': tom === 'verde' }]}>A confirmar</span>
+            <span class:list={['pendente', { 'pendente--claro': tom === 'verde' }]}>{t.aConfirmar}</span>
           )}
         </dd>
       </div>
@@ -40,12 +60,8 @@ const publicados = detalhes.some((d) => d.valor && d.aValidar);
   </dl>
   {(pendentes > 0 || publicados) && (
     <p class="ficha__nota">
-      {publicados &&
-        'Os valores publicados pelo lodge nas redes sociais podem ter mudado: confirme-os no pedido. '}
-      {pendentes > 0 &&
-        (pendentes === detalhes.length
-          ? 'Estes dados são indicados pela equipa do lodge, a pedido.'
-          : 'Os dados "a confirmar" são indicados pela equipa do lodge, a pedido.')}
+      {publicados && t.mudaram}
+      {pendentes > 0 && (pendentes === detalhes.length ? t.todos : t.alguns)}
     </p>
   )}
 </div>

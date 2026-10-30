@@ -1,0 +1,174 @@
+---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Enfase from '../components/Enfase.astro';
+import FichaServico from '../components/FichaServico.astro';
+import Foto from '../components/Foto.astro';
+import Icone from '../components/Icone.astro';
+import IndiceServicos from '../components/IndiceServicos.astro';
+import { lodge } from '../config/lodge';
+import { linguaDe, rota, traducoes } from '../i18n/linguas';
+import Base from '../layouts/Base.astro';
+
+const l = linguaDe(Astro.url);
+const t = traducoes(
+  {
+    titulo: 'Restaurante',
+    descricao:
+      'O restaurante do Mulotana Lodge, em Boane: sala de refeições ampla e buffets para grupos e eventos. Fale com a equipa para conhecer o menu e os horários.',
+    intro: 'Uma sala de refeições ampla, com janelas largas sobre o jardim.',
+    menu: 'Perguntar pelo menu',
+    whatsapp: `Olá, ${lodge.nome}! Gostaria de saber o menu e os horários do restaurante.`,
+    mesaEtiqueta: 'À mesa',
+    mesaTitulo: 'Refeições para hóspedes, *grupos e eventos.*',
+    mesaTextos: [
+      'As fotografias mostram a sala de refeições, com janelas a toda a volta, e os buffets montados para grupos e eventos.',
+      'O menu, os horários, os preços e as refeições para grupos são indicados pela equipa do lodge. Para as refeições de um evento, indique-as no pedido de orçamento.',
+    ],
+    grupo: 'Pedir orçamento para um grupo',
+    contactos: 'Contactos',
+    ofertaEtiqueta: 'A oferta',
+    ofertaTitulo: 'Horários, menu e *preços.*',
+    ofertaTexto:
+      'Ainda não há horários, menu nem preços publicados. Pergunte à equipa do lodge pelo WhatsApp ou pelo telefone de reservas.',
+    sala: 'Sala com janelas amplas sobre a vegetação.',
+    resumo: 'O restaurante em resumo',
+    explorarEtiqueta: 'Continue a explorar',
+    explorarTitulo: 'Mais para descobrir no lodge.',
+  },
+  {
+    titulo: 'Restaurant',
+    descricao:
+      'The restaurant at Mulotana Lodge, in Boane: a spacious dining room and buffets for groups and events. Talk to the team to find out about the menu and opening hours.',
+    intro: 'A spacious dining room with wide windows overlooking the garden.',
+    menu: 'Ask about the menu',
+    whatsapp: `Hello, ${lodge.nome}! I would like to know the restaurant menu and opening hours.`,
+    mesaEtiqueta: 'At the table',
+    mesaTitulo: 'Meals for guests, *groups and events.*',
+    mesaTextos: [
+      'The photos show the dining room, with windows all around, and the buffets set up for groups and events.',
+      'The menu, opening hours, prices and group meals are given by the lodge team. For meals during an event, include them in your quote request.',
+    ],
+    grupo: 'Request a quote for a group',
+    contactos: 'Contact',
+    ofertaEtiqueta: 'What is on offer',
+    ofertaTitulo: 'Hours, menu and *prices.*',
+    ofertaTexto:
+      'No opening hours, menu or prices have been published yet. Ask the lodge team on WhatsApp or by calling the bookings number.',
+    sala: 'Room with large windows looking out onto the greenery.',
+    resumo: 'The restaurant at a glance',
+    explorarEtiqueta: 'Keep exploring',
+    explorarTitulo: 'More to discover at the lodge.',
+  },
+)[l];
+---
+
+<Base titulo={t.titulo} movimento="moderado" descricao={t.descricao}>
+  <CabecalhoPagina titulo={t.titulo} intro={t.intro} foto="restaurante-janelas">
+    <BotaoWhatsApp slot="accoes" texto={t.menu} variante="principal" mensagem={t.whatsapp} />
+  </CabecalhoPagina>
+
+  <section class="secao secao--clara" aria-labelledby="mesa-titulo">
+    <div class="contentor grelha grelha--texto-foto">
+      <div class="bloco-titulo">
+        <p class="etiqueta c-revelar">{t.mesaEtiqueta}</p>
+        <h2 id="mesa-titulo" class="c-titulo">
+          <Enfase texto={t.mesaTitulo} />
+        </h2>
+        <div class="texto c-revelar">
+          {t.mesaTextos.map((p) => (
+            <p>{p}</p>
+          ))}
+        </div>
+        <div class="accoes">
+          <a class="botao botao--verde" href={rota(l, '/eventos/#pedido')}>
+            {t.grupo}
+            <Icone nome="seta" tamanho={18} />
+          </a>
+          <a class="ligacao-seta" href={rota(l, '/contactos/')}>
+            <span>{t.contactos}</span>
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </div>
+      </div>
+      <ul class="mosaico">
+        <li class="mosaico__a c-cortina">
+          <Foto id="sala-refeicoes-bar" sizes="(min-width: 900px) 700px, 92vw" class="foto" />
+        </li>
+        <li class="c-cortina">
+          <Foto id="restaurante-buffet-sala" sizes="(min-width: 900px) 340px, 46vw" class="foto" />
+        </li>
+        <li class="c-cortina">
+          <Foto id="restaurante-buffet" sizes="(min-width: 900px) 340px, 46vw" class="foto" />
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="secao secao--cinza" aria-labelledby="oferta-titulo">
+    <div class="contentor grelha grelha--metades oferta">
+      <div class="bloco-titulo">
+        <p class="etiqueta c-revelar">{t.ofertaEtiqueta}</p>
+        <h2 id="oferta-titulo" class="c-titulo">
+          <Enfase texto={t.ofertaTitulo} />
+        </h2>
+        <div class="texto">
+          <p>{t.ofertaTexto}</p>
+        </div>
+        <figure class="sala c-paralaxe">
+          <Foto id="sala-refeicoes" sizes="(min-width: 900px) 640px, 92vw" class="foto sala__foto" />
+          <figcaption class="legenda">{t.sala}</figcaption>
+        </figure>
+      </div>
+      <FichaServico servico="restaurante" titulo={t.resumo} tom="clara" />
+    </div>
+  </section>
+
+  <section class="secao secao--clara" aria-labelledby="explorar-titulo">
+    <div class="contentor">
+      <p class="etiqueta c-revelar">{t.explorarEtiqueta}</p>
+      <h2 id="explorar-titulo" class="explorar__titulo c-titulo">
+        {t.explorarTitulo}
+      </h2>
+      <IndiceServicos variante="cartoes" excluir="restaurante" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .mosaico {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mosaico li {
+    border-radius: var(--raio-l);
+  }
+  .mosaico__a {
+    grid-column: 1 / -1;
+  }
+  .mosaico :global(.foto) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  .mosaico__a :global(.foto) {
+    aspect-ratio: 16 / 10;
+  }
+  .oferta {
+    align-items: start;
+  }
+  .sala {
+    margin: 8px 0 0;
+    border-radius: var(--raio-l);
+  }
+  .sala :global(.sala__foto) {
+    display: block;
+    aspect-ratio: 16 / 10;
+  }
+  .explorar__titulo {
+    margin-bottom: clamp(32px, 4vw, 48px);
+  }
+</style>

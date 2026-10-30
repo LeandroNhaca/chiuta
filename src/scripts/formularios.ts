@@ -2,6 +2,7 @@
 // envio opcional para um endpoint. Nunca diz que uma reserva está confirmada e nunca finge um envio que não
 // aconteceu: sem endpoint, o pedido só chega ao lodge quando o visitante o envia na sua aplicação.
 
+import type { Lingua } from '../i18n/linguas';
 import { enviarPedido } from '../lib/pedidos';
 import {
   CAMPOS_ALOJAMENTO,
@@ -17,59 +18,135 @@ import {
 import { assuntoPedido, linkEmail, linkWhatsApp, mensagemPedido, type TipoPedido } from '../lib/whatsapp';
 
 type Estado = 'enviado' | 'mensagem' | 'demonstracao';
+type TextosEstado = Record<
+  Estado,
+  { titulo: string; texto: (nome: string, tipo: TipoPedido, canais: string) => string }
+>;
 
-const ROTULOS: Record<string, string> = {
-  nome: 'Nome',
-  empresa: 'Empresa',
-  telefone: 'Telefone',
-  email: 'E-mail',
-  entrada: 'Entrada',
-  saida: 'Saída',
-  hospedes: 'Hóspedes',
-  quarto: 'Tipo de quarto',
-  tipo: 'Tipo de evento',
-  data: 'Data pretendida',
-  participantes: 'Participantes',
-  servicos: 'Serviços pretendidos',
-  mensagem: 'Mensagem',
+// A língua da página (o atributo lang do <html>): os textos seguem-na.
+const lingua: Lingua = document.documentElement.lang.startsWith('en') ? 'en' : 'pt';
+
+const ROTULOS: Record<Lingua, Record<string, string>> = {
+  pt: {
+    nome: 'Nome',
+    empresa: 'Empresa',
+    telefone: 'Telefone',
+    email: 'E-mail',
+    entrada: 'Entrada',
+    saida: 'Saída',
+    hospedes: 'Hóspedes',
+    quarto: 'Tipo de quarto',
+    tipo: 'Tipo de evento',
+    data: 'Data pretendida',
+    participantes: 'Participantes',
+    servicos: 'Serviços pretendidos',
+    mensagem: 'Mensagem',
+  },
+  en: {
+    nome: 'Name',
+    empresa: 'Company',
+    telefone: 'Phone',
+    email: 'Email',
+    entrada: 'Check-in',
+    saida: 'Check-out',
+    hospedes: 'Guests',
+    quarto: 'Room type',
+    tipo: 'Type of event',
+    data: 'Preferred date',
+    participantes: 'Participants',
+    servicos: 'Services requested',
+    mensagem: 'Message',
+  },
 };
 
 // O que a equipa responde, conforme o tipo de pedido.
-const RESPOSTA: Record<TipoPedido, string> = {
-  alojamento: 'com a disponibilidade e as condições da estadia',
-  evento: 'com as opções disponíveis e o orçamento para a data indicada',
+const RESPOSTA: Record<Lingua, Record<TipoPedido, string>> = {
+  pt: {
+    alojamento: 'com a disponibilidade e as condições da estadia',
+    evento: 'com as opções disponíveis e o orçamento para a data indicada',
+  },
+  en: {
+    alojamento: 'with availability and the conditions of your stay',
+    evento: 'with the available options and a quote for the date given',
+  },
 };
-const NAO_E_RESERVA: Record<TipoPedido, string> = {
-  alojamento:
-    'Este pedido não é uma reserva: a estadia só fica garantida depois de confirmada pela equipa do lodge.',
-  evento:
-    'Este pedido não é uma reserva: o evento só fica garantido depois de confirmado pela equipa do lodge.',
+const NAO_E_RESERVA: Record<Lingua, Record<TipoPedido, string>> = {
+  pt: {
+    alojamento:
+      'Este pedido não é uma reserva: a estadia só fica garantida depois de confirmada pela equipa do lodge.',
+    evento:
+      'Este pedido não é uma reserva: o evento só fica garantido depois de confirmado pela equipa do lodge.',
+  },
+  en: {
+    alojamento:
+      'This request is not a booking: your stay is only guaranteed once it has been confirmed by the lodge team.',
+    evento:
+      'This request is not a booking: your event is only guaranteed once it has been confirmed by the lodge team.',
+  },
 };
 
 // Nunca se diz que um pedido foi enviado ou guardado sem a resposta do servidor o confirmar.
-const TEXTOS: Record<
-  Estado,
-  { titulo: string; texto: (nome: string, tipo: TipoPedido, canais: string) => string }
-> = {
-  enviado: {
-    titulo: 'Pedido enviado',
-    texto: (nome, tipo) =>
-      `Obrigado, ${nome}. A equipa do lodge vai responder ${RESPOSTA[tipo]}. ${NAO_E_RESERVA[tipo]}`,
+const TEXTOS: Record<Lingua, TextosEstado> = {
+  pt: {
+    enviado: {
+      titulo: 'Pedido enviado',
+      texto: (nome, tipo) =>
+        `Obrigado, ${nome}. A equipa do lodge vai responder ${RESPOSTA.pt[tipo]}. ${NAO_E_RESERVA.pt[tipo]}`,
+    },
+    mensagem: {
+      titulo: 'Falta enviar o pedido',
+      texto: (_nome, tipo, canais) =>
+        `O pedido ainda não foi enviado. Escolha como o quer enviar (${canais}): a mensagem abre já ` +
+        'preenchida na sua aplicação e só chega à equipa do lodge quando a enviar. ' +
+        `A equipa responde ${RESPOSTA.pt[tipo]}. ${NAO_E_RESERVA.pt[tipo]}`,
+    },
+    demonstracao: {
+      titulo: 'Pedido validado',
+      texto: () =>
+        'Os dados estão correctos, mas este formulário ainda não tem destino: nenhum dado foi enviado nem ' +
+        'guardado, por isso o pedido não chegou à equipa do lodge. Esta é a mensagem que vai ser preparada.',
+    },
   },
-  mensagem: {
-    titulo: 'Falta enviar o pedido',
-    texto: (_nome, tipo, canais) =>
-      `O pedido ainda não foi enviado. Escolha como o quer enviar (${canais}): a mensagem abre já ` +
-      'preenchida na sua aplicação e só chega à equipa do lodge quando a enviar. ' +
-      `A equipa responde ${RESPOSTA[tipo]}. ${NAO_E_RESERVA[tipo]}`,
-  },
-  demonstracao: {
-    titulo: 'Pedido validado',
-    texto: () =>
-      'Os dados estão correctos, mas este formulário ainda não tem destino: nenhum dado foi enviado nem ' +
-      'guardado, por isso o pedido não chegou à equipa do lodge. Esta é a mensagem que vai ser preparada.',
+  en: {
+    enviado: {
+      titulo: 'Request sent',
+      texto: (nome, tipo) =>
+        `Thank you, ${nome}. The lodge team will reply ${RESPOSTA.en[tipo]}. ${NAO_E_RESERVA.en[tipo]}`,
+    },
+    mensagem: {
+      titulo: 'Your request has not been sent yet',
+      texto: (_nome, tipo, canais) =>
+        `Your request has not been sent yet. Choose how you want to send it (${canais}): the message opens ` +
+        'already filled in on your app and only reaches the lodge team when you send it. ' +
+        `The team will reply ${RESPOSTA.en[tipo]}. ${NAO_E_RESERVA.en[tipo]}`,
+    },
+    demonstracao: {
+      titulo: 'Request validated',
+      texto: () =>
+        'Your details are correct, but this form does not have a destination yet: no data was sent or ' +
+        'stored, so the request has not reached the lodge team. This is the message that will be prepared.',
+    },
   },
 };
+
+const OUTROS = {
+  pt: {
+    corrigir: (n: number) => (n === 1 ? 'Há 1 campo a corrigir.' : `Há ${n} campos a corrigir.`),
+    ou: ' ou ',
+    email: 'e-mail',
+    aEnviar: 'A enviar…',
+    copiada: 'Mensagem copiada.',
+    naoCopiou: 'Não foi possível copiar. Seleccione o texto e copie-o manualmente.',
+  },
+  en: {
+    corrigir: (n: number) => (n === 1 ? 'There is 1 field to correct.' : `There are ${n} fields to correct.`),
+    ou: ' or ',
+    email: 'email',
+    aEnviar: 'Sending…',
+    copiada: 'Message copied.',
+    naoCopiou: 'Could not copy. Select the text and copy it manually.',
+  },
+}[lingua];
 
 function iniciar(form: HTMLFormElement): void {
   const tipo = form.dataset.tipo as TipoPedido;
@@ -78,7 +155,8 @@ function iniciar(form: HTMLFormElement): void {
   const email = form.dataset.email ?? '';
   const nomeLodge = form.dataset.lodge ?? 'Mulotana Lodge';
   const campos = tipo === 'alojamento' ? CAMPOS_ALOJAMENTO : CAMPOS_EVENTO;
-  const validar = tipo === 'alojamento' ? validarAlojamento : validarEvento;
+  const validar = (d: Record<string, string>, hoje: string) =>
+    tipo === 'alojamento' ? validarAlojamento(d, hoje, lingua) : validarEvento(d, hoje, lingua);
 
   const contentor = form.closest<HTMLElement>('[data-pedido]');
   const resultado = contentor?.querySelector<HTMLElement>('[data-resultado]');
@@ -123,7 +201,7 @@ function iniciar(form: HTMLFormElement): void {
       msg.textContent = erros[nome] ?? '';
     }
     const n = Object.keys(erros).length;
-    resumoErros.textContent = n === 1 ? 'Há 1 campo a corrigir.' : `Há ${n} campos a corrigir.`;
+    resumoErros.textContent = OUTROS.corrigir(n);
     resumoErros.hidden = n === 0;
   };
 
@@ -140,14 +218,14 @@ function iniciar(form: HTMLFormElement): void {
     wa: string | null,
     mail: string | null,
   ) => {
-    const t = TEXTOS[estado];
+    const t = TEXTOS[lingua][estado];
     const blocoMensagem = resultado.querySelector<HTMLElement>('[data-resultado-mensagem]');
     const textoMensagem = resultado.querySelector('[data-mensagem-texto]');
     const estadoCopia = resultado.querySelector('[data-copiar-estado]');
     if (blocoMensagem && textoMensagem) {
       // Depois de um envio real não há mensagem a mostrar; nos outros casos mostra-se o que seguirá.
       blocoMensagem.hidden = estado === 'enviado';
-      textoMensagem.textContent = estado === 'enviado' ? '' : mensagemPedido(tipo, dados, nomeLodge);
+      textoMensagem.textContent = estado === 'enviado' ? '' : mensagemPedido(tipo, dados, nomeLodge, lingua);
     }
     if (estadoCopia) estadoCopia.textContent = '';
     const titulo = resultado.querySelector('[data-resultado-titulo]');
@@ -155,7 +233,7 @@ function iniciar(form: HTMLFormElement): void {
     const resumo = resultado.querySelector('[data-resultado-resumo]');
     const botaoWa = resultado.querySelector<HTMLAnchorElement>('[data-resultado-whatsapp]');
     const botaoEmail = resultado.querySelector<HTMLAnchorElement>('[data-resultado-email]');
-    const canais = [wa && 'WhatsApp', mail && 'e-mail'].filter(Boolean).join(' ou ');
+    const canais = [wa && 'WhatsApp', mail && OUTROS.email].filter(Boolean).join(OUTROS.ou);
     if (titulo) titulo.textContent = t.titulo;
     if (texto) texto.textContent = t.texto(dados.nome, tipo, canais);
     if (resumo) {
@@ -164,7 +242,7 @@ function iniciar(form: HTMLFormElement): void {
         if (!dados[nome]) continue;
         const dt = document.createElement('dt');
         const dd = document.createElement('dd');
-        dt.textContent = ROTULOS[nome] ?? nome;
+        dt.textContent = ROTULOS[lingua][nome] ?? nome;
         dd.textContent = /^\d{4}-\d{2}-\d{2}$/.test(dados[nome]) ? formatarData(dados[nome]) : dados[nome];
         resumo.append(dt, dd);
       }
@@ -201,9 +279,9 @@ function iniciar(form: HTMLFormElement): void {
       return;
     }
 
-    const texto = mensagemPedido(tipo, dados, nomeLodge);
+    const texto = mensagemPedido(tipo, dados, nomeLodge, lingua);
     const wa = whatsapp ? linkWhatsApp(whatsapp, texto) : null;
-    const mail = email ? linkEmail(email, assuntoPedido(tipo, dados), texto) : null;
+    const mail = email ? linkEmail(email, assuntoPedido(tipo, dados, lingua), texto) : null;
     if (!endpoint) {
       mostrarResultado(wa || mail ? 'mensagem' : 'demonstracao', dados, wa, mail);
       return;
@@ -213,13 +291,17 @@ function iniciar(form: HTMLFormElement): void {
     aEnviar = true;
     botao.disabled = true;
     botao.setAttribute('aria-busy', 'true');
-    rotuloBotao.textContent = 'A enviar…';
-    const r = await enviarPedido(endpoint, {
-      tipo,
-      dados,
-      website: campo('website')?.value ?? '',
-      origem: window.location.pathname,
-    });
+    rotuloBotao.textContent = OUTROS.aEnviar;
+    const r = await enviarPedido(
+      endpoint,
+      {
+        tipo,
+        dados,
+        website: campo('website')?.value ?? '',
+        origem: window.location.pathname,
+      },
+      { lingua },
+    );
     aEnviar = false;
     botao.disabled = false;
     botao.removeAttribute('aria-busy');
@@ -237,9 +319,9 @@ function iniciar(form: HTMLFormElement): void {
     const estado = resultado.querySelector('[data-copiar-estado]');
     try {
       await navigator.clipboard.writeText(texto);
-      if (estado) estado.textContent = 'Mensagem copiada.';
+      if (estado) estado.textContent = OUTROS.copiada;
     } catch {
-      if (estado) estado.textContent = 'Não foi possível copiar. Seleccione o texto e copie-o manualmente.';
+      if (estado) estado.textContent = OUTROS.naoCopiou;
     }
   });
 

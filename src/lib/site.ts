@@ -1,10 +1,20 @@
-/** Valores derivados da configuração do lodge, usados pelos componentes. */
+/** Valores derivados da configuração do lodge, usados pelos componentes (na língua da página). */
 import { lodge } from '../config/lodge';
+import { pais } from '../i18n/lodge';
+import { caminhoPt, rota, type Lingua } from '../i18n/linguas';
 
 import { linkWhatsApp } from './whatsapp';
 
-export const localizacaoCurta = `${lodge.localizacao.localidade}, província de ${lodge.localizacao.provincia}`;
-export const localizacaoCompleta = `${localizacaoCurta}, ${lodge.localizacao.pais}`;
+/** "Boane, província de Maputo" / "Boane, Maputo Province". */
+export function localizacaoCurtaEm(l: Lingua): string {
+  const { localidade, provincia } = lodge.localizacao;
+  return l === 'en' ? `${localidade}, ${provincia} Province` : `${localidade}, província de ${provincia}`;
+}
+export function localizacaoCompletaEm(l: Lingua): string {
+  return `${localizacaoCurtaEm(l)}, ${pais(l)}`;
+}
+export const localizacaoCurta = localizacaoCurtaEm('pt');
+export const localizacaoCompleta = localizacaoCompletaEm('pt');
 
 export const whatsappDisponivel = linkWhatsApp(lodge.contactos.whatsapp) !== null;
 
@@ -44,14 +54,15 @@ export function urlDireccoes(mapa: Mapa = lodge.mapa): string {
 }
 
 /** Coordenadas em texto, como o lodge as publica (S/E, em graus decimais). */
-export function coordenadasTexto(mapa: Mapa = lodge.mapa): string {
+export function coordenadasTexto(mapa: Mapa = lodge.mapa, l: Lingua = 'pt'): string {
   if (!mapa.coordenadas) return '';
   const { lat, lng } = mapa.coordenadas;
-  const fmt = (n: number) => Math.abs(n).toFixed(5).replace('.', ',');
-  return `${fmt(lat)}° ${lat < 0 ? 'S' : 'N'}, ${fmt(lng)}° ${lng < 0 ? 'O' : 'E'}`;
+  const fmt = (n: number) => (l === 'en' ? Math.abs(n).toFixed(5) : Math.abs(n).toFixed(5).replace('.', ','));
+  const oeste = l === 'en' ? 'W' : 'O';
+  return `${fmt(lat)}° ${lat < 0 ? 'S' : 'N'}, ${fmt(lng)}° ${lng < 0 ? oeste : 'E'}`;
 }
 
-/** Mapa do OpenStreetMap à volta das coordenadas; só carrega quando o visitante o pede. */
+/** Mapa do OpenStreetMap à volta das coordenadas (iframe com carregamento diferido). */
 export function urlMapaIncorporado(mapa: Mapa = lodge.mapa): string | null {
   if (!mapa.coordenadas) return null;
   const { lat, lng } = mapa.coordenadas;
@@ -97,15 +108,39 @@ export const navegacao = [
   { href: '/contactos/', nome: 'Contactos' },
 ] as const;
 
+const NAVEGACAO_EN: Record<(typeof navegacao)[number]['href'], string> = {
+  '/': 'Home',
+  '/alojamento/': 'Rooms',
+  '/restaurante/': 'Restaurant',
+  '/piscinas/': 'Pools',
+  '/eventos/': 'Events',
+  '/galeria/': 'Gallery',
+  '/contactos/': 'Contact',
+};
+
+/** Menu principal na língua pedida (endereços dessa língua). */
+export function navegacaoEm(l: Lingua): { href: string; nome: string }[] {
+  return navegacao.map((n) => ({
+    href: rota(l, n.href),
+    nome: l === 'en' ? NAVEGACAO_EN[n.href] : n.nome,
+  }));
+}
+
 /**
  * Destino dos dois pedidos a partir de cada página. O formulário de disponibilidade existe na página
  * inicial e na de alojamento; o de orçamento, na página inicial (separador "Evento") e na de eventos.
+ * Funciona com os endereços das duas línguas e devolve endereços da língua da página.
  */
-export function ligacoesPedido(caminho: string): { disponibilidade: string; evento: string } {
-  const inicio = caminho === '/';
+export function ligacoesPedido(
+  caminho: string,
+  l: Lingua = 'pt',
+): { disponibilidade: string; evento: string } {
+  const pt = caminhoPt(caminho);
+  const inicio = pt === '/';
   return {
-    disponibilidade: inicio || caminho.startsWith('/alojamento/') ? '#disponibilidade' : '/#disponibilidade',
-    evento: inicio ? '#orcamento' : caminho.startsWith('/eventos/') ? '#pedido' : '/eventos/#pedido',
+    disponibilidade:
+      inicio || pt.startsWith('/alojamento/') ? '#disponibilidade' : rota(l, '/#disponibilidade'),
+    evento: inicio ? '#orcamento' : pt.startsWith('/eventos/') ? '#pedido' : rota(l, '/eventos/#pedido'),
   };
 }
 
@@ -142,3 +177,13 @@ export const canaisContacto: CanalContacto[] = [
     externo: false,
   },
 ];
+
+const ROTULOS_CANAL_EN: Record<CanalContacto['id'], string> = {
+  telefone: 'Phone',
+  whatsapp: 'WhatsApp',
+  email: 'Email',
+};
+
+export function canaisContactoEm(l: Lingua): CanalContacto[] {
+  return l === 'pt' ? canaisContacto : canaisContacto.map((c) => ({ ...c, rotulo: ROTULOS_CANAL_EN[c.id] }));
+}

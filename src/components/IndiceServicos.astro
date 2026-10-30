@@ -4,6 +4,7 @@
  * abre com uma fotografia real do espaço.
  */
 import type { IdFotografia } from '../data/fotografias';
+import { linguaDe, rota } from '../i18n/linguas';
 
 import Foto from './Foto.astro';
 import Icone, { type NomeIcone } from './Icone.astro';
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const { variante = 'pilares', excluir } = Astro.props;
+const en = linguaDe(Astro.url) === 'en';
 
 const itens: {
   id: Id;
@@ -29,32 +31,40 @@ const itens: {
   {
     id: 'alojamento',
     icone: 'cama',
-    titulo: 'Alojamento',
-    texto: 'Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração.',
+    titulo: en ? 'Rooms' : 'Alojamento',
+    texto: en
+      ? 'Rooms to rest in after a day of leisure, work or celebration.'
+      : 'Quartos para descansar depois de um dia de lazer, de trabalho ou de celebração.',
     href: '/alojamento/',
     foto: 'quarto-cadeirao',
   },
   {
     id: 'eventos',
     icone: 'pessoas',
-    titulo: 'Conferências e eventos',
-    texto: 'Salas de conferências e espaços ao ar livre para reunir e celebrar.',
+    titulo: en ? 'Conferences and events' : 'Conferências e eventos',
+    texto: en
+      ? 'Conference rooms and outdoor spaces to meet and celebrate.'
+      : 'Salas de conferências e espaços ao ar livre para reunir e celebrar.',
     href: '/eventos/',
     foto: 'sala-conferencias-u',
   },
   {
     id: 'piscinas',
     icone: 'ondas',
-    titulo: 'Piscinas e jardins',
-    texto: 'Lazer ao ar livre, entre palmeiras, árvores de sombra e jardins cuidados.',
+    titulo: en ? 'Pools and gardens' : 'Piscinas e jardins',
+    texto: en
+      ? 'Outdoor leisure among palm trees, shady trees and well-kept gardens.'
+      : 'Lazer ao ar livre, entre palmeiras, árvores de sombra e jardins cuidados.',
     href: '/piscinas/',
     foto: 'piscina-topiaria',
   },
   {
     id: 'restaurante',
     icone: 'talheres',
-    titulo: 'Restaurante',
-    texto: 'Refeições numa sala ampla, com janelas largas sobre o jardim.',
+    titulo: en ? 'Restaurant' : 'Restaurante',
+    texto: en
+      ? 'Meals in a spacious room with wide windows overlooking the garden.'
+      : 'Refeições numa sala ampla, com janelas largas sobre o jardim.',
     href: '/restaurante/',
     foto: 'sala-refeicoes-bar',
   },
@@ -65,7 +75,7 @@ const lista = itens.filter((i) => i.id !== excluir);
 <ul class:list={['indice', `indice--${variante}`, 'c-cartoes']}>
   {lista.map((i) => (
     <li>
-      <a class="indice__item" href={i.href}>
+      <a class="indice__item" href={rota(en ? 'en' : 'pt', i.href)}>
         <Foto
           id={i.foto}
           sizes={
@@ -83,7 +93,7 @@ const lista = itens.filter((i) => i.id !== excluir);
           </span>
           <span class="indice__texto">{i.texto}</span>
           <span class="indice__seta">
-            Saber mais <Icone nome="seta" tamanho={18} />
+            {en ? 'Find out more' : 'Saber mais'} <Icone nome="seta" tamanho={18} />
           </span>
         </span>
       </a>

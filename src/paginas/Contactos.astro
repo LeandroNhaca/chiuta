@@ -1,0 +1,226 @@
+---
+import BotaoWhatsApp from '../components/BotaoWhatsApp.astro';
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import ComoChegar from '../components/ComoChegar.astro';
+import Enfase from '../components/Enfase.astro';
+import Icone from '../components/Icone.astro';
+import RedesSociais from '../components/RedesSociais.astro';
+import { lodge } from '../config/lodge';
+import { linguaDe, rota, traducoes } from '../i18n/linguas';
+import { canaisContactoEm, localizacaoCompletaEm, temContactosDirectos } from '../lib/site';
+import Base from '../layouts/Base.astro';
+
+const l = linguaDe(Astro.url);
+const canaisContacto = canaisContactoEm(l);
+const t = traducoes(
+  {
+    tituloPagina: 'Contactos e localização',
+    descricao:
+      'Contactos do Mulotana Lodge, em Boane: telefone de reservas, WhatsApp, e-mail, morada e mapa. Consulte a disponibilidade ou peça um orçamento para o seu evento.',
+    titulo: 'Fale connosco',
+    intro:
+      'Peça informações, consulte a disponibilidade ou prepare o seu evento no Mulotana Lodge, em Boane.',
+    etiqueta: 'Contactos',
+    tituloSecao: 'Estamos em *Boane.*',
+    telefone: 'Telefone de reservas',
+    aConfirmar: 'A confirmar',
+    novaJanela: '(abre numa nova janela)',
+    nota: 'O telefone, o WhatsApp e o e-mail oficiais estão a ser confirmados pelo Mulotana Lodge e serão publicados nesta página. Até lá, pode preparar o seu pedido de disponibilidade ou de orçamento.',
+    disponibilidade: 'Consultar disponibilidade',
+    disponibilidadeTexto: 'Indique as datas e o número de hóspedes.',
+    evento: 'Pedir orçamento para um evento',
+    eventoTexto: 'Reuniões, conferências, celebrações e encontros de grupo.',
+    chegar: 'Como chegar',
+  },
+  {
+    tituloPagina: 'Contact and location',
+    descricao:
+      'Contact Mulotana Lodge, in Boane: bookings phone, WhatsApp, email, address and map. Check availability or request a quote for your event.',
+    titulo: 'Get in touch',
+    intro: 'Ask for information, check availability or plan your event at Mulotana Lodge, in Boane.',
+    etiqueta: 'Contact',
+    tituloSecao: 'We are in *Boane.*',
+    telefone: 'Bookings phone',
+    aConfirmar: 'To be confirmed',
+    novaJanela: '(opens in a new window)',
+    nota: 'The official phone, WhatsApp and email are being confirmed by Mulotana Lodge and will be published on this page. In the meantime, you can prepare your availability or quote request.',
+    disponibilidade: 'Check availability',
+    disponibilidadeTexto: 'Tell us the dates and the number of guests.',
+    evento: 'Request a quote for an event',
+    eventoTexto: 'Meetings, conferences, celebrations and group gatherings.',
+    chegar: 'Getting here',
+  },
+)[l];
+---
+
+<Base movimento="minimo" titulo={t.tituloPagina} descricao={t.descricao}>
+  <CabecalhoPagina titulo={t.titulo} intro={t.intro} />
+
+  <section class="secao secao--clara" aria-labelledby="contactos-titulo">
+    <div class="contentor grelha grelha--metades contactos">
+      <div class="bloco-titulo">
+        <p class="etiqueta">{t.etiqueta}</p>
+        <h2 id="contactos-titulo">
+          <Enfase texto={t.tituloSecao} />
+        </h2>
+        <ul class="contactos__lista">
+          {canaisContacto.map((c) => (
+            <li>
+              <Icone nome={c.id} tamanho={22} />
+              <span class="contactos__canal">
+                <span class="contactos__rotulo">{c.id === 'telefone' ? t.telefone : c.rotulo}</span>
+                {c.href ? (
+                  <a
+                    href={c.href}
+                    target={c.externo ? '_blank' : undefined}
+                    rel={c.externo ? 'noopener' : undefined}
+                  >
+                    {c.valor}
+                    {c.externo && <span class="visualmente-oculto"> {t.novaJanela}</span>}
+                  </a>
+                ) : (
+                  <span class="pendente">{t.aConfirmar}</span>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+        {!temContactosDirectos && <p class="contactos__nota">{t.nota}</p>}
+        <div class="accoes">
+          <BotaoWhatsApp variante="principal" />
+        </div>
+        <RedesSociais />
+      </div>
+
+      <ul class="contactos__accoes">
+        <li>
+          <a class="contactos__cartao" href={rota(l, '/#disponibilidade')}>
+            <Icone nome="calendario" tamanho={28} />
+            <span class="contactos__titulo">{t.disponibilidade}</span>
+            <span class="contactos__texto">{t.disponibilidadeTexto}</span>
+            <Icone nome="seta" tamanho={20} class="contactos__seta" />
+          </a>
+        </li>
+        <li>
+          <a class="contactos__cartao" href={rota(l, '/eventos/#pedido')}>
+            <Icone nome="pessoas" tamanho={28} />
+            <span class="contactos__titulo">{t.evento}</span>
+            <span class="contactos__texto">{t.eventoTexto}</span>
+            <Icone nome="seta" tamanho={20} class="contactos__seta" />
+          </a>
+        </li>
+        <li>
+          <a class="contactos__cartao" href="#como-chegar">
+            <Icone nome="pino" tamanho={28} />
+            <span class="contactos__titulo">{t.chegar}</span>
+            <span class="contactos__texto">
+              {lodge.localizacao.morada
+                ? `${lodge.localizacao.morada}, ${lodge.localizacao.localidade}`
+                : localizacaoCompletaEm(l)}
+            </span>
+            <Icone nome="seta" tamanho={20} class="contactos__seta" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <ComoChegar semContacto />
+</Base>
+
+<style>
+  .contactos {
+    align-items: start;
+  }
+  .contactos__lista {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--linha);
+  }
+  .contactos__lista li {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .contactos__lista > li > :global(svg) {
+    flex: none;
+    color: var(--dourado-texto);
+  }
+  .contactos__canal {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .contactos__lista a {
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--verde);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .contactos__lista a:hover {
+    text-decoration: underline;
+  }
+  .contactos__rotulo {
+    font-size: var(--t-pequeno);
+    font-weight: 700;
+    color: var(--texto-suave);
+  }
+  .contactos__nota {
+    font-size: var(--t-pequeno);
+    color: var(--texto-suave);
+  }
+  .contactos__accoes {
+    display: grid;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .contactos__cartao {
+    position: relative;
+    display: grid;
+    gap: 8px;
+    padding: 26px 64px 26px 28px;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-l);
+    background: #fff;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      border-color var(--transicao),
+      transform var(--transicao);
+  }
+  .contactos__cartao:hover {
+    border-color: var(--dourado-texto);
+    box-shadow: var(--sombra);
+    transform: translateY(-2px);
+  }
+  .contactos__cartao > :global(svg:first-child) {
+    color: var(--dourado-texto);
+  }
+  .contactos__titulo {
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .contactos__texto {
+    font-size: 0.95rem;
+    color: var(--texto-suave);
+  }
+  .contactos__cartao :global(.contactos__seta) {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--verde);
+  }
+</style>

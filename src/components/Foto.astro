@@ -4,7 +4,8 @@
  * (sem saltos de layout). O enquadramento por secção faz-se em CSS (object-position), nunca com estilos
  * inline, para respeitar a Content-Security-Policy.
  */
-import { fotografia, srcset, type IdFotografia } from '../data/fotografias';
+import { fotografia, srcset, textosFoto, type IdFotografia } from '../data/fotografias';
+import { linguaDe } from '../i18n/linguas';
 
 interface Props {
   id: IdFotografia;
@@ -20,6 +21,7 @@ interface Props {
 
 const { id, sizes = '100vw', prioridade = false, alt, class: classe, classeImg } = Astro.props;
 const f = fotografia(id);
+const { alt: altCatalogo } = textosFoto(f, linguaDe(Astro.url));
 ---
 
 <picture class={classe}>
@@ -30,7 +32,7 @@ const f = fotografia(id);
     src={`/images/mulotane/real/${f.id}-${f.larguras[0]}.webp`}
     width={f.largura}
     height={f.altura}
-    alt={alt ?? f.alt}
+    alt={alt ?? altCatalogo}
     loading={prioridade ? 'eager' : 'lazy'}
     decoding={prioridade ? 'auto' : 'async'}
     fetchpriority={prioridade ? 'high' : undefined}

@@ -9,7 +9,8 @@
  * - Sem passagem automática, sem ciclo infinito e sem cartões duplicados.
  * - Só fotografias do catálogo (src/data/fotografias.ts), com a legenda e o texto alternativo de lá.
  */
-import { fotografia, type IdFotografia } from '../data/fotografias';
+import { fotografia, textosFoto, type IdFotografia } from '../data/fotografias';
+import { linguaDe, traducoes } from '../i18n/linguas';
 
 import Foto from './Foto.astro';
 import Icone from './Icone.astro';
@@ -32,19 +33,29 @@ const MAXIMO = 15;
 const { id, rotulo, cartoes } = Astro.props;
 const lista = cartoes.slice(0, MAXIMO);
 const total = lista.length;
+const l = linguaDe(Astro.url);
+const t = traducoes(
+  {
+    carrossel: 'carrossel',
+    fotografias: 'fotografias',
+    anterior: 'Fotografia anterior',
+    seguinte: 'Fotografia seguinte',
+  },
+  { carrossel: 'carousel', fotografias: 'photos', anterior: 'Previous photo', seguinte: 'Next photo' },
+)[l];
 ---
 
 {total > 0 && (
-  <section class="carrossel" aria-roledescription="carrossel" aria-label={rotulo} data-carrossel>
+  <section class="carrossel" aria-roledescription={t.carrossel} aria-label={rotulo} data-carrossel>
     <ul
       class="carrossel__pista"
       id={`${id}-pista`}
       tabindex="0"
-      aria-label={`${rotulo}: ${total} fotografias`}
+      aria-label={`${rotulo}: ${total} ${t.fotografias}`}
     >
       {lista.map((c, i) => {
         const f = fotografia(c.foto);
-        const titulo = c.titulo ?? f.legenda;
+        const titulo = c.titulo ?? textosFoto(f, l).legenda;
         return (
           <li class="carrossel__cartao">
             <figure>
@@ -67,7 +78,7 @@ const total = lista.length;
           type="button"
           class="carrossel__botao"
           aria-controls={`${id}-pista`}
-          aria-label="Fotografia anterior"
+          aria-label={t.anterior}
           data-carrossel-anterior
         >
           <Icone nome="seta-esquerda" tamanho={20} />
@@ -76,7 +87,7 @@ const total = lista.length;
           type="button"
           class="carrossel__botao"
           aria-controls={`${id}-pista`}
-          aria-label="Fotografia seguinte"
+          aria-label={t.seguinte}
           data-carrossel-seguinte
         >
           <Icone nome="seta" tamanho={20} />

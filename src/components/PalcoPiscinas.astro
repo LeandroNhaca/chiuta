@@ -10,18 +10,52 @@
  * Não se publicam horários, preços nem regras da piscina: só o convite para perguntar.
  */
 import { lodge } from '../config/lodge';
+import { linguaDe, rota, traducoes } from '../i18n/linguas';
 
 import BotaoWhatsApp from './BotaoWhatsApp.astro';
+import Enfase from './Enfase.astro';
 import Foto from './Foto.astro';
 import Icone from './Icone.astro';
+
+const l = linguaDe(Astro.url);
+const t = traducoes(
+  {
+    etiqueta: 'Piscinas e lazer',
+    titulo: 'Piscinas *e jardins.*',
+    tituloUm: 'Lazer ao ar livre',
+    textoUm:
+      'Piscinas entre palmeiras e jardins cuidados, com esplanadas à sombra das árvores: para um dia de descanso, um encontro de família ou a pausa de um evento.',
+    ligacaoUm: 'Piscinas e jardins',
+    tituloDois: 'Um dia à beira da piscina',
+    textoDois:
+      'Quer saber as condições de acesso, os horários ou se a piscina está aberta a visitantes não alojados? Pergunte directamente à equipa.',
+    perguntar: 'Perguntar sobre a piscina',
+    whatsapp: `Olá, ${lodge.nome}! Gostaria de saber as condições de acesso à piscina (horários, regras e preço).`,
+    contactos: 'Outros contactos',
+  },
+  {
+    etiqueta: 'Pools and leisure',
+    titulo: 'Pools *and gardens.*',
+    tituloUm: 'Outdoor leisure',
+    textoUm:
+      'Pools among palm trees and well-kept gardens, with terraces in the shade of the trees: for a day of rest, a family gathering or a break during an event.',
+    ligacaoUm: 'Pools and gardens',
+    tituloDois: 'A day by the pool',
+    textoDois:
+      'Would you like to know the access conditions, the opening hours or whether the pool is open to non-resident guests? Ask the team directly.',
+    perguntar: 'Ask about the pool',
+    whatsapp: `Hello, ${lodge.nome}! I would like to know the conditions for using the pool (opening hours, rules and price).`,
+    contactos: 'Other contact details',
+  },
+)[l];
 ---
 
 <section class="lazer cinema" data-cinema aria-labelledby="piscinas-titulo">
   <div class="cinema__palco" data-cinema-palco>
     <div class="lazer__cabeca">
-      <p class="etiqueta c-revelar">Piscinas e lazer</p>
+      <p class="etiqueta c-revelar">{t.etiqueta}</p>
       <h2 id="piscinas-titulo" class="lazer__titulo c-titulo">
-        Piscinas <em>e jardins.</em>
+        <Enfase texto={t.titulo} />
       </h2>
     </div>
 
@@ -31,13 +65,10 @@ import Icone from './Icone.astro';
       </div>
     </div>
     <div class="lazer__painel lazer__painel--1" id="piscinas" data-cinema-em="0.36" tabindex="-1">
-      <h3>Lazer ao ar livre</h3>
-      <p>
-        Piscinas entre palmeiras e jardins cuidados, com esplanadas à sombra das árvores: para um dia de
-        descanso, um encontro de família ou a pausa de um evento.
-      </p>
-      <a class="ligacao-seta" href="/piscinas/">
-        <span>Piscinas e jardins</span>
+      <h3>{t.tituloUm}</h3>
+      <p>{t.textoUm}</p>
+      <a class="ligacao-seta" href={rota(l, '/piscinas/')}>
+        <span>{t.ligacaoUm}</span>
         <Icone nome="seta" tamanho={18} />
       </a>
     </div>
@@ -48,19 +79,12 @@ import Icone from './Icone.astro';
       </div>
     </div>
     <div class="lazer__painel lazer__painel--2" data-cinema-em="0.94" tabindex="-1">
-      <h3>Um dia à beira da piscina</h3>
-      <p>
-        Quer saber as condições de acesso, os horários ou se a piscina está aberta a visitantes não alojados?
-        Pergunte directamente à equipa.
-      </p>
+      <h3>{t.tituloDois}</h3>
+      <p>{t.textoDois}</p>
       <div class="accoes">
-        <BotaoWhatsApp
-          texto="Perguntar sobre a piscina"
-          variante="principal"
-          mensagem={`Olá, ${lodge.nome}! Gostaria de saber as condições de acesso à piscina (horários, regras e preço).`}
-        />
-        <a class="ligacao-seta" href="/contactos/">
-          <span>Outros contactos</span>
+        <BotaoWhatsApp texto={t.perguntar} variante="principal" mensagem={t.whatsapp} />
+        <a class="ligacao-seta" href={rota(l, '/contactos/')}>
+          <span>{t.contactos}</span>
           <Icone nome="seta" tamanho={18} />
         </a>
       </div>

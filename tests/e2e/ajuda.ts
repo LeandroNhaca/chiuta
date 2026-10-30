@@ -11,6 +11,20 @@ export const PAGINAS = [
   '/privacidade/',
 ] as const;
 
+/** As mesmas páginas na versão inglesa (pela mesma ordem). */
+export const PAGINAS_EN = [
+  '/en/',
+  '/en/rooms/',
+  '/en/restaurant/',
+  '/en/pools/',
+  '/en/events/',
+  '/en/gallery/',
+  '/en/contact/',
+  '/en/privacy/',
+] as const;
+
+export const TODAS = [...PAGINAS, ...PAGINAS_EN];
+
 export const ehTelemovel = (info: TestInfo) => info.project.name.startsWith('telemovel');
 export const ehComputador = (info: TestInfo) => ['portatil', 'monitor'].includes(info.project.name);
 

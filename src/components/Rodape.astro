@@ -1,7 +1,9 @@
 ---
 import { lodge } from '../config/lodge';
 import { fotografias } from '../data/fotografias';
-import { canaisContacto, navegacao } from '../lib/site';
+import { pais } from '../i18n/lodge';
+import { linguaDe, rota, traducoes } from '../i18n/linguas';
+import { canaisContactoEm, navegacaoEm } from '../lib/site';
 
 import Assinatura from './Assinatura.astro';
 import Icone from './Icone.astro';
@@ -9,13 +11,52 @@ import RedesSociais from './RedesSociais.astro';
 
 const ano = new Date().getFullYear();
 const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
+const l = linguaDe(Astro.url);
+const navegacao = navegacaoEm(l);
+const canaisContacto = canaisContactoEm(l);
+const t = traducoes(
+  {
+    resumo: 'Alojamento, salas de conferências, restaurante e área de lazer com piscina, em Boane.',
+    provincia: `Província de ${lodge.localizacao.provincia}`,
+    rodape: 'Rodapé',
+    explorar: 'Explorar',
+    pedidos: 'Pedidos',
+    disponibilidade: 'Consultar disponibilidade',
+    evento: 'Pedir orçamento para um evento',
+    chegar: 'Como chegar',
+    contactos: 'Contactos',
+    aConfirmar: 'A confirmar',
+    fale: 'Fale connosco',
+    direitos: 'Todos os direitos reservados.',
+    privacidade: 'Política de privacidade',
+    creditos: 'Créditos fotográficos',
+    autor: 'Website por',
+  },
+  {
+    resumo: 'Accommodation, conference rooms, a restaurant and a leisure area with pools, in Boane.',
+    provincia: `${lodge.localizacao.provincia} Province`,
+    rodape: 'Footer',
+    explorar: 'Explore',
+    pedidos: 'Requests',
+    disponibilidade: 'Check availability',
+    evento: 'Request a quote for an event',
+    chegar: 'Getting here',
+    contactos: 'Contact',
+    aConfirmar: 'To be confirmed',
+    fale: 'Get in touch',
+    direitos: 'All rights reserved.',
+    privacidade: 'Privacy policy',
+    creditos: 'Photo credits',
+    autor: 'Website by',
+  },
+)[l];
 ---
 
 <footer class="rodape">
   <div class="contentor rodape__grelha">
     <div class="rodape__marca">
       <Assinatura sobreEscuro altura={64} />
-      <p>Alojamento, salas de conferências, restaurante e área de lazer com piscina, em Boane.</p>
+      <p>{t.resumo}</p>
       <p class="rodape__local">
         <Icone nome="pino" tamanho={18} />
         <span>
@@ -25,15 +66,14 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
               <br />
             </>
           )}
-          {lodge.localizacao.localidade} · Província de {lodge.localizacao.provincia} ·{' '}
-          {lodge.localizacao.pais}
+          {lodge.localizacao.localidade} · {t.provincia} · {pais(l)}
         </span>
       </p>
       <RedesSociais claro />
     </div>
 
-    <nav class="rodape__coluna" aria-label="Rodapé">
-      <h2>Explorar</h2>
+    <nav class="rodape__coluna" aria-label={t.rodape}>
+      <h2>{t.explorar}</h2>
       <ul>
         {navegacao.map((item) => (
           <li>
@@ -44,22 +84,22 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
     </nav>
 
     <div class="rodape__coluna">
-      <h2>Pedidos</h2>
+      <h2>{t.pedidos}</h2>
       <ul>
         <li>
-          <a href="/#disponibilidade">Consultar disponibilidade</a>
+          <a href={rota(l, '/#disponibilidade')}>{t.disponibilidade}</a>
         </li>
         <li>
-          <a href="/eventos/#pedido">Pedir orçamento para um evento</a>
+          <a href={rota(l, '/eventos/#pedido')}>{t.evento}</a>
         </li>
         <li>
-          <a href="/contactos/#como-chegar">Como chegar</a>
+          <a href={rota(l, '/contactos/#como-chegar')}>{t.chegar}</a>
         </li>
       </ul>
     </div>
 
     <div class="rodape__coluna">
-      <h2>Contactos</h2>
+      <h2>{t.contactos}</h2>
       <ul class="rodape__contactos">
         {canaisContacto.map((c) => (
           <li>
@@ -76,14 +116,14 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
               <span class="rodape__canal">
                 <Icone nome={c.id} tamanho={18} />
                 {c.rotulo}
-                <span class="pendente pendente--claro">A confirmar</span>
+                <span class="pendente pendente--claro">{t.aConfirmar}</span>
               </span>
             )}
           </li>
         ))}
       </ul>
-      <a class="ligacao-seta" href="/contactos/">
-        <span>Fale connosco</span>
+      <a class="ligacao-seta" href={rota(l, '/contactos/')}>
+        <span>{t.fale}</span>
         <Icone nome="seta" tamanho={18} />
       </a>
     </div>
@@ -91,18 +131,20 @@ const comCapturas = fotografias.some((f) => f.origem === 'google-maps');
 
   <div class="contentor rodape__base">
     <p>
-      © {ano} {lodge.nome}. Todos os direitos reservados.
+      © {ano} {lodge.nome}. {t.direitos}
     </p>
     <ul>
       <li>
-        <a href="/privacidade/">Política de privacidade</a>
+        <a href={rota(l, '/privacidade/')}>{t.privacidade}</a>
       </li>
       {comCapturas && (
         <li>
-          <a href="/galeria/#creditos-titulo">Créditos fotográficos</a>
+          <a href={rota(l, '/galeria/#creditos-titulo')}>{t.creditos}</a>
         </li>
       )}
-      <li>Website por {lodge.demonstracao.autor}</li>
+      <li>
+        {t.autor} {lodge.demonstracao.autor}
+      </li>
     </ul>
   </div>
 </footer>

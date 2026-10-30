@@ -11,6 +11,12 @@ const estadoFiltro = document.querySelector<HTMLElement>('[data-filtro-estado]')
 
 const visiveis = () => itens.filter((a) => !a.closest('li')?.hidden);
 
+// Textos que dependem da língua da página.
+const ingles = document.documentElement.lang.startsWith('en');
+const nFotos = (n: number) =>
+  ingles ? (n === 1 ? '1 photo' : `${n} photos`) : n === 1 ? '1 fotografia' : `${n} fotografias`;
+const de = ingles ? 'of' : 'de';
+
 if (filtros) {
   const botoes = Array.from(filtros.querySelectorAll<HTMLButtonElement>('[data-filtro]'));
   filtros.classList.remove('galeria__filtros--espera');
@@ -24,8 +30,7 @@ if (filtros) {
       });
       const n = visiveis().length;
       const nome = botao.firstChild?.textContent?.trim() ?? '';
-      if (estadoFiltro)
-        estadoFiltro.textContent = `${n === 1 ? '1 fotografia' : `${n} fotografias`}${escolhido === 'todas' ? '' : `: ${nome}`}`;
+      if (estadoFiltro) estadoFiltro.textContent = `${nFotos(n)}${escolhido === 'todas' ? '' : `: ${nome}`}`;
     }),
   );
 }
@@ -54,7 +59,7 @@ if (caixa && itens.length > 0) {
     }
     if (legenda) legenda.textContent = d.legenda ?? '';
     if (credito) credito.textContent = d.credito ?? '';
-    if (contador) contador.textContent = `${actual + 1} de ${lista.length}`;
+    if (contador) contador.textContent = `${actual + 1} ${de} ${lista.length}`;
   };
 
   itens.forEach((item) =>

@@ -1,0 +1,395 @@
+---
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Cenas, { type Cena } from '../components/Cenas.astro';
+import Enfase from '../components/Enfase.astro';
+import FichaServico from '../components/FichaServico.astro';
+import FormularioEvento from '../components/FormularioEvento.astro';
+import Foto from '../components/Foto.astro';
+import Icone from '../components/Icone.astro';
+import IndiceServicos from '../components/IndiceServicos.astro';
+import { lodge } from '../config/lodge';
+import { detalhe } from '../i18n/lodge';
+import { linguaDe, traducoes } from '../i18n/linguas';
+import Base from '../layouts/Base.astro';
+
+const l = linguaDe(Astro.url);
+const salas = detalhe('eventos', 'Salas de conferências', l);
+const exterior = detalhe('eventos', 'Eventos ao ar livre', l);
+// Capacidades tal como o lodge as publicou (src/config/lodge.ts → detalhes.eventos).
+const capacidades = salas?.valor.match(/\d+/g) ?? [];
+const capacidadeExterior = exterior?.valor.match(/\d+/)?.[0];
+
+const t = traducoes(
+  {
+    tituloPagina: 'Salas de conferências e eventos em Boane',
+    descricao:
+      'Salas de conferências e espaços para eventos no Mulotana Lodge, em Boane: reuniões, formações, conferências e celebrações. Peça um orçamento para o seu evento.',
+    titulo: 'Conferências e eventos',
+    intro:
+      'Salas de conferências e uma área ao ar livre junto à piscina para reuniões, formações, encontros de grupo e celebrações.',
+    pedirEvento: 'Pedir orçamento para um evento',
+    pedir: 'Pedir orçamento',
+    montagem: 'Montagem',
+    cenas: [
+      {
+        titulo: 'Em plateia',
+        texto: 'Filas de mesas viradas para a mesa de honra, para conferências e formações.',
+      },
+      {
+        titulo: 'Em U, com ecrã',
+        texto: 'Mesas em U à volta da mesa de honra e do ecrã de projecção, para reuniões e workshops.',
+      },
+      {
+        titulo: 'Estrado e mesa de honra',
+        texto: 'Estrado, mesa de honra e púlpito, para sessões formais e cerimónias.',
+      },
+    ],
+    tipos: [
+      'Reuniões empresariais',
+      'Formações e workshops',
+      'Conferências',
+      'Encontros de grupo',
+      'Celebrações e eventos privados',
+    ],
+    salasEtiqueta: 'As salas',
+    salasTitulo: 'Um espaço à medida do *seu evento.*',
+    salasTexto:
+      'Da reunião de equipa à conferência com centenas de participantes. Diga-nos quantas pessoas espera e como quer a sala montada: plateia, em U ou com mesa de honra.',
+    capacidade: 'Capacidade dos espaços',
+    pessoas: 'pessoas',
+    sala: 'Sala de conferências',
+    piscina: 'Área junto à piscina',
+    nota: (origem: string) =>
+      `Capacidades publicadas pelo lodge nas redes sociais (${origem}). A equipa confirma a sala, a montagem e a disponibilidade para a data do seu evento.`,
+    montagensEtiqueta: 'As montagens',
+    montagensTitulo: 'A sala como o seu evento *precisa.*',
+    montagensRotulo: 'Montagens das salas',
+    pedidoEtiqueta: 'Orçamento',
+    pedidoTitulo: 'Pedir orçamento para um *evento.*',
+    pedidoTexto: `Conte-nos o que está a planear. Não há orçamentos automáticos: a equipa do ${lodge.nome} prepara-o de acordo com a disponibilidade do espaço e o que pedir.`,
+    comoFunciona: 'Como funciona',
+    passos: [
+      'Preencha o pedido com a data, o número de participantes e os serviços pretendidos.',
+      'Envie a mensagem preparada pelo WhatsApp ou por e-mail.',
+      'A equipa confirma a disponibilidade e envia o orçamento.',
+      'O evento fica garantido só depois de confirmado pelo lodge.',
+    ],
+    buffet: 'Buffet montado para um evento. Indique no pedido as refeições que pretende.',
+    reunirEtiqueta: 'Reunir e celebrar',
+    reunirTitulo: 'Eventos que pode *organizar.*',
+    resumo: 'Os eventos em resumo',
+    explorarEtiqueta: 'Continue a explorar',
+    explorarTitulo: 'Mais para descobrir no lodge.',
+  },
+  {
+    tituloPagina: 'Conference rooms and events in Boane',
+    descricao:
+      'Conference rooms and event spaces at Mulotana Lodge, in Boane: meetings, training, conferences and celebrations. Request a quote for your event.',
+    titulo: 'Conferences and events',
+    intro:
+      'Conference rooms and an outdoor area by the pool for meetings, training sessions, group gatherings and celebrations.',
+    pedirEvento: 'Request a quote for an event',
+    pedir: 'Request a quote',
+    montagem: 'Layout',
+    cenas: [
+      {
+        titulo: 'Theatre-style',
+        texto: 'Rows of tables facing the top table, for conferences and training sessions.',
+      },
+      {
+        titulo: 'U-shape, with a screen',
+        texto: 'Tables in a U around the top table and the projection screen, for meetings and workshops.',
+      },
+      {
+        titulo: 'Stage and top table',
+        texto: 'A stage, top table and lectern, for formal sessions and ceremonies.',
+      },
+    ],
+    tipos: [
+      'Business meetings',
+      'Training and workshops',
+      'Conferences',
+      'Group gatherings',
+      'Celebrations and private events',
+    ],
+    salasEtiqueta: 'The rooms',
+    salasTitulo: 'A space that fits *your event.*',
+    salasTexto:
+      'From a team meeting to a conference with hundreds of participants. Tell us how many people you expect and how you would like the room set up: theatre-style, U-shape or with a top table.',
+    capacidade: 'Capacity of the spaces',
+    pessoas: 'people',
+    sala: 'Conference room',
+    piscina: 'Poolside area',
+    nota: (origem: string) =>
+      `Capacities published by the lodge on social media (${origem}). The team confirms the room, the layout and availability for the date of your event.`,
+    montagensEtiqueta: 'Room layouts',
+    montagensTitulo: 'The room the way your event *needs it.*',
+    montagensRotulo: 'Room layouts',
+    pedidoEtiqueta: 'Quote',
+    pedidoTitulo: 'Request a quote for an *event.*',
+    pedidoTexto: `Tell us what you are planning. There are no automatic quotes: the ${lodge.nome} team prepares yours according to the availability of the space and what you ask for.`,
+    comoFunciona: 'How it works',
+    passos: [
+      'Fill in the request with the date, the number of participants and the services you need.',
+      'Send the prepared message on WhatsApp or by email.',
+      'The team confirms availability and sends you the quote.',
+      'Your event is only guaranteed once it has been confirmed by the lodge.',
+    ],
+    buffet: 'Buffet set up for an event. Include the meals you would like in your request.',
+    reunirEtiqueta: 'Meet and celebrate',
+    reunirTitulo: 'Events you can *organise.*',
+    resumo: 'Events at a glance',
+    explorarEtiqueta: 'Keep exploring',
+    explorarTitulo: 'More to discover at the lodge.',
+  },
+)[l];
+
+// As montagens das salas, tal como aparecem nas fotografias do lodge; cada cena leva ao pedido de orçamento.
+const orcamento = { href: '#pedido', texto: t.pedir };
+const montagens: Cena[] = (
+  [
+    { id: 'plateia', foto: 'sala-conferencias-plateia' },
+    { id: 'u', foto: 'sala-conferencias-u' },
+    { id: 'mesa-de-honra', foto: 'sala-conferencias-palco' },
+  ] as const
+).map((c, i) => ({ ...c, etiqueta: t.montagem, ...t.cenas[i], ligacao: orcamento }));
+---
+
+<Base titulo={t.tituloPagina} descricao={t.descricao}>
+  <CabecalhoPagina titulo={t.titulo} intro={t.intro} foto="sala-conferencias-palco">
+    <a slot="accoes" class="botao botao--principal" href="#pedido">
+      {t.pedirEvento}
+      <Icone nome="seta" tamanho={18} />
+    </a>
+  </CabecalhoPagina>
+
+  <section class="secao secao--clara" aria-labelledby="salas-titulo">
+    <div class="contentor">
+      <div class="bloco-titulo salas__topo">
+        <p class="etiqueta c-revelar">{t.salasEtiqueta}</p>
+        <h2 id="salas-titulo" class="c-titulo">
+          <Enfase texto={t.salasTitulo} />
+        </h2>
+        <div class="texto c-revelar">
+          <p>{t.salasTexto}</p>
+        </div>
+      </div>
+      {capacidades.length > 0 && (
+        <ul class="salas c-cartoes" aria-label={t.capacidade}>
+          {capacidades.map((n) => (
+            <li class="sala">
+              <span class="sala__numero">{n}</span>
+              <span class="sala__texto">{t.pessoas}</span>
+              <span class="sala__tipo">{t.sala}</span>
+            </li>
+          ))}
+          {capacidadeExterior && (
+            <li class="sala sala--exterior">
+              <span class="sala__numero">{capacidadeExterior}</span>
+              <span class="sala__texto">{t.pessoas}</span>
+              <span class="sala__tipo">{t.piscina}</span>
+            </li>
+          )}
+        </ul>
+      )}
+      {salas?.aValidar && (
+        <p class="salas__nota">
+          <Icone nome="info" tamanho={16} />
+          <span>{t.nota(salas.aValidar)}</span>
+        </p>
+      )}
+    </div>
+  </section>
+
+  <section class="secao secao--escura montagens" aria-labelledby="montagens-titulo">
+    <div class="contentor montagens__intro">
+      <p class="etiqueta c-revelar">{t.montagensEtiqueta}</p>
+      <h2 id="montagens-titulo" class="c-titulo">
+        <Enfase texto={t.montagensTitulo} />
+      </h2>
+    </div>
+    <Cenas id="montagem" cenas={montagens} variante="compacta" rotulo={t.montagensRotulo} />
+    <div class="contentor montagens__fecho">
+      <a class="botao botao--principal" href="#pedido">
+        {t.pedirEvento}
+        <Icone nome="seta" tamanho={18} />
+      </a>
+    </div>
+  </section>
+
+  <section id="pedido" class="secao secao--cinza pedido-evento" aria-labelledby="pedido-titulo">
+    <div class="contentor grelha pedido-evento__grelha">
+      <div class="bloco-titulo pedido-evento__intro">
+        <p class="etiqueta c-revelar">{t.pedidoEtiqueta}</p>
+        <h2 id="pedido-titulo" class="c-titulo">
+          <Enfase texto={t.pedidoTitulo} />
+        </h2>
+        <div class="texto">
+          <p>{t.pedidoTexto}</p>
+        </div>
+      </div>
+      <div class="pedido-evento__form">
+        <FormularioEvento />
+      </div>
+      <div class="pedido-evento__lista">
+        <p class="filete-titulo">{t.comoFunciona}</p>
+        <ol class="lista-numerada">
+          {t.passos.map((p) => (
+            <li>{p}</li>
+          ))}
+        </ol>
+        <!-- Fotografia pequena (780 px de origem): fora do palco em ecrã inteiro, onde ficaria desfocada. -->
+        <figure class="pedido-evento__foto c-revelar">
+          <Foto id="buffet-evento" sizes="(min-width: 1000px) 480px, 92vw" class="foto" />
+          <figcaption class="legenda">{t.buffet}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao secao--clara" aria-labelledby="reunir-titulo">
+    <div class="contentor grelha grelha--metades reunir">
+      <div class="bloco-titulo">
+        <p class="etiqueta c-revelar">{t.reunirEtiqueta}</p>
+        <h2 id="reunir-titulo" class="c-titulo">
+          <Enfase texto={t.reunirTitulo} />
+        </h2>
+        <ul class="lista-traco reunir__tipos">
+          {t.tipos.map((x) => (
+            <li>{x}</li>
+          ))}
+        </ul>
+        <div class="accoes">
+          <a class="botao botao--principal" href="#pedido">
+            {t.pedir}
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </div>
+      </div>
+      <FichaServico servico="eventos" titulo={t.resumo} tom="clara" />
+    </div>
+  </section>
+
+  <section class="secao secao--cinza" aria-labelledby="explorar-titulo">
+    <div class="contentor">
+      <p class="etiqueta c-revelar">{t.explorarEtiqueta}</p>
+      <h2 id="explorar-titulo" class="explorar__titulo c-titulo">
+        {t.explorarTitulo}
+      </h2>
+      <IndiceServicos variante="cartoes" excluir="eventos" />
+    </div>
+  </section>
+</Base>
+
+<style>
+  .salas__topo {
+    max-width: 46rem;
+    margin-bottom: clamp(28px, 4vw, 40px);
+  }
+  .salas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 900px) {
+    .salas {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .sala {
+    display: grid;
+    gap: 2px;
+    padding: 20px;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-l);
+    background: #fff;
+  }
+  .sala__numero {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 1.7rem + 2vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0;
+    color: var(--dourado-texto);
+  }
+  .sala--exterior .sala__numero {
+    color: var(--verde);
+  }
+  .sala__texto {
+    font-weight: 700;
+  }
+  .sala__tipo {
+    margin-top: 8px;
+    font-size: var(--t-pequeno);
+    color: var(--texto-suave);
+  }
+  .salas__nota {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    font-size: var(--t-pequeno);
+    color: var(--texto-suave);
+  }
+  .salas__nota :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--dourado-texto);
+  }
+  .montagens {
+    padding-bottom: clamp(48px, 6vw, 80px);
+  }
+  .montagens__intro {
+    margin-bottom: clamp(28px, 4vw, 48px);
+  }
+  .montagens__fecho {
+    margin-top: clamp(32px, 4vw, 48px);
+  }
+
+  /* Telemóvel: título, formulário e só depois a lista de apoio. Computador: duas colunas. */
+  .pedido-evento__grelha {
+    align-items: start;
+    row-gap: 36px;
+  }
+  .pedido-evento__lista {
+    display: grid;
+    gap: 6px;
+  }
+  .pedido-evento__foto {
+    margin: 26px 0 0;
+  }
+  .pedido-evento__foto :global(.foto) {
+    display: block;
+    aspect-ratio: 5 / 4;
+  }
+  @media (min-width: 1000px) {
+    .pedido-evento__grelha {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-rows: auto 1fr;
+    }
+    .pedido-evento__intro {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    .pedido-evento__lista {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .pedido-evento__form {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+  }
+  .reunir {
+    align-items: start;
+  }
+  .reunir__tipos {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .explorar__titulo {
+    margin-bottom: clamp(32px, 4vw, 48px);
+  }
+</style>

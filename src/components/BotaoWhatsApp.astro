@@ -4,6 +4,7 @@
  * Sem número não aparece; a página de contactos assinala o WhatsApp como pendente.
  */
 import { lodge } from '../config/lodge';
+import { linguaDe } from '../i18n/linguas';
 import { linkWhatsApp } from '../lib/whatsapp';
 
 import Icone from './Icone.astro';
@@ -14,9 +15,12 @@ interface Props {
   variante?: 'principal' | 'contorno' | 'contorno-claro';
 }
 
+const en = linguaDe(Astro.url) === 'en';
 const {
-  texto = 'Falar pelo WhatsApp',
-  mensagem = `Olá, ${lodge.nome}! Gostaria de obter mais informações.`,
+  texto = en ? 'Chat on WhatsApp' : 'Falar pelo WhatsApp',
+  mensagem = en
+    ? `Hello, ${lodge.nome}! I would like some more information.`
+    : `Olá, ${lodge.nome}! Gostaria de obter mais informações.`,
   variante = 'contorno',
 } = Astro.props;
 const href = linkWhatsApp(lodge.contactos.whatsapp, mensagem);
@@ -26,5 +30,6 @@ const href = linkWhatsApp(lodge.contactos.whatsapp, mensagem);
   <a class={`botao botao--${variante}`} href={href} target="_blank" rel="noopener">
     <Icone nome="whatsapp" tamanho={18} />
     {texto}
+    <span class="visualmente-oculto">{en ? '(opens in a new window)' : '(abre numa nova janela)'}</span>
   </a>
 )}

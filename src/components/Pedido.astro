@@ -4,6 +4,7 @@
  * O comportamento (validação, WhatsApp, envio) está em src/scripts/formularios.ts.
  */
 import { lodge } from '../config/lodge';
+import { linguaDe, traducoes } from '../i18n/linguas';
 import { linkEmail, linkWhatsApp, normalizarNumero } from '../lib/whatsapp';
 
 import Icone from './Icone.astro';
@@ -23,7 +24,48 @@ const comEmail = linkEmail(lodge.contactos.email) !== null;
 const porMensagem = !lodge.pedidos.endpoint && (comWhatsApp || comEmail);
 const demonstrativo = !lodge.pedidos.endpoint && !porMensagem;
 const temAviso = demonstrativo || porMensagem;
-const canais = [comWhatsApp && 'WhatsApp', comEmail && 'e-mail'].filter(Boolean).join(' ou ');
+const l = linguaDe(Astro.url);
+const t = traducoes(
+  {
+    email: 'e-mail',
+    ou: ' ou ',
+    demo: 'Formulário de demonstração.',
+    demoTexto:
+      'Ainda não envia pedidos: pode preencher e validar os dados, mas nada é transmitido nem guardado.',
+    porCanais: (c: string) => `Pedido por ${c}.`,
+    porCanaisTexto: (c: string) =>
+      `No fim, preparamos a mensagem com os seus dados para o ${c} do ${lodge.nome}. Nada é enviado nem guardado por este site: o pedido só chega à equipa quando o enviar na sua aplicação.`,
+    obrigatoriosAntes: 'Os campos com',
+    obrigatoriosDepois: 'são obrigatórios.',
+    armadilha: 'Não preencha este campo',
+    preparada: 'Mensagem preparada',
+    copiar: 'Copiar mensagem',
+    whatsapp: 'Enviar pelo WhatsApp',
+    porEmail: 'Enviar por e-mail',
+    outro: 'Fazer outro pedido',
+    novaJanela: '(abre numa nova janela)',
+  },
+  {
+    email: 'email',
+    ou: ' or ',
+    demo: 'Demonstration form.',
+    demoTexto:
+      'It does not send requests yet: you can fill in and validate the details, but nothing is transmitted or stored.',
+    porCanais: (c: string) => `Request by ${c}.`,
+    porCanaisTexto: (c: string) =>
+      `At the end, we prepare the message with your details for the ${lodge.nome} ${c}. Nothing is sent or stored by this website: the request only reaches the team when you send it from your app.`,
+    obrigatoriosAntes: 'Fields marked with',
+    obrigatoriosDepois: 'are required.',
+    armadilha: 'Do not fill in this field',
+    preparada: 'Prepared message',
+    copiar: 'Copy message',
+    whatsapp: 'Send on WhatsApp',
+    porEmail: 'Send by email',
+    outro: 'Make another request',
+    novaJanela: '(opens in a new window)',
+  },
+)[l];
+const canais = [comWhatsApp && 'WhatsApp', comEmail && t.email].filter(Boolean).join(t.ou);
 ---
 
 <div class="pedido" data-pedido>
@@ -46,8 +88,7 @@ const canais = [comWhatsApp && 'WhatsApp', comEmail && 'e-mail'].filter(Boolean)
       <p class="pedido__demo" id={`${prefixo}-demo`}>
         <Icone nome="info" tamanho={18} />
         <span>
-          <strong>Formulário de demonstração.</strong> Ainda não envia pedidos: pode preencher e validar os
-          dados, mas nada é transmitido nem guardado.
+          <strong>{t.demo}</strong> {t.demoTexto}
         </span>
       </p>
     )}
@@ -55,14 +96,12 @@ const canais = [comWhatsApp && 'WhatsApp', comEmail && 'e-mail'].filter(Boolean)
       <p class="pedido__demo pedido__demo--whatsapp" id={`${prefixo}-demo`}>
         <Icone nome={comWhatsApp ? 'whatsapp' : 'email'} tamanho={18} />
         <span>
-          <strong>Pedido por {canais}.</strong> No fim, preparamos a mensagem com os seus dados para o{' '}
-          {canais} do {lodge.nome}. Nada é enviado nem guardado por este site: o pedido só chega à equipa
-          quando o enviar na sua aplicação.
+          <strong>{t.porCanais(canais)}</strong> {t.porCanaisTexto(canais)}
         </span>
       </p>
     )}
     <p class="pedido__obrigatorios">
-      Os campos com <span aria-hidden="true">*</span> são obrigatórios.
+      {t.obrigatoriosAntes} <span aria-hidden="true">*</span> {t.obrigatoriosDepois}
     </p>
     <p class="pedido__erros" role="alert" data-resumo-erros hidden></p>
 
@@ -71,7 +110,7 @@ const canais = [comWhatsApp && 'WhatsApp', comEmail && 'e-mail'].filter(Boolean)
     </div>
 
     <div class="pedido__armadilha" aria-hidden="true">
-      <label for={`${prefixo}-website`}>Não preencha este campo</label>
+      <label for={`${prefixo}-website`}>{t.armadilha}</label>
       <input id={`${prefixo}-website`} name="website" type="text" tabindex="-1" autocomplete="off" />
     </div>
 
@@ -97,11 +136,11 @@ const canais = [comWhatsApp && 'WhatsApp', comEmail && 'e-mail'].filter(Boolean)
     <p data-resultado-texto></p>
     <dl class="pedido__resumo" data-resultado-resumo></dl>
     <div class="pedido__mensagem" data-resultado-mensagem hidden>
-      <p class="pedido__mensagem-titulo">Mensagem preparada</p>
+      <p class="pedido__mensagem-titulo">{t.preparada}</p>
       <pre class="pedido__mensagem-texto" data-mensagem-texto></pre>
       <div class="pedido__mensagem-accoes">
         <button class="botao botao--contorno" type="button" data-copiar-mensagem>
-          Copiar mensagem
+          {t.copiar}
         </button>
         <p class="pedido__mensagem-estado" role="status" data-copiar-estado></p>
       </div>
@@ -109,14 +148,15 @@ const canais = [comWhatsApp && 'WhatsApp', comEmail && 'e-mail'].filter(Boolean)
     <div class="accoes">
       <a class="botao botao--principal" data-resultado-whatsapp hidden target="_blank" rel="noopener">
         <Icone nome="whatsapp" tamanho={18} />
-        Enviar pelo WhatsApp
+        {t.whatsapp}
+        <span class="visualmente-oculto">{t.novaJanela}</span>
       </a>
       <a class="botao botao--verde" data-resultado-email hidden>
         <Icone nome="email" tamanho={18} />
-        Enviar por e-mail
+        {t.porEmail}
       </a>
       <button class="botao botao--contorno" type="button" data-novo-pedido>
-        Fazer outro pedido
+        {t.outro}
       </button>
     </div>
   </div>

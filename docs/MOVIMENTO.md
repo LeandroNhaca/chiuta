@@ -68,7 +68,7 @@ O endereço público da referência não foi aberto nesta sessão: não se afirm
    - entra o primeiro texto; a seguir, a vista do terraço sobe como uma cortina, com "Perguntar sobre a piscina" (WhatsApp).
 5. **Conferências e eventos**: capacidades publicadas, fotografias com parallax e "Pedir orçamento para um evento".
 6. **Galeria**: mosaico de 6 fotografias em proporções diferentes, com entrada e parallax, e "Ver as 32 fotografias".
-7. **Conversão**: pedidos (estadia / evento), contactos, mapa a pedido e rodapé.
+7. **Conversão**: pedidos (estadia / evento), contactos, mapa e rodapé.
 
 Percursos dos palcos, proporcionais ao ecrã (não fixos em píxeis):
 
@@ -226,7 +226,7 @@ A experiência mais completa:
 ### Contactos (`/contactos/`) e privacidade, movimento mínimo
 
 - Sem animações de entrada nem barra de progresso: a informação aparece de imediato.
-- Mantêm-se os contactos, a morada, as coordenadas, o Google Maps, o mapa a pedido e as redes.
+- Mantêm-se os contactos, a morada, as coordenadas, o Google Maps, o mapa e as redes.
 
 ## Fotografias
 
