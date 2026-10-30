@@ -1,4 +1,18 @@
-import type { Page, TestInfo } from '@playwright/test';
+import { expect, test as base, type Page, type TestInfo } from '@playwright/test';
+
+/**
+ * `test` de todos os ficheiros: o mapa do OpenStreetMap (o único conteúdo de terceiros, num iframe) é
+ * simulado, para os testes não dependerem da rede nem de outro site.
+ */
+export const test = base.extend({
+  context: async ({ context }, use) => {
+    await context.route('https://www.openstreetmap.org/**', (r) =>
+      r.fulfill({ body: '<!doctype html><title>Mapa</title><p>mapa</p>', contentType: 'text/html' }),
+    );
+    await use(context);
+  },
+});
+export { expect };
 
 export const PAGINAS = [
   '/',

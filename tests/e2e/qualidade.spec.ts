@@ -1,7 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
 
-import { TODAS, percorrer } from './ajuda';
+import { expect, percorrer, test, TODAS } from './ajuda';
 
 test.describe('imagens, ligações e SEO', () => {
   test.beforeEach(({}, info) => test.skip(info.project.name !== 'portatil', 'verificação única (portátil)'));

@@ -1,6 +1,4 @@
-import { expect, test } from '@playwright/test';
-
-import { ehComputador, ehTelemovel } from './ajuda';
+import { ehComputador, ehTelemovel, expect, test } from './ajuda';
 
 test('o primeiro Tab mostra a ligação para saltar para o conteúdo', async ({ page }, info) => {
   test.skip(info.project.name !== 'portatil');

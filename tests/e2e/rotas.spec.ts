@@ -1,6 +1,4 @@
-import { expect, test } from '@playwright/test';
-
-import { TODAS, percorrer } from './ajuda';
+import { expect, percorrer, test, TODAS } from './ajuda';
 
 for (const caminho of TODAS) {
   test(`${caminho} carrega sem erros, sem scroll horizontal e com metadados`, async ({ page, baseURL }) => {
@@ -9,10 +7,6 @@ for (const caminho of TODAS) {
     page.on('console', (m) => m.type() === 'error' && erros.push(m.text()));
     page.on('pageerror', (e) => erros.push(String(e)));
     page.on('request', (r) => !r.url().startsWith(baseURL!) && externos.push(r.url()));
-    // O mapa do OpenStreetMap (iframe com carregamento diferido) é o único conteúdo de terceiros.
-    await page.route('https://www.openstreetmap.org/**', (r) =>
-      r.fulfill({ body: '<p>mapa</p>', contentType: 'text/html' }),
-    );
 
     const resposta = await page.goto(caminho);
     expect(resposta?.status()).toBe(200);

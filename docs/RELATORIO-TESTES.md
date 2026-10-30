@@ -1,4 +1,4 @@
-# Relatório de testes · 29/10/2026
+# Relatório de testes · 30/10/2026
 
 Só estão aqui verificações que foram de facto executadas.
 
@@ -12,16 +12,18 @@ Só estão aqui verificações que foram de facto executadas.
 | Lint | `npm run lint` (ESLint + typescript-eslint + eslint-plugin-astro) | 0 problemas |
 | Formatação | `npm run format:check` (Prettier) | ✓ |
 | Tipos | `npm run check` (astro check, TypeScript 6 estrito) | 0 erros, 0 avisos |
-| Unitários | `npm test` (Vitest, com a API de contentor do Astro) | 46/46 |
-| Build de produção | `npm run build` | 9 páginas + robots.txt + sitemap.xml |
-| End-to-end | `npm run test:e2e` (Playwright, 5 tamanhos de ecrã) | 144 passaram, 136 ignorados de propósito, 0 falhas |
+| Unitários | `npm test` (Vitest, com a API de contentor do Astro) | 56/56 |
+| Build de produção | `npm run build` | 17 páginas (8 em português, 8 em inglês e a 404) + robots.txt + sitemap.xml |
+| End-to-end | `npm run test:e2e` (Playwright, 5 tamanhos de ecrã) | 203 passaram, 172 ignorados de propósito, 0 falhas |
 | Servidor web | contentor `nginx-unprivileged` só de leitura com o `dist/` e a configuração de `deploy/nginx/` | ✓ (ver abaixo) |
 
-Os 136 testes "ignorados" são intencionais. Os pesados (formulários, galeria, axe, imagens e ligações) e os específicos do telemóvel ou do computador só correm nos tamanhos de ecrã relevantes.
+Os 172 testes "ignorados" são intencionais. Os pesados (formulários, galeria, axe, imagens e ligações) e os específicos do telemóvel ou do computador só correm nos tamanhos de ecrã relevantes.
 
 O `docker build` completo não correu nesta sessão: o `npm ci` dentro do Docker não chega ao registo npm através do proxy da sessão. A imagem completa é construída e testada no GitHub Actions.
 
-## Testes unitários (Vitest, 46)
+## Testes unitários (Vitest, 56)
+
+- **Línguas** (`tests/unit/linguas.test.ts`): endereços das duas línguas e equivalências; menu, pedidos e contactos em inglês; todos os textos da configuração e das 32 fotografias traduzidos; validação, mensagem do WhatsApp, assunto do e-mail e erros de envio em inglês; dados estruturados com a língua.
 
 - **Configuração**:
   - nome "Mulotana Lodge";
@@ -119,12 +121,14 @@ Tamanhos: telemóvel pequeno (360×740), telemóvel (Pixel 7), tablet (820×1180
 
 | Página | Ecrã | Transferido no carregamento | LCP (local) | CLS |
 | --- | --- | --- | --- | --- |
-| `/` | 390×844 @3x | 562 KB | 136 ms | 0,000 |
-| `/` | 1440×900 | 528 KB | 212 ms | 0,000 |
-| `/eventos/` | 390×844 @3x | 302 KB | 128 ms | 0,000 |
-| `/eventos/` | 1440×900 | 343 KB | 160 ms | 0,000 |
-| `/galeria/` | 390×844 @3x | 434 KB | 100 ms | 0,000 |
-| `/galeria/` | 1440×900 | 467 KB | 132 ms | 0,000 |
+| `/` | 390×844 @3x | 572 KB | 140 ms | 0,000 |
+| `/` | 1440×900 | 539 KB | 188 ms | 0,000 |
+| `/eventos/` | 390×844 @3x | 308 KB | 116 ms | 0,000 |
+| `/eventos/` | 1440×900 | 349 KB | 128 ms | 0,000 |
+| `/galeria/` | 390×844 @3x | 443 KB | 112 ms | 0,000 |
+| `/galeria/` | 1440×900 | 470 KB | 96 ms | 0,000 |
+
+Medido de novo a 30/10/2026, depois da revisão das fotografias de fundo: mais 6 a 11 KB (as de fundo deixaram de ter redução de ruído). A versão de 2000 px só é escolhida por ecrãs com mais de 1600 píxeis reais de largura.
 
 O peso subiu cerca de 25% na página inicial: é o preço de fotografias mais nítidas (menos redução de ruído, compressão de melhor qualidade e versões grandes). Ver a secção "Nitidez das fotografias" abaixo.
 
@@ -220,3 +224,13 @@ Medido antes e depois, fotografia a fotografia.
 - **Capturas a 1920 px**, lado a lado com a versão publicada antes desta revisão: o pormenor (variância do Laplaciano) subiu na abertura do restaurante (126 → 184), no palco das piscinas (30 → 42) e nas portas do quarto (18 → 20).
 - **Contraste e cor**: sem alterações (os ajustes de luz são os mesmos).
 - **Inteligência artificial**: não se usou nenhuma, nem para ampliar.
+
+## Fotografias de fundo (revisão de 30/10/2026)
+
+As 12 fotografias que aparecem em ecrã inteiro (aberturas das páginas, palcos e cenas) foram revistas a partir das capturas enviadas pelo responsável.
+
+- **Redução de ruído**: deixou de se aplicar nas de fundo, salvo ruído forte (σ ≥ 2; só a esplanada, com σ = 2,51). Era ela que dava às palmeiras e aos arbustos o aspecto "pintado". Mudaram a hero (piscina com palmeiras), o palco das piscinas, a vista sobre o terraço e a sala em plateia.
+- **Versão de 2000 px**, além da de 1600 px: num ecrã de 1920 px, o browser deixa de ampliar a imagem.
+- **Medida a 1920 px** (variância do Laplaciano, maior = mais pormenor fino): ficou perto da versão anterior (de −3 % a −13 %), sem o alisamento da folhagem. Peso das versões de 2000 px: de 57 KB (quartos) a 246 KB (esplanada), em AVIF.
+- **Super-resolução EDSR** (rede de reconstrução da OpenCV): testada nas 12 e **não adoptada**. Reduz a imagem antes de a reconstruir e o resultado ficou mais macio do que o Lanczos (variância do Laplaciano 37 % a 86 % abaixo da versão anterior), mesmo com mais nitidez aplicada.
+- **Limite**: as fotografias de origem são capturas de 1080 px das redes sociais. Em ecrã inteiro num monitor grande continuam a parecer macias; só os originais das câmaras do lodge resolvem isso.

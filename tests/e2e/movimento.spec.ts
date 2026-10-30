@@ -1,6 +1,6 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
-import { ehComputador, ehTelemovel } from './ajuda';
+import { ehComputador, ehTelemovel, expect, test } from './ajuda';
 
 // Movimento (src/styles/cinema.css, src/scripts/cinema.ts e os palcos da página inicial): nunca pode esconder
 // conteúdo de forma permanente, tem de respeitar o movimento reduzido e não pode depender de JavaScript.

@@ -304,7 +304,8 @@ const espacos = ['/alojamento/', '/eventos/', '/piscinas/', '/restaurante/'].map
     line-height: 1.12;
     text-wrap: balance;
   }
-  .abertura__subtitulo em {
+  /* O <em> vem do componente Enfase (fora do âmbito destes estilos): :global. */
+  .abertura__subtitulo :global(em) {
     color: var(--dourado-claro);
   }
   .abertura__apoio {
@@ -367,7 +368,7 @@ const espacos = ['/alojamento/', '/eventos/', '/piscinas/', '/restaurante/'].map
   .abertura__descoberta .etiqueta {
     margin-bottom: 0;
   }
-  .abertura__descoberta h2 em {
+  .abertura__descoberta h2 :global(em) {
     color: var(--dourado);
   }
   .abertura__texto {

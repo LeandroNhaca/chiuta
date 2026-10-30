@@ -1,6 +1,4 @@
-import { expect, test } from '@playwright/test';
-
-import { PAGINAS, PAGINAS_EN } from './ajuda';
+import { expect, PAGINAS, PAGINAS_EN, test } from './ajuda';
 
 // Palavras que só aparecem em português e nunca deviam ficar na versão inglesa (a morada fica como está).
 const PORTUGUES = [

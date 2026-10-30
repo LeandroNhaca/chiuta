@@ -1,6 +1,6 @@
-import { expect, test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
-import { daquiA } from './ajuda';
+import { daquiA, expect, test } from './ajuda';
 
 test.beforeEach(({}, info) => {
   test.skip(!['telemovel', 'portatil'].includes(info.project.name), 'formulários: telemóvel e portátil');
@@ -208,9 +208,6 @@ test('evento a partir da página inicial: separador próprio e confirmação hon
 });
 
 test('contactos: telefone, WhatsApp e e-mail oficiais, morada, mapa e redes sociais', async ({ page }) => {
-  await page.route('https://www.openstreetmap.org/**', (r) =>
-    r.fulfill({ body: '<p>mapa</p>', contentType: 'text/html' }),
-  );
   await page.goto('/contactos/');
   const lista = page.locator('.contactos__lista');
   await expect(lista.getByRole('link', { name: '+258 84 888 5556' }).first()).toHaveAttribute(

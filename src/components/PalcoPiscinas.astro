@@ -127,7 +127,8 @@ const t = traducoes(
     letter-spacing: -0.015em;
     color: var(--verde);
   }
-  .lazer__titulo em {
+  /* O <em> vem do componente Enfase (fora do âmbito destes estilos): :global. */
+  .lazer__titulo :global(em) {
     color: var(--dourado-texto);
   }
 
