@@ -4,7 +4,9 @@
  * pré-escolhe o quarto no pedido. Sem quartos não mostra nada. Os valores ainda não validados pela
  * gerência dizem de onde vêm; o que falta aparece como "A confirmar".
  */
-import { lodge, type TipoQuarto } from '../config/lodge';
+import type { TipoQuarto } from '../config/lodge';
+import { quartos as quartosEm } from '../i18n/lodge';
+import { linguaDe, traducoes } from '../i18n/linguas';
 
 import Foto from './Foto.astro';
 import Icone from './Icone.astro';
@@ -15,7 +17,28 @@ interface Props {
   pedido?: string;
 }
 
-const { quartos = lodge.quartos, pedido = '#disponibilidade' } = Astro.props;
+const l = linguaDe(Astro.url);
+const { quartos = quartosEm(l), pedido = '#disponibilidade' } = Astro.props;
+const t = traducoes(
+  {
+    preco: 'Preço publicado',
+    capacidade: 'Capacidade',
+    aConfirmar: 'A confirmar',
+    comodidades: 'Comodidades',
+    origem: (o: string) =>
+      `Valor publicado pelo lodge (${o}). A equipa confirma o preço actual e as condições no pedido.`,
+    consultar: 'Consultar disponibilidade',
+  },
+  {
+    preco: 'Published price',
+    capacidade: 'Capacity',
+    aConfirmar: 'To be confirmed',
+    comodidades: 'Amenities',
+    origem: (o: string) =>
+      `Price published by the lodge (${o}). The team confirms the current price and conditions when you enquire.`,
+    consultar: 'Check availability',
+  },
+)[l];
 const naPagina = pedido.startsWith('#');
 const href = (id: string) =>
   naPagina ? pedido : `${pedido.replace(/#.*$/, '')}?quarto=${id}#disponibilidade`;
@@ -39,33 +62,28 @@ const href = (id: string) =>
         </div>
         <dl class="quarto__dados">
           <div>
-            <dt>Preço publicado</dt>
-            <dd class="quarto__preco">{q.tarifa || <span class="pendente">A confirmar</span>}</dd>
+            <dt>{t.preco}</dt>
+            <dd class="quarto__preco">{q.tarifa || <span class="pendente">{t.aConfirmar}</span>}</dd>
           </div>
           <div>
-            <dt>Capacidade</dt>
-            <dd>{q.capacidade || <span class="pendente">A confirmar</span>}</dd>
+            <dt>{t.capacidade}</dt>
+            <dd>{q.capacidade || <span class="pendente">{t.aConfirmar}</span>}</dd>
           </div>
         </dl>
         {q.comodidades.length > 0 && (
-          <ul class="lista-traco quarto__comodidades" aria-label={`Comodidades: ${q.nome}`}>
+          <ul class="lista-traco quarto__comodidades" aria-label={`${t.comodidades}: ${q.nome}`}>
             {q.comodidades.map((c) => (
               <li>{c}</li>
             ))}
           </ul>
         )}
-        {q.aValidar && (
-          <p class="quarto__origem">
-            Valor publicado pelo lodge ({q.aValidar}). A equipa confirma o preço actual e as condições no
-            pedido.
-          </p>
-        )}
+        {q.aValidar && <p class="quarto__origem">{t.origem(q.aValidar)}</p>}
         <a
           class="botao botao--principal quarto__botao"
           href={href(q.id)}
           data-escolher-quarto={naPagina ? q.id : undefined}
         >
-          Consultar disponibilidade
+          {t.consultar}
           <span class="visualmente-oculto">: {q.nome}</span>
           <Icone nome="seta" tamanho={18} />
         </a>

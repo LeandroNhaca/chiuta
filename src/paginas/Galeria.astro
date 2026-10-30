@@ -1,0 +1,71 @@
+---
+import CabecalhoPagina from '../components/CabecalhoPagina.astro';
+import Galeria from '../components/Galeria.astro';
+import { fotografias } from '../data/fotografias';
+import { linguaDe, traducoes } from '../i18n/linguas';
+import Base from '../layouts/Base.astro';
+
+const autores = [...new Set(fotografias.filter((f) => f.autor).map((f) => f.autor))];
+const l = linguaDe(Astro.url);
+const t = traducoes(
+  {
+    titulo: 'Galeria',
+    descricao:
+      'Fotografias reais do Mulotana Lodge, em Boane: quartos, piscinas e jardins, salas de conferências, restaurante e espaços do lodge.',
+    intro:
+      'Os espaços do Mulotana Lodge em fotografias reais: quartos, piscinas e jardins, salas de conferências e restaurante.',
+    fotografias: 'Fotografias',
+    creditos: 'Créditos fotográficos',
+    creditosTexto: (a: string) =>
+      `A maior parte das fotografias foi publicada pelo próprio lodge no Instagram e no Facebook; as datas vão de 2016 a 2025. Algumas são contribuições de visitantes no Google Maps e são apresentadas com indicação de autoria: ${a}.`,
+  },
+  {
+    titulo: 'Gallery',
+    descricao:
+      'Real photos of Mulotana Lodge, in Boane: rooms, pools and gardens, conference rooms, the restaurant and spaces around the lodge.',
+    intro:
+      'The spaces at Mulotana Lodge in real photos: rooms, pools and gardens, conference rooms and the restaurant.',
+    fotografias: 'Photos',
+    creditos: 'Photo credits',
+    creditosTexto: (a: string) =>
+      `Most of the photos were published by the lodge itself on Instagram and Facebook, between 2016 and 2025. Some are contributions from visitors on Google Maps and are shown with their author’s name: ${a}.`,
+  },
+)[l];
+---
+
+<Base movimento="moderado" titulo={t.titulo} descricao={t.descricao}>
+  <CabecalhoPagina titulo={t.titulo} intro={t.intro} />
+
+  <section class="secao secao--clara" aria-label={t.fotografias}>
+    <div class="contentor">
+      <Galeria />
+      {autores.length > 0 && (
+        <aside class="creditos" aria-labelledby="creditos-titulo">
+          <h2 id="creditos-titulo">{t.creditos}</h2>
+          <p>{t.creditosTexto(autores.join(', '))}</p>
+        </aside>
+      )}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .creditos {
+    display: grid;
+    gap: 10px;
+    max-width: 48rem;
+    margin-top: clamp(64px, 8vw, 112px);
+    padding-top: 28px;
+    border-top: 1px solid var(--linha);
+    font-size: var(--t-pequeno);
+    color: var(--texto-suave);
+  }
+  .creditos h2 {
+    font-family: var(--sans);
+    font-size: var(--t-etiqueta);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--dourado-texto);
+  }
+</style>

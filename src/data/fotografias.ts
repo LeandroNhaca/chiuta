@@ -5,6 +5,9 @@
  * por isso nunca ficam desalinhadas com os ficheiros em public/images/mulotane/real/.
  * Aqui só se acrescenta o que é editorial: texto alternativo, legenda, categoria e origem.
  */
+import type { Lingua } from '../i18n/linguas';
+
+import { categoriasEn, dataEn, textosEn } from './fotografias-en';
 import geradas from './imagens-geradas.json';
 
 export type Categoria = 'quartos' | 'piscinas' | 'conferencias' | 'restaurante' | 'lazer' | 'lodge';
@@ -362,8 +365,18 @@ export function urlFotografia(f: Fotografia, formato: 'avif' | 'webp' = 'webp', 
   return `/images/mulotane/real/${f.id}-${l}.${formato}`;
 }
 
-export function credito(f: Fotografia): string {
+export function credito(f: Fotografia, l: Lingua = 'pt'): string {
   if (!f.autor) return '';
   const via = f.origem === 'google-maps' ? ', via Google Maps' : '';
-  return `Fotografia: ${f.autor}${via}${f.data ? ` (${f.data})` : ''}`;
+  const data = f.data && (l === 'en' ? dataEn(f.data) : f.data);
+  return `${l === 'en' ? 'Photo' : 'Fotografia'}: ${f.autor}${via}${data ? ` (${data})` : ''}`;
+}
+
+/** Texto alternativo e legenda na língua da página (versão inglesa em fotografias-en.ts). */
+export function textosFoto(f: Fotografia, l: Lingua): { alt: string; legenda: string } {
+  return l === 'en' ? textosEn[f.id] : { alt: f.alt, legenda: f.legenda };
+}
+
+export function categoriasEm(l: Lingua): Record<Categoria, string> {
+  return l === 'en' ? categoriasEn : categorias;
 }

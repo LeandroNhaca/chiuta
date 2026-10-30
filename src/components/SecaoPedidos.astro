@@ -4,43 +4,60 @@
  * Sem JavaScript os dois formulários aparecem um a seguir ao outro (os separadores ficam escondidos).
  * As âncoras #disponibilidade e #orcamento abrem o separador certo (src/scripts/separadores.ts).
  */
+import { linguaDe, traducoes } from '../i18n/linguas';
+
+import Enfase from './Enfase.astro';
 import FormularioDisponibilidade from './FormularioDisponibilidade.astro';
 import FormularioEvento from './FormularioEvento.astro';
 import Icone from './Icone.astro';
 
+const l = linguaDe(Astro.url);
+const t = traducoes(
+  {
+    etiqueta: 'Pedidos',
+    titulo: 'Planeie a sua *visita.*',
+    textos: [
+      'Consulte a disponibilidade para a sua estadia ou peça um orçamento para um evento: reuniões, conferências, celebrações e encontros de grupo.',
+      'No fim, a mensagem fica pronta para enviar pelo WhatsApp ou por e-mail. Um pedido não é uma reserva: a estadia ou o evento só ficam garantidos depois de confirmados pela equipa do lodge.',
+    ],
+    tipo: 'Tipo de pedido',
+    estadia: 'Estadia',
+    evento: 'Evento',
+  },
+  {
+    etiqueta: 'Requests',
+    titulo: 'Plan your *visit.*',
+    textos: [
+      'Check availability for your stay or request a quote for an event: meetings, conferences, celebrations and group gatherings.',
+      'At the end, the message is ready to send on WhatsApp or by email. A request is not a booking: your stay or event is only guaranteed once it has been confirmed by the lodge team.',
+    ],
+    tipo: 'Type of request',
+    estadia: 'Stay',
+    evento: 'Event',
+  },
+)[l];
 const separadores = [
-  { id: 'disponibilidade', rotulo: 'Estadia', icone: 'calendario' as const },
-  { id: 'orcamento', rotulo: 'Evento', icone: 'pessoas' as const },
+  { id: 'disponibilidade', rotulo: t.estadia, icone: 'calendario' as const },
+  { id: 'orcamento', rotulo: t.evento, icone: 'pessoas' as const },
 ];
 ---
 
 <section id="pedidos" class="secao secao--escura pedidos" aria-labelledby="pedidos-titulo">
   <div class="contentor pedidos__grelha">
     <div class="bloco-titulo pedidos__titulo">
-      <p class="etiqueta c-revelar">Pedidos</p>
+      <p class="etiqueta c-revelar">{t.etiqueta}</p>
       <h2 id="pedidos-titulo" class="c-titulo">
-        Planeie a sua <em>visita.</em>
+        <Enfase texto={t.titulo} />
       </h2>
       <div class="texto">
-        <p>
-          Consulte a disponibilidade para a sua estadia ou peça um orçamento para um evento: reuniões,
-          conferências, celebrações e encontros de grupo.
-        </p>
-        <p>
-          No fim, a mensagem fica pronta para enviar pelo WhatsApp ou por e-mail. Um pedido não é uma reserva:
-          a estadia ou o evento só ficam garantidos depois de confirmados pela equipa do lodge.
-        </p>
+        {t.textos.map((p) => (
+          <p>{p}</p>
+        ))}
       </div>
     </div>
 
     <div class="pedidos__formularios" data-separadores>
-      <div
-        class="pedidos__separadores"
-        role="tablist"
-        aria-label="Tipo de pedido"
-        hidden
-        data-lista-separadores
-      >
+      <div class="pedidos__separadores" role="tablist" aria-label={t.tipo} hidden data-lista-separadores>
         {separadores.map((s, i) => (
           <button
             class="pedidos__separador"

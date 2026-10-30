@@ -2,6 +2,8 @@
 /** Campo de formulário com rótulo, ajuda e mensagem de erro ligadas por aria-describedby. */
 import type { HTMLAttributes } from 'astro/types';
 
+import { linguaDe } from '../i18n/linguas';
+
 /** Opção de uma lista: o texto é também o valor enviado; `id` serve para a pré-escolher por ligação. */
 export interface Opcao {
   valor: string;
@@ -22,6 +24,7 @@ interface Props {
   atributos?: HTMLAttributes<'input'> & HTMLAttributes<'textarea'>;
 }
 
+const en = linguaDe(Astro.url) === 'en';
 const {
   prefixo,
   nome,
@@ -30,20 +33,21 @@ const {
   obrigatorio = false,
   ajuda,
   opcoes = [],
-  vazio = 'Escolha uma opção',
+  vazio = en ? 'Choose an option' : 'Escolha uma opção',
   largo,
   atributos = {},
 } = Astro.props;
 const id = `${prefixo}-${nome}`;
 const descricao = [ajuda && `${id}-ajuda`, `${id}-erro`].filter(Boolean).join(' ');
 const lista: Opcao[] = opcoes.map((o) => (typeof o === 'string' ? { valor: o } : o));
+const opcional = en ? '(optional)' : '(opcional)';
 ---
 
 {tipo === 'escolhas' ? (
   <fieldset class="campo campo--largo campo--escolhas" id={id} aria-describedby={descricao}>
     <legend>
       {rotulo}
-      <span class="campo__opcional">(opcional)</span>
+      <span class="campo__opcional">{opcional}</span>
     </legend>
     {ajuda && (
       <p class="campo__ajuda" id={`${id}-ajuda`}>
@@ -69,7 +73,7 @@ const lista: Opcao[] = opcoes.map((o) => (typeof o === 'string' ? { valor: o } :
           *
         </span>
       ) : (
-        <span class="campo__opcional">(opcional)</span>
+        <span class="campo__opcional">{opcional}</span>
       )}
     </label>
     {ajuda && (

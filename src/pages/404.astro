@@ -23,6 +23,9 @@ import Base from '../layouts/Base.astro';
           Fale connosco
         </a>
       </div>
+      <p class="erro__ingles" lang="en">
+        Page not found. <a href="/en/">Go to the English home page</a>.
+      </p>
       <IndiceServicos />
     </div>
   </section>
@@ -30,6 +33,14 @@ import Base from '../layouts/Base.astro';
 
 <style>
   .erro__accoes {
+    margin-bottom: 20px;
+  }
+  .erro__ingles {
     margin-bottom: clamp(48px, 6vw, 80px);
+    color: var(--texto-suave);
+  }
+  .erro__ingles a {
+    font-weight: 700;
+    color: var(--verde);
   }
 </style>

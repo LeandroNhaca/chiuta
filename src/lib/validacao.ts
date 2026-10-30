@@ -1,7 +1,9 @@
 /**
  * Validação dos pedidos de alojamento e de eventos. Funções puras: correm no browser antes do envio e
- * podem correr num backend futuro com as mesmas regras.
+ * podem correr num backend futuro com as mesmas regras. As mensagens e as listas de escolha seguem a
+ * língua da página (português por omissão).
  */
+import type { Lingua } from '../i18n/linguas';
 
 export type Dados = Record<string, string | undefined>;
 export type Erros = Record<string, string>;
@@ -37,6 +39,79 @@ export const SERVICOS_EVENTO = [
   'Equipamento de som ou projecção',
   'Decoração',
 ] as const;
+
+/** As mesmas listas, pela mesma ordem, na versão inglesa do site. */
+export const TIPOS_EVENTO_EN = [
+  'Business meeting',
+  'Conference',
+  'Training or workshop',
+  'Group gathering',
+  'Celebration or private event',
+  'Other',
+] as const;
+export const SERVICOS_EVENTO_EN = [
+  'Conference room',
+  'Outdoor area by the pool',
+  'Meals or coffee break',
+  'Accommodation for participants',
+  'Sound or projection equipment',
+  'Decoration',
+] as const;
+
+export const LISTAS_EVENTO: Record<Lingua, { tipos: readonly string[]; servicos: readonly string[] }> = {
+  pt: { tipos: TIPOS_EVENTO, servicos: SERVICOS_EVENTO },
+  en: { tipos: TIPOS_EVENTO_EN, servicos: SERVICOS_EVENTO_EN },
+};
+
+const MENSAGENS = {
+  pt: {
+    nome: 'Indique o seu nome.',
+    nomeTamanho: (min: number, max: number) => `O nome deve ter entre ${min} e ${max} caracteres.`,
+    telefone: 'Indique um número de telefone ou WhatsApp.',
+    telefoneInvalido: (min: number, max: number) =>
+      `Indique um número válido, com ${min} a ${max} algarismos.`,
+    email: 'Indique um e-mail válido ou deixe o campo em branco.',
+    mensagem: (max: number) => `O texto pode ter até ${max} caracteres.`,
+    dataInvalida: 'Indique uma data válida.',
+    dataPassada: 'A data não pode ser anterior a hoje.',
+    inteiro: (min: number, max: number) => `Indique um número inteiro entre ${min} e ${max}.`,
+    entrada: 'Indique a data de entrada.',
+    saida: 'Indique a data de saída.',
+    saidaAntes: 'A data de saída tem de ser posterior à data de entrada.',
+    hospedes: 'Indique o número de hóspedes.',
+    quarto: 'Escolha um tipo de quarto da lista.',
+    empresa: (max: number) => `O nome da empresa pode ter até ${max} caracteres.`,
+    tipo: 'Escolha o tipo de evento.',
+    tipoLista: 'Escolha um tipo de evento da lista.',
+    data: 'Indique a data pretendida.',
+    participantes: 'Indique o número estimado de participantes.',
+    servicos: 'Escolha serviços da lista.',
+  },
+  en: {
+    nome: 'Please enter your name.',
+    nomeTamanho: (min: number, max: number) => `Your name must be between ${min} and ${max} characters.`,
+    telefone: 'Please enter a phone or WhatsApp number.',
+    telefoneInvalido: (min: number, max: number) =>
+      `Please enter a valid number, with ${min} to ${max} digits.`,
+    email: 'Please enter a valid email address or leave this field blank.',
+    mensagem: (max: number) => `The text can have up to ${max} characters.`,
+    dataInvalida: 'Please enter a valid date.',
+    dataPassada: 'The date cannot be earlier than today.',
+    inteiro: (min: number, max: number) => `Please enter a whole number between ${min} and ${max}.`,
+    entrada: 'Please enter the check-in date.',
+    saida: 'Please enter the check-out date.',
+    saidaAntes: 'The check-out date must be after the check-in date.',
+    hospedes: 'Please enter the number of guests.',
+    quarto: 'Please choose a room type from the list.',
+    empresa: (max: number) => `The company name can have up to ${max} characters.`,
+    tipo: 'Please choose the type of event.',
+    tipoLista: 'Please choose a type of event from the list.',
+    data: 'Please enter the preferred date.',
+    participantes: 'Please enter the estimated number of participants.',
+    servicos: 'Please choose services from the list.',
+  },
+} satisfies Record<Lingua, unknown>;
+type Mensagens = (typeof MENSAGENS)['pt'];
 
 const DATA_ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -76,28 +151,26 @@ function inteiro(v: string): number | null {
   return /^\d+$/.test(v) ? Number(v) : null;
 }
 
-function validarNome(v: string, erros: Erros): void {
-  if (!v) erros.nome = 'Indique o seu nome.';
+function validarNome(v: string, erros: Erros, m: Mensagens): void {
+  if (!v) erros.nome = m.nome;
   else if (v.length < LIMITES.nome.min || v.length > LIMITES.nome.max)
-    erros.nome = `O nome deve ter entre ${LIMITES.nome.min} e ${LIMITES.nome.max} caracteres.`;
+    erros.nome = m.nomeTamanho(LIMITES.nome.min, LIMITES.nome.max);
 }
 
-function validarTelefone(v: string, erros: Erros): void {
+function validarTelefone(v: string, erros: Erros, m: Mensagens): void {
   const algarismos = v.replace(/\D/g, '').length;
   const { min, max } = LIMITES.algarismosTelefone;
-  if (!v) erros.telefone = 'Indique um número de telefone ou WhatsApp.';
+  if (!v) erros.telefone = m.telefone;
   else if (!TELEFONE.test(v) || algarismos < min || algarismos > max)
-    erros.telefone = `Indique um número válido, com ${min} a ${max} algarismos (pode incluir o indicativo, por exemplo +258).`;
+    erros.telefone = m.telefoneInvalido(min, max);
 }
 
-function validarEmail(v: string, erros: Erros): void {
-  if (v && (v.length > 160 || !EMAIL.test(v)))
-    erros.email = 'Indique um e-mail válido ou deixe o campo em branco.';
+function validarEmail(v: string, erros: Erros, m: Mensagens): void {
+  if (v && (v.length > 160 || !EMAIL.test(v))) erros.email = m.email;
 }
 
-function validarMensagem(v: string, erros: Erros): void {
-  if (v.length > LIMITES.mensagem.max)
-    erros.mensagem = `O texto pode ter até ${LIMITES.mensagem.max} caracteres.`;
+function validarMensagem(v: string, erros: Erros, m: Mensagens): void {
+  if (v.length > LIMITES.mensagem.max) erros.mensagem = m.mensagem(LIMITES.mensagem.max);
 }
 
 /** Lista separada por vírgulas, só com valores da lista permitida (escolhas múltiplas). */
@@ -109,10 +182,17 @@ export function listaValida(v: string, permitidos: readonly string[]): boolean {
     .every((x) => permitidos.includes(x));
 }
 
-function validarDataFutura(campo: string, v: string, hoje: string, vazio: string, erros: Erros): void {
+function validarDataFutura(
+  campo: string,
+  v: string,
+  hoje: string,
+  vazio: string,
+  erros: Erros,
+  m: Mensagens,
+): void {
   if (!v) erros[campo] = vazio;
-  else if (!dataValida(v)) erros[campo] = 'Indique uma data válida.';
-  else if (v < hoje) erros[campo] = 'A data não pode ser anterior a hoje.';
+  else if (!dataValida(v)) erros[campo] = m.dataInvalida;
+  else if (v < hoje) erros[campo] = m.dataPassada;
 }
 
 function validarQuantidade(
@@ -121,58 +201,53 @@ function validarQuantidade(
   { min, max }: { min: number; max: number },
   vazio: string,
   erros: Erros,
+  m: Mensagens,
 ): void {
   const n = inteiro(v);
   if (!v) erros[campo] = vazio;
-  else if (n === null || n < min || n > max)
-    erros[campo] = `Indique um número inteiro entre ${min} e ${max}.`;
+  else if (n === null || n < min || n > max) erros[campo] = m.inteiro(min, max);
 }
 
-export function validarAlojamento(dados: Dados, hoje: string = hojeISO()): Erros {
+export function validarAlojamento(dados: Dados, hoje: string = hojeISO(), lingua: Lingua = 'pt'): Erros {
+  const m = MENSAGENS[lingua];
   const erros: Erros = {};
   const entrada = limpo(dados.entrada);
   const saida = limpo(dados.saida);
-  validarNome(limpo(dados.nome), erros);
-  validarTelefone(limpo(dados.telefone), erros);
-  validarEmail(limpo(dados.email), erros);
-  validarDataFutura('entrada', entrada, hoje, 'Indique a data de entrada.', erros);
-  if (!saida) erros.saida = 'Indique a data de saída.';
-  else if (!dataValida(saida)) erros.saida = 'Indique uma data válida.';
-  else if (!erros.entrada && saida <= entrada)
-    erros.saida = 'A data de saída tem de ser posterior à data de entrada.';
-  validarQuantidade(
-    'hospedes',
-    limpo(dados.hospedes),
-    LIMITES.hospedes,
-    'Indique o número de hóspedes.',
-    erros,
-  );
-  if (limpo(dados.quarto).length > LIMITES.quarto.max) erros.quarto = 'Escolha um tipo de quarto da lista.';
-  validarMensagem(limpo(dados.mensagem), erros);
+  validarNome(limpo(dados.nome), erros, m);
+  validarTelefone(limpo(dados.telefone), erros, m);
+  validarEmail(limpo(dados.email), erros, m);
+  validarDataFutura('entrada', entrada, hoje, m.entrada, erros, m);
+  if (!saida) erros.saida = m.saida;
+  else if (!dataValida(saida)) erros.saida = m.dataInvalida;
+  else if (!erros.entrada && saida <= entrada) erros.saida = m.saidaAntes;
+  validarQuantidade('hospedes', limpo(dados.hospedes), LIMITES.hospedes, m.hospedes, erros, m);
+  if (limpo(dados.quarto).length > LIMITES.quarto.max) erros.quarto = m.quarto;
+  validarMensagem(limpo(dados.mensagem), erros, m);
   return erros;
 }
 
-export function validarEvento(dados: Dados, hoje: string = hojeISO()): Erros {
+export function validarEvento(dados: Dados, hoje: string = hojeISO(), lingua: Lingua = 'pt'): Erros {
+  const m = MENSAGENS[lingua];
+  const { tipos, servicos } = LISTAS_EVENTO[lingua];
   const erros: Erros = {};
   const tipo = limpo(dados.tipo);
-  validarNome(limpo(dados.nome), erros);
-  if (limpo(dados.empresa).length > LIMITES.empresa.max)
-    erros.empresa = `O nome da empresa pode ter até ${LIMITES.empresa.max} caracteres.`;
-  validarTelefone(limpo(dados.telefone), erros);
-  validarEmail(limpo(dados.email), erros);
-  if (!tipo) erros.tipo = 'Escolha o tipo de evento.';
-  else if (!(TIPOS_EVENTO as readonly string[]).includes(tipo))
-    erros.tipo = 'Escolha um tipo de evento da lista.';
-  validarDataFutura('data', limpo(dados.data), hoje, 'Indique a data pretendida.', erros);
+  validarNome(limpo(dados.nome), erros, m);
+  if (limpo(dados.empresa).length > LIMITES.empresa.max) erros.empresa = m.empresa(LIMITES.empresa.max);
+  validarTelefone(limpo(dados.telefone), erros, m);
+  validarEmail(limpo(dados.email), erros, m);
+  if (!tipo) erros.tipo = m.tipo;
+  else if (!tipos.includes(tipo)) erros.tipo = m.tipoLista;
+  validarDataFutura('data', limpo(dados.data), hoje, m.data, erros, m);
   validarQuantidade(
     'participantes',
     limpo(dados.participantes),
     LIMITES.participantes,
-    'Indique o número estimado de participantes.',
+    m.participantes,
     erros,
+    m,
   );
-  if (!listaValida(limpo(dados.servicos), SERVICOS_EVENTO)) erros.servicos = 'Escolha serviços da lista.';
-  validarMensagem(limpo(dados.mensagem), erros);
+  if (!listaValida(limpo(dados.servicos), servicos)) erros.servicos = m.servicos;
+  validarMensagem(limpo(dados.mensagem), erros, m);
   return erros;
 }
 

@@ -16,30 +16,86 @@
  * blocos, com todo o conteúdo visível. Só se animam transform e opacity.
  */
 import { lodge } from '../config/lodge';
+import { quartos as quartosEm } from '../i18n/lodge';
+import { linguaDe, rota, traducoes } from '../i18n/linguas';
 
+import Enfase from './Enfase.astro';
 import Foto from './Foto.astro';
 import Icone from './Icone.astro';
 
+const l = linguaDe(Astro.url);
 const quartos = lodge.detalhes.alojamento.find((d) => d.rotulo === 'Quartos');
 const salas = lodge.detalhes.eventos.find((d) => d.rotulo === 'Salas de conferências');
 // Números tal como o lodge os publicou (src/config/lodge.ts → detalhes); sem eles, não aparecem.
 const numeroQuartos = quartos?.valor.match(/\d+/)?.[0];
 const capacidades = (salas?.valor.match(/\d+/g) ?? []).map(Number);
+
+const t = traducoes(
+  {
+    apresentacao: `Apresentação do ${lodge.nome}`,
+    lugar: 'Boane · Província de Maputo',
+    subtitulo: 'O seu espaço para descansar, *celebrar e reunir.*',
+    apoio:
+      'Alojamento, salas de conferências, restaurante e piscinas em Boane. Consulte a disponibilidade e fale directamente com a nossa equipa.',
+    disponibilidade: 'Consultar disponibilidade',
+    orcamento: 'Pedir orçamento para um evento',
+    explorar: 'Explorar o lodge',
+    etiquetaLodge: 'O lodge',
+    tituloLodge: 'Alojamento, conferências e lazer *em Boane.*',
+    textoLodge: `Entre a localidade de Mulotana e as margens do rio Matola, o ${lodge.nome} reúne quartos para descansar, salas de conferências, um restaurante e uma área de lazer com piscinas e jardins.`,
+    factoQuartos: 'quartos',
+    factoSalas: 'salas de conferências',
+    factoPessoas: 'pessoas na sala maior',
+    fonte: 'Números publicados pelo lodge nas redes sociais.',
+    espacos: 'Espaços do lodge',
+    espacosLista: ['Alojamento', 'Conferências e eventos', 'Piscinas e jardins', 'Restaurante'],
+    etiquetaQuartos: 'Alojamento',
+    tituloQuartos: 'Quartos para *descansar.*',
+    textoQuartos:
+      'Para uma noite, um fim de semana ou um grupo inteiro. Escolha o tipo de quarto e consulte a disponibilidade: a equipa confirma o preço actual e as condições da estadia.',
+    tipos: 'Tipos de quarto',
+    verQuartos: 'Ver os quartos',
+  },
+  {
+    apresentacao: `Introducing ${lodge.nome}`,
+    lugar: 'Boane · Maputo Province',
+    subtitulo: 'Your place to rest, *celebrate and meet.*',
+    apoio:
+      'Accommodation, conference rooms, a restaurant and pools in Boane. Check availability and talk directly to our team.',
+    disponibilidade: 'Check availability',
+    orcamento: 'Request a quote for an event',
+    explorar: 'Explore the lodge',
+    etiquetaLodge: 'The lodge',
+    tituloLodge: 'Accommodation, conferences and leisure *in Boane.*',
+    textoLodge: `Between the village of Mulotana and the banks of the Matola River, ${lodge.nome} brings together rooms to rest in, conference rooms, a restaurant and a leisure area with pools and gardens.`,
+    factoQuartos: 'rooms',
+    factoSalas: 'conference rooms',
+    factoPessoas: 'people in the largest room',
+    fonte: 'Figures published by the lodge on social media.',
+    espacos: 'Spaces at the lodge',
+    espacosLista: ['Rooms', 'Conferences and events', 'Pools and gardens', 'Restaurant'],
+    etiquetaQuartos: 'Accommodation',
+    tituloQuartos: 'Rooms to *rest.*',
+    textoQuartos:
+      'For one night, a weekend or a whole group. Choose the room type and check availability: the team confirms the current price and the conditions of your stay.',
+    tipos: 'Room types',
+    verQuartos: 'See the rooms',
+  },
+)[l];
+
 const factos = [
-  numeroQuartos && { valor: numeroQuartos, rotulo: 'quartos' },
-  capacidades.length > 0 && { valor: String(capacidades.length), rotulo: 'salas de conferências' },
-  capacidades.length > 0 && { valor: String(Math.max(...capacidades)), rotulo: 'pessoas na sala maior' },
+  numeroQuartos && { valor: numeroQuartos, rotulo: t.factoQuartos },
+  capacidades.length > 0 && { valor: String(capacidades.length), rotulo: t.factoSalas },
+  capacidades.length > 0 && { valor: String(Math.max(...capacidades)), rotulo: t.factoPessoas },
 ].filter((f): f is { valor: string; rotulo: string } => Boolean(f));
 
-const espacos = [
-  { href: '/alojamento/', texto: 'Alojamento' },
-  { href: '/eventos/', texto: 'Conferências e eventos' },
-  { href: '/piscinas/', texto: 'Piscinas e jardins' },
-  { href: '/restaurante/', texto: 'Restaurante' },
-];
+const espacos = ['/alojamento/', '/eventos/', '/piscinas/', '/restaurante/'].map((href, i) => ({
+  href: rota(l, href),
+  texto: t.espacosLista[i],
+}));
 ---
 
-<section class="abertura cinema" data-cinema aria-label={`Apresentação do ${lodge.nome}`}>
+<section class="abertura cinema" data-cinema aria-label={t.apresentacao}>
   <div class="cinema__palco" data-cinema-palco>
     <!-- 1. Entrada -->
     <div class="abertura__janela">
@@ -49,27 +105,24 @@ const espacos = [
     </div>
     <div class="abertura__entrada" data-cinema-em="0" tabindex="-1">
       <div class="abertura__titulo">
-        <p class="etiqueta etiqueta--clara abertura__chegar">Boane · Província de Maputo</p>
+        <p class="etiqueta etiqueta--clara abertura__chegar">{t.lugar}</p>
         <h1 class="abertura__chegar">{lodge.nome}</h1>
       </div>
       <div class="abertura__corpo">
         <p class="abertura__subtitulo abertura__chegar">
-          O seu espaço para descansar, <em>celebrar e reunir.</em>
+          <Enfase texto={t.subtitulo} />
         </p>
-        <p class="abertura__apoio abertura__chegar">
-          Alojamento, salas de conferências, restaurante e piscinas em Boane. Consulte a disponibilidade e
-          fale directamente com a nossa equipa.
-        </p>
+        <p class="abertura__apoio abertura__chegar">{t.apoio}</p>
         <div class="accoes abertura__accoes abertura__chegar">
           <a class="botao botao--principal" href="#disponibilidade">
-            Consultar disponibilidade
+            {t.disponibilidade}
             <Icone nome="seta" tamanho={18} />
           </a>
           <a class="botao botao--contorno-claro" href="#orcamento">
-            Pedir orçamento para um evento
+            {t.orcamento}
           </a>
           <a class="ligacao-seta abertura__explorar" href="#o-lodge">
-            <span>Explorar o lodge</span>
+            <span>{t.explorar}</span>
             <Icone nome="seta" tamanho={18} />
           </a>
         </div>
@@ -91,14 +144,11 @@ const espacos = [
       role="group"
       aria-labelledby="o-lodge-titulo"
     >
-      <p class="etiqueta etiqueta--clara c-revelar">O lodge</p>
+      <p class="etiqueta etiqueta--clara c-revelar">{t.etiquetaLodge}</p>
       <h2 id="o-lodge-titulo" class="c-titulo">
-        Alojamento, conferências e lazer <em>em Boane.</em>
+        <Enfase texto={t.tituloLodge} />
       </h2>
-      <p class="abertura__texto c-revelar">
-        Entre a localidade de Mulotana e as margens do rio Matola, o {lodge.nome} reúne quartos para
-        descansar, salas de conferências, um restaurante e uma área de lazer com piscinas e jardins.
-      </p>
+      <p class="abertura__texto c-revelar">{t.textoLodge}</p>
       {factos.length > 0 && (
         <>
           <dl class="abertura__factos c-cartoes">
@@ -109,10 +159,10 @@ const espacos = [
               </div>
             ))}
           </dl>
-          <p class="abertura__fonte">Números publicados pelo lodge nas redes sociais.</p>
+          <p class="abertura__fonte">{t.fonte}</p>
         </>
       )}
-      <ul class="abertura__espacos c-revelar" aria-label="Espaços do lodge">
+      <ul class="abertura__espacos c-revelar" aria-label={t.espacos}>
         {espacos.map((e) => (
           <li>
             <a class="ligacao-seta" href={e.href}>
@@ -141,28 +191,25 @@ const espacos = [
       role="group"
       aria-labelledby="quartos-intro-titulo"
     >
-      <p class="etiqueta">Alojamento</p>
+      <p class="etiqueta">{t.etiquetaQuartos}</p>
       <h2 id="quartos-intro-titulo">
-        Quartos para <em>descansar.</em>
+        <Enfase texto={t.tituloQuartos} />
       </h2>
-      <p>
-        Para uma noite, um fim de semana ou um grupo inteiro. Escolha o tipo de quarto e consulte a
-        disponibilidade: a equipa confirma o preço actual e as condições da estadia.
-      </p>
+      <p>{t.textoQuartos}</p>
       {lodge.quartos.length > 0 && (
-        <ul class="abertura__tipos" aria-label="Tipos de quarto">
-          {lodge.quartos.map((q) => (
+        <ul class="abertura__tipos" aria-label={t.tipos}>
+          {quartosEm(l).map((q) => (
             <li>{q.nome}</li>
           ))}
         </ul>
       )}
       <div class="accoes">
         <a class="botao botao--verde" href="#disponibilidade">
-          Consultar disponibilidade
+          {t.disponibilidade}
           <Icone nome="seta" tamanho={18} />
         </a>
         <a class="ligacao-seta" href="#quartos">
-          <span>Ver os quartos</span>
+          <span>{t.verQuartos}</span>
           <Icone nome="seta" tamanho={18} />
         </a>
       </div>
@@ -257,7 +304,8 @@ const espacos = [
     line-height: 1.12;
     text-wrap: balance;
   }
-  .abertura__subtitulo em {
+  /* O <em> vem do componente Enfase (fora do âmbito destes estilos): :global. */
+  .abertura__subtitulo :global(em) {
     color: var(--dourado-claro);
   }
   .abertura__apoio {
@@ -320,7 +368,7 @@ const espacos = [
   .abertura__descoberta .etiqueta {
     margin-bottom: 0;
   }
-  .abertura__descoberta h2 em {
+  .abertura__descoberta h2 :global(em) {
     color: var(--dourado);
   }
   .abertura__texto {

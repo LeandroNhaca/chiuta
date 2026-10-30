@@ -1,5 +1,7 @@
 ---
 import { lodge } from '../config/lodge';
+import { quartos as quartosEm } from '../i18n/lodge';
+import { linguaDe, traducoes } from '../i18n/linguas';
 import { LIMITES } from '../lib/validacao';
 
 import Campo from './Campo.astro';
@@ -10,26 +12,58 @@ interface Props {
   prefixo?: string;
 }
 const { prefixo = 'disp' } = Astro.props;
+const l = linguaDe(Astro.url);
 // Tipos de quarto publicados pelo lodge, com o id que os botões "Consultar disponibilidade" pré-escolhem.
-const quartos = lodge.quartos.map((q) => ({
+const quartos = quartosEm(l).map((q) => ({
   valor: q.descricao ? `${q.nome} (${q.descricao})` : q.nome,
   id: q.id,
 }));
+const t = traducoes(
+  {
+    titulo: 'Pedido de disponibilidade',
+    botao: 'Consultar disponibilidade',
+    estadia: 'A sua estadia',
+    entrada: 'Data de entrada',
+    saida: 'Data de saída',
+    hospedes: 'Número de hóspedes',
+    quarto: 'Tipo de quarto',
+    semPreferencia: 'Sem preferência',
+    mensagem: 'Mensagem',
+    mensagemAjuda: 'Hora prevista de chegada, pedidos especiais ou outras informações.',
+    contactos: 'Os seus contactos',
+    nome: 'Nome',
+    telefone: 'Telefone ou WhatsApp',
+    email: 'E-mail',
+    aviso: `Este pedido serve para consultar disponibilidade e não constitui uma reserva. A reserva só fica garantida depois de confirmada pela equipa do ${lodge.nome}.`,
+  },
+  {
+    titulo: 'Availability request',
+    botao: 'Check availability',
+    estadia: 'Your stay',
+    entrada: 'Check-in date',
+    saida: 'Check-out date',
+    hospedes: 'Number of guests',
+    quarto: 'Room type',
+    semPreferencia: 'No preference',
+    mensagem: 'Message',
+    mensagemAjuda: 'Expected arrival time, special requests or other information.',
+    contactos: 'Your contact details',
+    nome: 'Name',
+    telefone: 'Phone or WhatsApp',
+    email: 'Email',
+    aviso: `This request is to check availability and is not a booking. A booking is only guaranteed once it has been confirmed by the ${lodge.nome} team.`,
+  },
+)[l];
 ---
 
-<Pedido
-  tipo="alojamento"
-  prefixo={prefixo}
-  titulo="Pedido de disponibilidade"
-  botao="Consultar disponibilidade"
->
-  <GrupoCampos numero={1} legenda="A sua estadia">
-    <Campo prefixo={prefixo} nome="entrada" rotulo="Data de entrada" tipo="date" obrigatorio />
-    <Campo prefixo={prefixo} nome="saida" rotulo="Data de saída" tipo="date" obrigatorio />
+<Pedido tipo="alojamento" prefixo={prefixo} titulo={t.titulo} botao={t.botao}>
+  <GrupoCampos numero={1} legenda={t.estadia}>
+    <Campo prefixo={prefixo} nome="entrada" rotulo={t.entrada} tipo="date" obrigatorio />
+    <Campo prefixo={prefixo} nome="saida" rotulo={t.saida} tipo="date" obrigatorio />
     <Campo
       prefixo={prefixo}
       nome="hospedes"
-      rotulo="Número de hóspedes"
+      rotulo={t.hospedes}
       tipo="number"
       obrigatorio
       atributos={{ min: LIMITES.hospedes.min, max: LIMITES.hospedes.max, step: 1, inputmode: 'numeric' }}
@@ -38,27 +72,27 @@ const quartos = lodge.quartos.map((q) => ({
       <Campo
         prefixo={prefixo}
         nome="quarto"
-        rotulo="Tipo de quarto"
+        rotulo={t.quarto}
         tipo="select"
-        vazio="Sem preferência"
+        vazio={t.semPreferencia}
         opcoes={quartos}
       />
     )}
     <Campo
       prefixo={prefixo}
       nome="mensagem"
-      rotulo="Mensagem"
+      rotulo={t.mensagem}
       tipo="textarea"
       largo
-      ajuda="Hora prevista de chegada, pedidos especiais ou outras informações."
+      ajuda={t.mensagemAjuda}
       atributos={{ maxlength: LIMITES.mensagem.max }}
     />
   </GrupoCampos>
-  <GrupoCampos numero={2} legenda="Os seus contactos">
+  <GrupoCampos numero={2} legenda={t.contactos}>
     <Campo
       prefixo={prefixo}
       nome="nome"
-      rotulo="Nome"
+      rotulo={t.nome}
       obrigatorio
       largo
       atributos={{ autocomplete: 'name', maxlength: 80 }}
@@ -66,22 +100,18 @@ const quartos = lodge.quartos.map((q) => ({
     <Campo
       prefixo={prefixo}
       nome="telefone"
-      rotulo="Telefone ou WhatsApp"
+      rotulo={t.telefone}
       tipo="tel"
       obrigatorio
-      ajuda="Com o indicativo do país, por exemplo +258."
       atributos={{ autocomplete: 'tel', inputmode: 'tel', maxlength: 24 }}
     />
     <Campo
       prefixo={prefixo}
       nome="email"
-      rotulo="E-mail"
+      rotulo={t.email}
       tipo="email"
       atributos={{ autocomplete: 'email', maxlength: 160 }}
     />
   </GrupoCampos>
-  <Fragment slot="aviso">
-    Este pedido serve para consultar disponibilidade e não constitui uma reserva. A reserva só fica garantida
-    depois de confirmada pela equipa do {lodge.nome}.
-  </Fragment>
+  <Fragment slot="aviso">{t.aviso}</Fragment>
 </Pedido>

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './ajuda';
 
 test.beforeEach(({}, info) => {
   test.skip(!['telemovel', 'portatil'].includes(info.project.name), 'galeria: telemóvel e portátil');
@@ -36,6 +36,15 @@ test('visualizador: abre, navega com teclado, fecha com Esc e devolve o foco', a
   await page.keyboard.press('ArrowLeft');
   await page.keyboard.press('ArrowLeft');
   await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('32 de 32');
+  // Fotografia ao alto: mostra-se inteira, dentro do ecrã e acima da legenda (nunca cortada).
+  await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.naturalHeight > i.naturalWidth)).toBe(true);
+  const ecra = page.viewportSize()!;
+  const caixaImg = (await img.boundingBox())!;
+  const legenda = (await caixa.locator('figcaption').boundingBox())!;
+  expect(caixaImg.y).toBeGreaterThanOrEqual(0);
+  expect(caixaImg.y + caixaImg.height).toBeLessThanOrEqual(Math.min(ecra.height, legenda.y) + 1);
+  expect(caixaImg.x + caixaImg.width).toBeLessThanOrEqual(ecra.width + 1);
+  expect(await img.evaluate((i) => getComputedStyle(i).objectFit)).toBe('contain');
   await caixa.getByRole('button', { name: 'Fotografia seguinte' }).click();
   await expect(caixa.locator('[data-lightbox-contador]')).toHaveText('1 de 32');
 

@@ -1,3 +1,5 @@
+import type { Lingua } from '../i18n/linguas';
+
 import type { TipoPedido } from './whatsapp';
 
 export interface Pedido {
@@ -10,6 +12,21 @@ export interface Pedido {
 
 export type Resultado = { ok: true } | { ok: false; erro: string };
 
+const ERROS = {
+  pt: {
+    muitos: 'Recebemos vários pedidos seguidos. Aguarde um minuto e tente novamente.',
+    falhou: 'Não foi possível enviar o pedido. Tente novamente dentro de momentos.',
+    expirou: 'O envio demorou demasiado. Verifique a ligação à internet e tente novamente.',
+    semLigacao: 'Sem ligação ao servidor. Verifique a ligação à internet e tente novamente.',
+  },
+  en: {
+    muitos: 'We received several requests in a row. Please wait a minute and try again.',
+    falhou: 'The request could not be sent. Please try again in a moment.',
+    expirou: 'Sending took too long. Please check your internet connection and try again.',
+    semLigacao: 'No connection to the server. Please check your internet connection and try again.',
+  },
+} satisfies Record<Lingua, Record<string, string>>;
+
 /**
  * Envia o pedido para o endpoint configurado em lodge.pedidos.endpoint.
  * Não há fallback silencioso: qualquer falha volta como erro para o visitante poder tentar outra vez.
@@ -17,8 +34,13 @@ export type Resultado = { ok: true } | { ok: false; erro: string };
 export async function enviarPedido(
   endpoint: string,
   pedido: Pedido,
-  { tempoLimiteMs = 15000, fetchFn = fetch }: { tempoLimiteMs?: number; fetchFn?: typeof fetch } = {},
+  {
+    tempoLimiteMs = 15000,
+    fetchFn = fetch,
+    lingua = 'pt',
+  }: { tempoLimiteMs?: number; fetchFn?: typeof fetch; lingua?: Lingua } = {},
 ): Promise<Resultado> {
+  const t = ERROS[lingua];
   const controlo = new AbortController();
   const temporizador = setTimeout(() => controlo.abort(), tempoLimiteMs);
   try {
@@ -30,16 +52,13 @@ export async function enviarPedido(
       credentials: 'omit',
     });
     if (resposta.ok) return { ok: true };
-    if (resposta.status === 429)
-      return { ok: false, erro: 'Recebemos vários pedidos seguidos. Aguarde um minuto e tente novamente.' };
-    return { ok: false, erro: 'Não foi possível enviar o pedido. Tente novamente dentro de momentos.' };
+    if (resposta.status === 429) return { ok: false, erro: t.muitos };
+    return { ok: false, erro: t.falhou };
   } catch (e) {
     const expirou = e instanceof DOMException && e.name === 'AbortError';
     return {
       ok: false,
-      erro: expirou
-        ? 'O envio demorou demasiado. Verifique a ligação à internet e tente novamente.'
-        : 'Sem ligação ao servidor. Verifique a ligação à internet e tente novamente.',
+      erro: expirou ? t.expirou : t.semLigacao,
     };
   } finally {
     clearTimeout(temporizador);

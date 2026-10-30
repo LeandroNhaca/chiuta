@@ -1,0 +1,380 @@
+---
+import Carrossel, { type Cartao } from '../components/Carrossel.astro';
+import ComoChegar from '../components/ComoChegar.astro';
+import Enfase from '../components/Enfase.astro';
+import Foto from '../components/Foto.astro';
+import Icone from '../components/Icone.astro';
+import PalcoAbertura from '../components/PalcoAbertura.astro';
+import PalcoPiscinas from '../components/PalcoPiscinas.astro';
+import QuartosLista from '../components/QuartosLista.astro';
+import SecaoPedidos from '../components/SecaoPedidos.astro';
+import { lodge } from '../config/lodge';
+import { fotografias, type IdFotografia } from '../data/fotografias';
+import { detalhe } from '../i18n/lodge';
+import { linguaDe, rota, traducoes } from '../i18n/linguas';
+import Base from '../layouts/Base.astro';
+import { dadosLodge } from '../lib/dados-estruturados';
+
+const site = Astro.site?.href ?? lodge.site.urlDemonstracao;
+const l = linguaDe(Astro.url);
+const salas = detalhe('eventos', 'Salas de conferências', l);
+const exterior = detalhe('eventos', 'Eventos ao ar livre', l);
+// Capacidades das salas tal como o lodge as publicou (src/config/lodge.ts → detalhes.eventos).
+const capacidades = salas?.valor.match(/\d+/g) ?? [];
+
+const t = traducoes(
+  {
+    titulo: 'Mulotana Lodge · Alojamento, conferências e piscina em Boane',
+    descricao:
+      'Alojamento, salas de conferências, restaurante e piscina em Boane, província de Maputo. Consulte a disponibilidade ou peça um orçamento para o seu evento.',
+    quartosEtiqueta: 'Os quartos',
+    quartosTitulo: 'Conheça os *quartos.*',
+    quartosTexto:
+      'Escolha o tipo de quarto e consulte a disponibilidade: a equipa confirma o preço actual, a capacidade e as condições da estadia.',
+    verAlojamento: 'Ver o alojamento',
+    carrossel: 'Fotografias dos quartos',
+    eventosEtiqueta: 'Conferências e eventos',
+    eventosTitulo: 'Salas para reunir, espaço para *celebrar.*',
+    eventosTexto:
+      'Reuniões de empresa, formações, conferências, encontros de grupo e celebrações. Indique a data, o número de participantes e o que precisa: a equipa prepara o orçamento e confirma a sala.',
+    capacidade: 'Capacidade das salas de conferências',
+    pessoas: 'pessoas',
+    nota: (salasValor: string, origem: string) =>
+      `${salasValor}: capacidades publicadas pelo lodge (${origem}). A equipa confirma a sala e a montagem para o seu evento.`,
+    pedirEvento: 'Pedir orçamento para um evento',
+    salas: 'Conhecer as salas',
+    galeriaEtiqueta: 'Galeria',
+    galeriaTitulo: 'O lodge, *em imagens.*',
+    verFotos: (n: number) => `Ver as ${n} fotografias`,
+    algumas: 'Algumas fotografias do lodge',
+  },
+  {
+    titulo: 'Mulotana Lodge · Accommodation, conferences and pool in Boane',
+    descricao:
+      'Accommodation, conference rooms, a restaurant and a pool in Boane, Maputo Province, Mozambique. Check availability or request a quote for your event.',
+    quartosEtiqueta: 'The rooms',
+    quartosTitulo: 'Discover the *rooms.*',
+    quartosTexto:
+      'Choose the room type and check availability: the team confirms the current price, the capacity and the conditions of your stay.',
+    verAlojamento: 'See the rooms page',
+    carrossel: 'Room photos',
+    eventosEtiqueta: 'Conferences and events',
+    eventosTitulo: 'Rooms to meet in, space to *celebrate.*',
+    eventosTexto:
+      'Company meetings, training sessions, conferences, group gatherings and celebrations. Tell us the date, the number of participants and what you need: the team prepares the quote and confirms the room.',
+    capacidade: 'Capacity of the conference rooms',
+    pessoas: 'people',
+    nota: (salasValor: string, origem: string) =>
+      `${salasValor}: capacities published by the lodge (${origem}). The team confirms the room and the layout for your event.`,
+    pedirEvento: 'Request a quote for an event',
+    salas: 'Discover the rooms',
+    galeriaEtiqueta: 'Gallery',
+    galeriaTitulo: 'The lodge, *in pictures.*',
+    verFotos: (n: number) => `See all ${n} photos`,
+    algumas: 'Some photos of the lodge',
+  },
+)[l];
+
+// Quartos em fotografias (a cama redonda já aparece nas portas da abertura).
+const fotosQuartos: Cartao[] = (
+  [
+    'quarto-cadeirao',
+    'quarto-duas-camas',
+    'quarto-casal',
+    'quarto-poltronas',
+    'quarto-twin',
+    'quarto-mosquiteiro',
+    'decoracao-quarto',
+  ] satisfies IdFotografia[]
+).map((foto) => ({ foto }));
+
+// Mosaico da galeria: proporções diferentes, cada fotografia no seu lugar (ver .mosaico__grelha). O "sizes"
+// de cada uma cobre a largura que ocupa e, nas casas altas e estreitas, a largura que o recorte pede.
+const mosaico: { foto: IdFotografia; area: string; sizes: string }[] = [
+  { foto: 'piscina-cascata', area: 'a', sizes: '(min-width: 1100px) 420px, (min-width: 760px) 46vw, 62vw' },
+  { foto: 'restaurante-janelas', area: 'b', sizes: '(min-width: 1100px) 620px, 46vw' },
+  { foto: 'sala-conferencias-u', area: 'c', sizes: '(min-width: 760px) 330px, 46vw' },
+  { foto: 'mesas-sombra', area: 'd', sizes: '(min-width: 760px) 290px, 46vw' },
+  { foto: 'esplanada-arvore', area: 'e', sizes: '(min-width: 1100px) 620px, 46vw' },
+  { foto: 'edificio-varandas', area: 'f', sizes: '(min-width: 1100px) 420px, (min-width: 760px) 46vw, 92vw' },
+];
+---
+
+<Base inicio titulo={t.titulo} descricao={t.descricao} dadosEstruturados={dadosLodge(site, l)}>
+  <!-- 1–3. Entrada, descoberta e alojamento: palco cinematográfico (src/components/PalcoAbertura.astro). -->
+  <PalcoAbertura />
+
+  <!-- 3. Alojamento: os quartos em fotografias e os tipos de quarto, cada um com o seu pedido. -->
+  <section id="quartos" class="secao secao--cinza quartos" aria-labelledby="alojamento-titulo">
+    <div class="contentor">
+      <div class="quartos__topo">
+        <div class="bloco-titulo">
+          <p class="etiqueta c-revelar">{t.quartosEtiqueta}</p>
+          <h2 id="alojamento-titulo" class="c-titulo">
+            <Enfase texto={t.quartosTitulo} />
+          </h2>
+        </div>
+        <div class="texto c-revelar">
+          <p>{t.quartosTexto}</p>
+          <a class="ligacao-seta" href={rota(l, '/alojamento/')}>
+            <span>{t.verAlojamento}</span>
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </div>
+      </div>
+      <Carrossel id="fotos-quartos" rotulo={t.carrossel} cartoes={fotosQuartos} />
+      <div class="quartos__tipos">
+        <QuartosLista />
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Piscinas e lazer: segundo palco (src/components/PalcoPiscinas.astro). -->
+  <PalcoPiscinas />
+
+  <!-- 5. Conferências e eventos. -->
+  <section class="secao secao--cinza eventos" aria-labelledby="eventos-titulo">
+    <div class="contentor grelha grelha--texto-foto eventos__grelha">
+      <div class="bloco-titulo">
+        <p class="etiqueta c-revelar">{t.eventosEtiqueta}</p>
+        <h2 id="eventos-titulo" class="c-titulo">
+          <Enfase texto={t.eventosTitulo} />
+        </h2>
+        <div class="texto c-revelar">
+          <p>{t.eventosTexto}</p>
+        </div>
+        {capacidades.length > 0 && (
+          <div class="capacidades">
+            <ul class="capacidades__lista c-cartoes" aria-label={t.capacidade}>
+              {capacidades.map((n) => (
+                <li>
+                  <span class="capacidades__numero">{n}</span>
+                  <span class="capacidades__texto">{t.pessoas}</span>
+                </li>
+              ))}
+            </ul>
+            {exterior?.valor && <p class="capacidades__exterior">{exterior.valor}.</p>}
+            {salas && <p class="capacidades__nota">{t.nota(salas.valor, salas.aValidar ?? '')}</p>}
+          </div>
+        )}
+        <div class="accoes c-revelar">
+          <a class="botao botao--principal" href="#orcamento">
+            {t.pedirEvento}
+            <Icone nome="seta" tamanho={18} />
+          </a>
+          <a class="ligacao-seta" href={rota(l, '/eventos/')}>
+            <span>{t.salas}</span>
+            <Icone nome="seta" tamanho={18} />
+          </a>
+        </div>
+      </div>
+      <div class="eventos__fotos">
+        <Foto
+          id="sala-conferencias-palco"
+          sizes="(min-width: 900px) 740px, 92vw"
+          class="foto eventos__principal c-paralaxe"
+        />
+        <Foto
+          id="buffet-evento"
+          sizes="(min-width: 900px) 300px, (min-width: 480px) 400px, 92vw"
+          class="foto eventos__detalhe"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Galeria: mosaico de proporções diferentes, com ligação para a galeria completa. -->
+  <section class="secao secao--clara mosaico" aria-labelledby="galeria-titulo">
+    <div class="contentor">
+      <div class="mosaico__topo">
+        <div class="bloco-titulo">
+          <p class="etiqueta c-revelar">{t.galeriaEtiqueta}</p>
+          <h2 id="galeria-titulo" class="c-titulo">
+            <Enfase texto={t.galeriaTitulo} />
+          </h2>
+        </div>
+        <a class="botao botao--contorno c-revelar" href={rota(l, '/galeria/')}>
+          {t.verFotos(fotografias.length)}
+          <Icone nome="seta" tamanho={18} />
+        </a>
+      </div>
+      <ul class="mosaico__grelha" aria-label={t.algumas}>
+        {mosaico.map((m) => (
+          <li class={`mosaico__item mosaico__item--${m.area} c-revelar`}>
+            <Foto id={m.foto} sizes={m.sizes} class="foto mosaico__foto c-paralaxe" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- 7. Conversão: pedidos (disponibilidade e orçamento), contactos e localização. -->
+  <SecaoPedidos />
+
+  <ComoChegar />
+</Base>
+
+<style>
+  /* ---------- Quartos ---------- */
+  .quartos__topo,
+  .mosaico__topo {
+    display: grid;
+    gap: 20px 64px;
+    align-items: end;
+    margin-bottom: clamp(32px, 4vw, 48px);
+  }
+  @media (min-width: 900px) {
+    .quartos__topo {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    }
+    .mosaico__topo {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+  .quartos__topo .texto,
+  .mosaico__topo {
+    justify-items: start;
+  }
+  .quartos__tipos {
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+
+  /* ---------- Eventos ---------- */
+  .eventos__grelha {
+    align-items: start;
+  }
+  .capacidades {
+    display: grid;
+    gap: 12px;
+  }
+  .capacidades__lista {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .capacidades__lista li {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    padding: 16px 14px;
+    border: 1px solid var(--linha);
+    border-radius: var(--raio-m);
+    background: #fff;
+  }
+  .capacidades__numero {
+    font-family: var(--serif);
+    font-size: clamp(2.2rem, 1.7rem + 1.8vw, 3.2rem);
+    font-weight: 600;
+    line-height: 1;
+    color: var(--verde);
+  }
+  .capacidades__texto {
+    font-size: 0.85rem;
+    line-height: 1.35;
+    color: var(--texto-suave);
+  }
+  .capacidades__exterior {
+    font-weight: 700;
+  }
+  .capacidades__nota {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--texto-suave);
+  }
+  .eventos__fotos {
+    position: relative;
+    display: grid;
+    gap: 14px;
+  }
+  .eventos :global(.eventos__principal) {
+    display: block;
+    aspect-ratio: 1 / 1;
+  }
+  .eventos :global(.eventos__detalhe) {
+    display: block;
+    aspect-ratio: 4 / 3;
+  }
+  /* A fotografia do buffet tem 780 px de origem: no tablet não passa de 400 px de largura (nítida). */
+  @media (min-width: 480px) and (max-width: 899px) {
+    .eventos :global(.eventos__detalhe) {
+      justify-self: end;
+      width: min(100%, 400px);
+    }
+  }
+  @media (min-width: 900px) {
+    .eventos__fotos {
+      padding-bottom: 72px;
+    }
+    .eventos :global(.eventos__detalhe) {
+      position: absolute;
+      left: -32px;
+      bottom: 0;
+      width: 46%;
+      border: 6px solid var(--branco);
+    }
+  }
+
+  /* ---------- Mosaico da galeria ---------- */
+  .mosaico__grelha {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 34vw;
+    grid-template-areas:
+      'a b'
+      'a c'
+      'd e'
+      'f f';
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .mosaico__item--a {
+    grid-area: a;
+  }
+  .mosaico__item--b {
+    grid-area: b;
+  }
+  .mosaico__item--c {
+    grid-area: c;
+  }
+  .mosaico__item--d {
+    grid-area: d;
+  }
+  .mosaico__item--e {
+    grid-area: e;
+  }
+  .mosaico__item--f {
+    grid-area: f;
+  }
+  .mosaico :global(.mosaico__foto) {
+    display: block;
+    height: 100%;
+  }
+  @media (min-width: 760px) {
+    .mosaico__grelha {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-auto-rows: clamp(150px, 19vw, 210px);
+      grid-template-areas:
+        'a a b b'
+        'a a b b'
+        'c d e e'
+        'c d f f';
+      gap: 14px;
+    }
+  }
+  @media (min-width: 1100px) {
+    .mosaico__grelha {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      grid-auto-rows: clamp(140px, 11vw, 168px);
+      grid-template-areas:
+        'a a b b b c'
+        'a a b b b c'
+        'a a d e e e'
+        'f f d e e e';
+    }
+  }
+</style>

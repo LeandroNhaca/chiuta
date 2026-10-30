@@ -1,18 +1,46 @@
 ---
-import { ligacoesPedido, localizacaoCompleta, navegacao } from '../lib/site';
+import { LINGUAS, equivalente, linguaDe, rota, traducoes, type Lingua } from '../i18n/linguas';
+import { ligacoesPedido, localizacaoCompletaEm, navegacaoEm } from '../lib/site';
 
 import Assinatura from './Assinatura.astro';
 import Icone from './Icone.astro';
 
 const caminho = Astro.url.pathname;
-const actual = (href: string) => (href === '/' ? caminho === '/' : caminho.startsWith(href));
-const pedidos = ligacoesPedido(caminho);
+const l = linguaDe(caminho);
+const inicio = rota(l, '/');
+const actual = (href: string) => (href === inicio ? caminho === inicio : caminho.startsWith(href));
+const pedidos = ligacoesPedido(caminho, l);
+const navegacao = navegacaoEm(l);
+// Selector de língua: a mesma página na outra língua (ou o início, nas páginas só numa língua).
+const linguas = (Object.keys(LINGUAS) as Lingua[]).map((x) => ({
+  lingua: x,
+  ...LINGUAS[x],
+  href: equivalente(caminho, x) ?? rota(x, '/'),
+}));
+const t = traducoes(
+  {
+    principal: 'Principal',
+    disponibilidade: 'Consultar disponibilidade',
+    evento: 'Pedir orçamento para um evento',
+    abrir: 'Abrir menu',
+    fechar: 'Fechar menu',
+    lingua: 'Língua',
+  },
+  {
+    principal: 'Main',
+    disponibilidade: 'Check availability',
+    evento: 'Request a quote for an event',
+    abrir: 'Open menu',
+    fechar: 'Close menu',
+    lingua: 'Language',
+  },
+)[l];
 ---
 
 <header class="cabecalho" data-cabecalho>
   <div class="cabecalho__barra contentor">
     <Assinatura class="cabecalho__assinatura" altura={60} />
-    <nav class="cabecalho__nav" aria-label="Principal">
+    <nav class="cabecalho__nav" aria-label={t.principal}>
       <ul>
         {navegacao.map((item) => (
           <li>
@@ -23,8 +51,24 @@ const pedidos = ligacoesPedido(caminho);
         ))}
       </ul>
     </nav>
+    <ul class="linguas" aria-label={t.lingua}>
+      {linguas.map((x) => (
+        <li>
+          {x.lingua === l ? (
+            <span class="linguas__actual" aria-current="true" title={x.nome}>
+              {x.sigla}
+            </span>
+          ) : (
+            <a href={x.href} hreflang={x.html} lang={x.html} title={x.nome}>
+              <span aria-hidden="true">{x.sigla}</span>
+              <span class="visualmente-oculto">{x.nome}</span>
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
     <a class="botao botao--principal cabecalho__cta" href={pedidos.disponibilidade}>
-      Consultar disponibilidade
+      {t.disponibilidade}
     </a>
     <button
       class="cabecalho__menu"
@@ -35,7 +79,7 @@ const pedidos = ligacoesPedido(caminho);
     >
       <Icone nome="menu" tamanho={22} />
       <span aria-hidden="true">Menu</span>
-      <span class="visualmente-oculto">Abrir menu</span>
+      <span class="visualmente-oculto">{t.abrir}</span>
     </button>
   </div>
 </header>
@@ -45,10 +89,10 @@ const pedidos = ligacoesPedido(caminho);
     <Assinatura />
     <button class="menu-movel__fechar" type="button" data-fechar-menu>
       <Icone nome="fechar" tamanho={26} />
-      <span class="visualmente-oculto">Fechar menu</span>
+      <span class="visualmente-oculto">{t.fechar}</span>
     </button>
   </div>
-  <nav class="menu-movel__nav contentor" aria-label="Principal">
+  <nav class="menu-movel__nav contentor" aria-label={t.principal}>
     <ol>
       {navegacao.map((item) => (
         <li>
@@ -65,12 +109,25 @@ const pedidos = ligacoesPedido(caminho);
   </nav>
   <div class="menu-movel__rodape contentor">
     <a class="botao botao--principal botao--bloco" href={pedidos.disponibilidade} data-fechar-menu-ao-navegar>
-      Consultar disponibilidade
+      {t.disponibilidade}
     </a>
     <a class="botao botao--verde botao--bloco" href={pedidos.evento} data-fechar-menu-ao-navegar>
-      Pedir orçamento para um evento
+      {t.evento}
     </a>
-    <p>{localizacaoCompleta}</p>
+    <ul class="menu-movel__linguas" aria-label={t.lingua}>
+      {linguas.map((x) => (
+        <li>
+          {x.lingua === l ? (
+            <span aria-current="true">{x.nome}</span>
+          ) : (
+            <a href={x.href} hreflang={x.html} lang={x.html}>
+              {x.nome}
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
+    <p>{localizacaoCompletaEm(l)}</p>
   </div>
 </dialog>
 
@@ -153,6 +210,48 @@ const pedidos = ligacoesPedido(caminho);
     display: none;
     min-height: 46px;
     padding-inline: 20px;
+  }
+  /* Selector de língua: a sigla da língua actual e uma ligação para a outra. */
+  .linguas {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+  }
+  .linguas li + li::before {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 16px;
+    margin-inline: 2px;
+    vertical-align: middle;
+    background: var(--linha);
+  }
+  .linguas a,
+  .linguas__actual {
+    display: inline-grid;
+    place-items: center;
+    min-width: 40px;
+    min-height: 44px;
+    border-radius: 10px;
+  }
+  .linguas a {
+    color: var(--texto-suave);
+    text-decoration: none;
+    transition:
+      color var(--transicao),
+      background-color var(--transicao);
+  }
+  .linguas a:hover {
+    background: rgb(32 41 35 / 0.05);
+    color: var(--texto);
+  }
+  .linguas__actual {
+    color: var(--dourado-texto);
   }
   .cabecalho__menu {
     display: inline-flex;
@@ -254,5 +353,27 @@ const pedidos = ligacoesPedido(caminho);
   }
   .menu-movel__rodape p {
     margin-top: 6px;
+  }
+  .menu-movel__linguas {
+    display: flex;
+    gap: 6px 20px;
+    margin: 6px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .menu-movel__linguas a,
+  .menu-movel__linguas span {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .menu-movel__linguas a {
+    color: var(--verde);
+    text-underline-offset: 3px;
+  }
+  .menu-movel__linguas [aria-current] {
+    color: var(--dourado-texto);
   }
 </style>

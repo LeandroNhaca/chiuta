@@ -1,6 +1,7 @@
 ---
 /** Ligações discretas para as contas oficiais do lodge (sem widgets nem conteúdos incorporados). */
 import { lodge } from '../config/lodge';
+import { linguaDe } from '../i18n/linguas';
 
 import Icone from './Icone.astro';
 
@@ -11,16 +12,17 @@ interface Props {
 const { claro = false } = Astro.props;
 const redes = lodge.redesSociais.filter((r) => /^https:\/\//.test(r.url));
 const icones = { Instagram: 'instagram', Facebook: 'facebook' } as const;
+const en = linguaDe(Astro.url) === 'en';
 ---
 
 {redes.length > 0 && (
-  <ul class:list={['redes', { 'redes--claro': claro }]} aria-label="Redes sociais">
+  <ul class:list={['redes', { 'redes--claro': claro }]} aria-label={en ? 'Social media' : 'Redes sociais'}>
     {redes.map((r) => (
       <li>
         <a href={r.url} target="_blank" rel="noopener">
           <Icone nome={icones[r.nome as keyof typeof icones] ?? 'externa'} tamanho={20} />
           <span>{r.nome}</span>
-          <span class="visualmente-oculto">(abre numa nova janela)</span>
+          <span class="visualmente-oculto">{en ? '(opens in a new window)' : '(abre numa nova janela)'}</span>
         </a>
       </li>
     ))}

@@ -4,6 +4,7 @@
  * escuros vai numa pastilha branca (`sobreEscuro`). Sem ficheiro configurado, mostra o nome em texto.
  */
 import { lodge } from '../config/lodge';
+import { linguaDe, rota } from '../i18n/linguas';
 
 interface Props {
   class?: string;
@@ -15,12 +16,13 @@ const { class: classe, sobreEscuro = false, altura = 56 } = Astro.props;
 const base = lodge.marca.logotipo;
 // Proporção dos ficheiros gerados por scripts/imagens/gerar_icones.py (480 × 311).
 const largura = Math.round((altura * 480) / 311);
+const l = linguaDe(Astro.url);
 ---
 
 <a
-  href="/"
+  href={rota(l, '/')}
   class:list={['assinatura', { 'assinatura--pastilha': sobreEscuro && base }, classe]}
-  aria-label={`${lodge.nome}, página inicial`}
+  aria-label={`${lodge.nome}, ${l === 'en' ? 'home page' : 'página inicial'}`}
 >
   {base ? (
     <img

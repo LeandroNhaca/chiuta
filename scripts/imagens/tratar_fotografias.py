@@ -11,6 +11,14 @@ secção são feitos no CSS (object-fit/object-position), não em ficheiros novo
 grande formato (palcos, aberturas e faixas) ganham uma versão maior (até 1600 px, no máximo 1,6 vezes o
 original), ampliada com Lanczos e nitidez: resolução aparente para ecrãs grandes, sem acrescentar conteúdo.
 
+Fotografias de fundo (ecrã inteiro: aberturas das páginas, palcos e cenas; revisão de 30/10/2026):
+- Sem redução de ruído, salvo ruído forte (σ ≥ 2): a folhagem e os tecidos finos medem-se como ruído e o
+  NL-means deixava-os com aspecto pintado, o que se notava muito em fundo.
+- Além da versão "grande" (1600 px), uma de 2000 px (Lanczos e nitidez), para um ecrã de 1920 px não ter
+  de ampliar a imagem; os ecrãs mais pequenos continuam a receber a de 1600 px.
+- Testou-se também a super-resolução EDSR (OpenCV dnn_superres): ficou mais macia do que o Lanczos nestas
+  fotografias (reduz a imagem antes de a reconstruir) e não foi adoptada.
+
 Nitidez (revisão de 29/10/2026, depois de uma medição fotografia a fotografia):
 - O ruído é medido nas zonas lisas de cada fotografia. A maioria quase não tem ruído (as das redes já vêm
   comprimidas e alisadas), por isso a redução de ruído só se aplica onde é preciso e com a força medida;
@@ -73,12 +81,17 @@ class Ajustes:
     # Recorte moderado (x0, y0, x1, y1) sobre o original, só para tirar carimbos de data, marcas de
     # câmara ou pessoas no limite do enquadramento. Nunca acrescenta nem move nada.
     recorte: tuple[int, int, int, int] | None = None
+    # Fotografia de fundo (ecrã inteiro): redução de ruído só com ruído forte e mais uma versão de 2000 px.
+    fundo: bool = False
 
 
 # Fotografias em grande formato (palcos, aberturas e faixas): versão extra ampliada ("grande").
 LARGO: list[int | str] = [640, "max", "grande"]
 GRANDE_MAXIMO = 1600
 GRANDE_FATOR = 1.6
+# Fotografias de fundo (ecrã inteiro): mais uma versão de 2000 px e redução de ruído só com ruído forte.
+GRANDE_FUNDO = 2000
+RUIDO_FORTE_FUNDO = 2.0
 # Qualidade de compressão (Pillow): as fotografias suaves ganham qualidade (o ficheiro continua pequeno).
 QUALIDADE_AVIF = {"normal": 52, "suave": 62}
 QUALIDADE_WEBP = {"normal": 78, "suave": 82}
@@ -89,43 +102,43 @@ FOTOGRAFIAS: dict[str, Ajustes] = {
     #     já editadas pelo lodge: só ruído de compressão e, nas de 2016, um balanço de brancos ligeiro.
     # Quartos
     "quarto-cadeirao": Ajustes(origem="ig-quarto-cadeirao.png",
-                               larguras=LARGO),
+                               fundo=True, larguras=LARGO),
     "quarto-duas-camas": Ajustes(origem="ig-quarto-duas-camas.png",
-                                  larguras=LARGO),
+                                  fundo=True, larguras=LARGO),
     "quarto-cama-redonda": Ajustes(origem="ig-quarto-cama-redonda.png",
-                                   larguras=LARGO),
+                                   fundo=True, larguras=LARGO),
     "quarto-casal": Ajustes(origem="ig-quarto-casal.png"),
     "quarto-poltronas": Ajustes(origem="ig-quarto-poltronas.png",
-                                 larguras=LARGO),
+                                 fundo=True, larguras=LARGO),
     "quarto-mosquiteiro": Ajustes(origem="fb-quarto-mosquiteiro.png", balanco=0.15, contraste=0.05),
     # Piscinas, jardins e lazer. A da piscina com palmeiras é o hero e a imagem de partilha.
     "piscina-palmeiras": Ajustes(origem="ig-piscina-palmeiras.png",
-                                 larguras=LARGO),
+                                 fundo=True, larguras=LARGO),
     "piscina-topiaria": Ajustes(origem="ig-piscina-topiaria.png",
-                                larguras=LARGO),
+                                fundo=True, larguras=LARGO),
     "piscina-deck": Ajustes(origem="ig-piscina-deck.png"),
     "piscina-cascata": Ajustes(origem="ig-piscina-cascata.png",
                                 larguras=LARGO),
     "piscina-sombra": Ajustes(origem="ig-piscina-sombra.png"),
     "vista-piscina-esplanada": Ajustes(origem="fb-vista-piscina-esplanada.png",
-                                       larguras=LARGO),
+                                       fundo=True, larguras=LARGO),
     "esplanada-arvore": Ajustes(origem="fb-esplanada-arvore.png", balanco=0.10, contraste=0.05,
-                                larguras=LARGO),
+                                fundo=True, larguras=LARGO),
     "mesas-sombra": Ajustes(origem="ig-mesas-sombra.png"),
     "decoracao-quarto": Ajustes(origem="ig-decoracao-quarto.png",
                                  larguras=LARGO),
     # Conferências e eventos. Recorte do buffet: tira o painel decorativo da festa no limite esquerdo.
     "sala-conferencias-palco": Ajustes(origem="ig-sala-conferencias-palco.png",
-                                       larguras=LARGO),
+                                       fundo=True, larguras=LARGO),
     "sala-conferencias-plateia": Ajustes(origem="ig-sala-conferencias-plateia.png",
-                                         larguras=LARGO),
+                                         fundo=True, larguras=LARGO),
     "sala-conferencias-u": Ajustes(origem="ig-sala-conferencias-u.png",
-                                   larguras=LARGO),
+                                   fundo=True, larguras=LARGO),
     "buffet-evento": Ajustes(origem="fb-buffet-evento.png", recorte=(300, 0, 1080, 810),
                              balanco=0.15),
     # Restaurante
     "restaurante-janelas": Ajustes(origem="fb-restaurante-janelas.png", balanco=0.15, gama=0.95,
-                                   contraste=0.05, larguras=LARGO),
+                                   contraste=0.05, fundo=True, larguras=LARGO),
     # Espaços do lodge
     "edificio-colmo": Ajustes(origem="ig-edificio-colmo.png",
                               larguras=LARGO),
@@ -299,9 +312,12 @@ def tratar(nome: str, aj: Ajustes) -> tuple[np.ndarray, dict]:
     rgb = vibracao(rgb, aj.vibracao)
     tratada = (np.clip(rgb, 0, 1) * 255 + 0.5).astype(np.uint8)
     # Redução de ruído só onde há ruído, medido depois dos ajustes de luz (aclarar sombras levanta-o) e
-    # misturada com a imagem para manter a textura. Abaixo de h = 1 não se aplica.
+    # misturada com a imagem para manter a textura. Abaixo de h = 1 não se aplica. Nas de fundo, só com
+    # ruído forte.
     sigma = ruido_medido(tratada)
     forca = aj.ruido if aj.ruido is not None else min(2.5, 2 * sigma)
+    if aj.fundo and aj.ruido is None and sigma < RUIDO_FORTE_FUNDO:
+        forca = 0.0
     if forca >= 1:
         limpa = cv2.fastNlMeansDenoisingColored(tratada, None, forca, forca, 5, 15)
         tratada = cv2.addWeighted(limpa, 0.6, tratada, 0.4, 0)
@@ -371,7 +387,7 @@ def main() -> None:
         def largura_de(l: int | str) -> int:
             return maxima if l == "max" else grande if l == "grande" else int(l)
 
-        larguras = sorted({largura_de(l) for l in aj.larguras})
+        larguras = sorted({largura_de(l) for l in aj.larguras} | ({GRANDE_FUNDO} if aj.fundo else set()))
         for largura in larguras:
             ficheiros += gravar(redimensionar(tratada, largura, info["suave"]), DESTINO / f"{nome}-{largura}",
                                 info["suave"])
